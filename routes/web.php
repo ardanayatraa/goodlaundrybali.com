@@ -106,10 +106,10 @@ Route::middleware('admin')->group(function () {
 
 
 Route::get('/send-wa', function () {
-    $sid    = "AC7dedc4aacae467260cf63c90981ad010"; // SID Twilio
-    $token  = "2ff78d3e26f0ee56e84e58bb26c62f53";  // Token Twilio
-    $from   = env('TWILIO_WHATSAPP_FROM');         // Nomor WhatsApp Twilio
-    $to     = "whatsapp:+6285172003970";           // Nomor tujuan
+    $sid    = env('TWILIO_SID');               // SID Twilio
+    $token  = env('TWILIO_TOKEN');            // Token Twilio
+    $from   = env('TWILIO_WHATSAPP_FROM');    // Nomor WhatsApp Twilio
+    $to     = "whatsapp:+6285172003970";      // Nomor tujuan
     $twilio = new Client($sid, $token);
 
     // Data untuk pesan
