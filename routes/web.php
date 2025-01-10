@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\ActionController;
 use Illuminate\Support\Facades\Route;
+use Twilio\Rest\Client;
+use App\Http\Controllers\Admin\AuthController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,16 +17,150 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/', function () {
-    return view('welcome');
+    if (Auth::guard('admin')->check()) {
+        return redirect()->route('dashboard');
+    }
+    return view('login-admin');
+});
+Route::get('/login', function () {
+    abort(404);
+});
+Route::get('/register', function () {
+    abort(404);
 });
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified'
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+
+Route::post('login', [AuthController::class, 'login'])->name('login.post');
+Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::middleware('admin')->group(function () {
+
+    // Dashboard Routes
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/', function () {
+            return view('dashboard');
+        })->name('dashboard');
+    });
+
+    // Transaction Routes
+    Route::prefix('transaksi')->group(function () {
+        Route::get('/', function () {
+            return view('transaksi');
+        })->name('transasksi');
+
+        Route::put('update/{id}', [ActionController::class, 'transaksiUpdate'])->name('transaksi.update');
+        Route::delete('delete/{id}', [ActionController::class, 'transaksiDelete'])->name('transaksi.delete');
+    });
+
+    // Paket Routes
+    Route::prefix('paket')->group(function () {
+        Route::get('/', function () {
+            return view('paket');
+        })->name('paket');
+        Route::put('update/{id}', [ActionController::class, 'paketUpdate'])->name('paket.update');
+        Route::delete('delete/{id}', [ActionController::class, 'paketDelete'])->name('paket.delete');
+    });
+
+    // Pelanggan Routes
+    Route::prefix('pelanggan')->group(function () {
+        Route::get('/', function () {
+            return view('pelanggan');
+        })->name('pelanggan');
+
+        Route::put('update/{id}', [ActionController::class, 'pelangganUpdate'])->name('pelanggan.update');
+        Route::delete('delete/{id}', [ActionController::class, 'pelangganDelete'])->name('pelanggan.delete');
+        Route::get('cetak/{id}', [ActionController::class, 'printMember'])->name('pelanggan.print');
+    });
+
+    // Stok Barang Routes
+    Route::prefix('barang')->group(function () {
+        Route::get('/', function () {
+            return view('barang');
+        })->name('stok-barang');
+        Route::put('update/{id}', [ActionController::class, 'barangUpdate'])->name('barang.update');
+        Route::delete('delete/{id}', [ActionController::class, 'barangDelete'])->name('barang.delete');
+        // Barang Masuk Routes
+        Route::get('masuk', function () {
+            return view('barang-masuk');
+        })->name('barang-masuk');
+
+        Route::put('masuk/update/{id}', [ActionController::class, 'barangMasukUpdate'])->name('trx_barang_masuk.update');
+        Route::delete('masuk/delete/{id}', [ActionController::class, 'barangMasukDelete'])->name('trx_barang_masuk.delete');
+
+        // Barang Keluar Routes
+        Route::get('keluar', function () {
+            return view('barang-keluar');
+        })->name('barang-keluar');
+
+        Route::put('keluar/update/{id}', [ActionController::class, 'barangKeluarUpdate'])->name('trx_barang_keluar.update');
+        Route::delete('keluar/delete/{id}', [ActionController::class, 'barangKeluarDelete'])->name('trx_barang_keluar.delete');
+    });
+
+    // Report Routes
+    Route::get('report', function () {
+        return 1;
+    })->name('report');
+});
+
+
+Route::get('/send-wa', function () {
+    $sid    = "AC7dedc4aacae467260cf63c90981ad010"; // SID Twilio
+    $token  = "2ff78d3e26f0ee56e84e58bb26c62f53";  // Token Twilio
+    $from   = env('TWILIO_WHATSAPP_FROM');         // Nomor WhatsApp Twilio
+    $to     = "whatsapp:+6285172003970";           // Nomor tujuan
+    $twilio = new Client($sid, $token);
+
+    // Data untuk pesan
+    $data = [
+        'title'       => 'Good Laundry',
+        'nota'        => '#Z495A/11060',
+        'tanggal'     => '2024-12-23 17:03:00',
+        'pembayaran'  => 'belum_bayar',
+        'status'      => 'Proses',
+        'nama'        => 'Kak ardana (085179799415)',
+        'estimasi'    => '1 Hari 2024-12-24',
+        'catatan'     => '',
+        'detail'      => 'Express (Rp7.000 x 3Kg)',
+        'subtotal'    => 'Rp21.000',
+        'total'       => 'Rp21.000',
+        'footer'      => 'Terimakasih',
+    ];
+
+    // Format pesan
+    $messageBody = "{$data['title']}
+------------------------------
+No Nota : {$data['nota']}
+Tanggal : {$data['tanggal']}
+Pembayaran : {$data['pembayaran']}
+Status : {$data['status']}
+Nama : {$data['nama']}
+Est : {$data['estimasi']}
+Note : {$data['catatan']}
+----------------------------
+{$data['detail']}
+{$data['subtotal']}
+------------------------------
+SubTotal : {$data['subtotal']}
+Total : {$data['total']}
+
+------------------------------
+{$data['footer']}
+------------------------------";
+
+    try {
+        // Kirim pesan WhatsApp
+        $message = $twilio->messages->create(
+            $to,
+            [
+                "from" => $from,
+                "body" => $messageBody,
+            ]
+        );
+
+        return response()->json(['success' => true, 'messageSid' => $message->sid]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()]);
+    }
 });

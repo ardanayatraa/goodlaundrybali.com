@@ -16,19 +16,20 @@ return new class extends Migration
             $table->foreignId('id_transaksi')->constrained('transaksis', 'id_transaksi')->onDelete('cascade');
             $table->date('tanggal_transaksi');
             $table->string('nama_pelanggan');
-            $table->text('alamat');
-            $table->string('no_telp');
-            $table->string('metode_pembayaran');
-            $table->string('status_pembayaran');
-            $table->string('status_transaksi');
-            $table->date('tanggal_ambil');
-            $table->string('jenis_paket');
-            $table->decimal('berat', 8, 2);
-            $table->decimal('harga', 10, 2);
-            $table->decimal('total_harga', 10, 2);
-            $table->decimal('total_diskon', 10, 2)->default(0);
+            $table->text('alamat')->nullable();
+            $table->string('no_telp')->nullable();
+            $table->string('metode_pembayaran')->nullable();
+            $table->string('status_pembayaran')->nullable();
+            $table->string('status_transaksi')->nullable();
+            $table->date('tanggal_ambil')->nullable();
+            $table->string('jenis_paket')->nullable();
+            $table->decimal('berat', 8, 2)->nullable();
+            $table->decimal('harga', 10, 2)->nullable();
+            $table->decimal('total_harga', 10, 2)->nullable();
+            $table->decimal('total_diskon', 10, 2)->default(0)->nullable();
             $table->timestamps();
         });
+        
     }
 
     /**

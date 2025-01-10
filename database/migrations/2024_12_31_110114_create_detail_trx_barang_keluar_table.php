@@ -16,8 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_trx_brgkeluar');
             $table->date('tanggal_keluar');
             $table->string('nama_admin');
-            $table->string('nama_barang');
-            $table->integer('jumlah_brgkeluar');
+            $table->string('nama_barang')->nullable();
+            $table->integer('jumlah_brgkeluar')->nullable();
             $table->timestamps();
         });
     }
