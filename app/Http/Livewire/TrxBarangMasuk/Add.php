@@ -33,8 +33,9 @@ class Add extends Component
         ]);
 
         $this->reset(['id_barang', 'tanggal_masuk', 'nama_admin', 'total_harga']);
-        $this->showModal = false; // Tutup modal
+        $this->showModal = false;
         session()->flash('success', 'Transaksi barang masuk berhasil ditambahkan!');
+        $this->emit('refreshLivewireDatatable');
     }
 
     public function render()

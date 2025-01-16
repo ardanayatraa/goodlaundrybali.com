@@ -26,7 +26,7 @@ class Add extends Component
 
         session()->flash('success', 'Paket berhasil ditambahkan.');
         $this->resetExcept('showModal'); // Hanya reset input, modal tetap terbuka
-        $this->emit('refreshLivewireDatatable '); // Untuk refresh datatable
+        $this->emit('refreshLivewireDatatable'); // Untuk refresh datatable
         $this->showModal = false; // Tutup modal setelah submit
     }
 

@@ -2,15 +2,17 @@
     <!-- Button to trigger modal for Edit and Delete -->
     <div class="flex space-x-4">
         <!-- Edit Button -->
-        <button onclick="openEditModal({{ $trxBarangMasuk->id_trx_brgmasuk }})" 
-                class="px-4 py-2 text-blue-800 rounded-md hover:bg-blue-100 focus:outline-none flex items-center space-x-2">
+        <button onclick="openEditModal(this)" data-id="{{ $trxBarangMasuk->id_trx_brgmasuk }}"
+            data-nama="{{ $trxBarangMasuk->nama_admin }}" data-tanggal="{{ $trxBarangMasuk->tanggal_masuk }}"
+            data-harga="{{ $trxBarangMasuk->total_harga }}"
+            class="px-4 py-2 text-blue-800 rounded-md hover:bg-blue-100 focus:outline-none flex items-center space-x-2">
             <i class="fas fa-edit"></i>
             <span>Edit</span>
         </button>
 
         <!-- Delete Button -->
-        <button onclick="openDeleteModal({{ $trxBarangMasuk->id_trx_brgmasuk }}, '{{ $trxBarangMasuk->nama_admin }}')" 
-                class="px-4 py-2 text-red-800 rounded-md hover:bg-red-100 focus:outline-none flex items-center space-x-2">
+        <button onclick="openDeleteModal({{ $trxBarangMasuk->id_trx_brgmasuk }}, '{{ $trxBarangMasuk->nama_admin }}')"
+            class="px-4 py-2 text-red-800 rounded-md hover:bg-red-100 focus:outline-none flex items-center space-x-2">
             <i class="fas fa-trash-alt"></i>
             <span>Hapus</span>
         </button>
@@ -27,63 +29,53 @@
             </button>
         </div>
 
-        <form id="editForm" action="{{ route('trx_barang_masuk.update', ['id' => $trxBarangMasuk->id_barang]) }}" method="POST">
+        <form id="editForm" action="{{ route('trx_barang_masuk.update', ['id' => $trxBarangMasuk->id_barang]) }}"
+            method="POST">
             @csrf
             @method('PUT')
-            
+
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm text-gray-700 mb-1">Barang</label>
-                    <select 
-                        name="id_barang" 
+                    <select name="id_barang"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         required>
                         <option value="">Pilih Barang</option>
-                        
+
                     </select>
                 </div>
 
                 <div>
                     <label class="block text-sm text-gray-700 mb-1">Tanggal Masuk</label>
-                    <input 
-                        type="date" 
-                        name="tanggal_masuk"
+                    <input type="date" name="tanggal_masuk"
                         value="{{ old('tanggal_masuk', $trxBarangMasuk->tanggal_masuk) }}"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                    >
+                        required>
                 </div>
 
                 <div>
                     <label class="block text-sm text-gray-700 mb-1">Nama Admin</label>
-                    <input 
-                        type="text" 
-                        name="nama_admin"
-                        value="{{ old('nama_admin', $trxBarangMasuk->nama_admin) }}"
+                    <input type="text" name="nama_admin" value="{{ old('nama_admin', $trxBarangMasuk->nama_admin) }}"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                    >
+                        required>
                 </div>
 
                 <div>
                     <label class="block text-sm text-gray-700 mb-1">Total Harga</label>
-                    <input 
-                        type="number" 
-                        name="total_harga"
+                    <input type="number" name="total_harga"
                         value="{{ old('total_harga', $trxBarangMasuk->total_harga) }}"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                    >
+                        required>
                 </div>
             </div>
 
             <div class="flex justify-end gap-2 mt-6">
-                <button type="button" onclick="closeEditModal()" 
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                <button type="button" onclick="closeEditModal()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
                     Batal
                 </button>
-                <button type="submit" 
-                        class="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-lg hover:bg-green-600">
+                <button type="submit"
+                    class="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-lg hover:bg-green-600">
                     Simpan
                 </button>
             </div>
@@ -96,21 +88,39 @@
     <div class="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 class="text-xl font-semibold text-gray-900">Delete Confirmation</h2>
         <h2 class="text-xl font-semibold text-gray-900" id="deleteItemName"></h2>
-        <p class="mt-2 text-gray-600">Are you sure you want to delete this transaction? This action cannot be undone.</p>
+        <p class="mt-2 text-gray-600">Are you sure you want to delete this transaction? This action cannot be undone.
+        </p>
         <div class="mt-4 flex justify-end space-x-2">
-            <form id="deleteForm" action="{{ route('trx_barang_masuk.delete', ['id' => $trxBarangMasuk->id_barang]) }}" method="POST">
+            <form id="deleteForm" action="{{ route('trx_barang_masuk.delete', ['id' => $trxBarangMasuk->id_barang]) }}"
+                method="POST">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none">Yes, Delete</button>
+                <button type="submit"
+                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none">Yes,
+                    Delete</button>
             </form>
-            <button onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400 focus:outline-none">Cancel</button>
+            <button onclick="closeDeleteModal()"
+                class="px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400 focus:outline-none">Cancel</button>
         </div>
     </div>
 </div>
 
 <script>
-    function openEditModal(id) {
+    function openEditModal(button) {
+        const id = button.getAttribute('data-id');
+        const namaAdmin = button.getAttribute('data-nama');
+        const tanggalMasuk = button.getAttribute('data-tanggal');
+        const totalHarga = button.getAttribute('data-harga');
+
+        // Update form action URL
         document.getElementById('editForm').action = `/barang/masuk/update/${id}`;
+
+        // Isi input form dengan data yang diambil
+        document.querySelector('input[name="nama_admin"]').value = namaAdmin;
+        document.querySelector('input[name="tanggal_masuk"]').value = tanggalMasuk;
+        document.querySelector('input[name="total_harga"]').value = totalHarga;
+
+        // Menampilkan modal
         document.getElementById('editModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden'; // Disable scrolling when modal is open
     }
@@ -133,7 +143,7 @@
     }
 
     // Close modal when clicking on overlay
-    window.addEventListener('click', function (event) {
+    window.addEventListener('click', function(event) {
         const editModal = document.getElementById('editModal');
         const deleteModal = document.getElementById('deleteModal');
         if (event.target === editModal) {

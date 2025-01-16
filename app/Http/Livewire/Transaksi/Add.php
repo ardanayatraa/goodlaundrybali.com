@@ -46,6 +46,7 @@ class Add extends Component
         $this->reset(['nama_pelanggan', 'tanggal_transaksi', 'total_harga', 'metode_pembayaran', 'status_pembayaran', 'status_transaksi', 'jumlah_point', 'status_bonus']);
         $this->showModal = false;
         session()->flash('success', 'Transaksi berhasil ditambahkan!');
+          $this->emit('refreshLivewireDatatable');
     }
 
     public function render()

@@ -47,7 +47,7 @@ class Add extends Component
 
         $this->closeModal();
 
-        $this->emit('refreshPelangganTable');
+        $this->emit('refreshLivewireDatatable');
     }
 
     public function render()

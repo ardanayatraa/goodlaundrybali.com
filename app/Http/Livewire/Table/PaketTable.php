@@ -40,13 +40,13 @@ class PaketTable extends LivewireDatatable
 
             Column::callback(['id_paket'], function($id) {
                 $paket = Paket::find($id);
-                return view('action.paket', ['paket' => $paket]); 
+                return view('action.paket', ['paket' => $paket]);
             })
                 ->label('Actions')
                 ->excludeFromExport(),
-            
-              
-           
+
+
+
         ];
     }
 }

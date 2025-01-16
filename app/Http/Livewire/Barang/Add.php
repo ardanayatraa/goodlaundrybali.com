@@ -27,6 +27,7 @@ class Add extends Component
 
         $this->reset(['nama_barang', 'harga']);
         $this->showModal = false; // Tutup modal setelah data berhasil disimpan
+        $this->emit('refreshLivewireDatatable');
         session()->flash('success', 'Barang berhasil ditambahkan!');
     }
 
