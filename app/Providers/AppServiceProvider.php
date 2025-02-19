@@ -29,8 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        TrxBarangKeluar::observe(TrxBarangKeluarObserver::class);
-        TrxBarangMasuk::observe(TrxBarangMasukObserver::class);
-        Transaksi::observe(TransaksiObserver::class);
+        // TrxBarangKeluar::observe(TrxBarangKeluarObserver::class);
+        // TrxBarangMasuk::observe(TrxBarangMasukObserver::class);
+        // Transaksi::observe(TransaksiObserver::class);
     }
 }

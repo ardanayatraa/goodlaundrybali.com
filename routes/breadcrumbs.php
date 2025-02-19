@@ -8,64 +8,49 @@ Breadcrumbs::for('home', function (BreadcrumbTrail $trail) {
     $trail->push('Dashboard', route('dashboard'));
 });
 
-// Home > Dashboard
+// Dashboard
 Breadcrumbs::for('dashboard', function (BreadcrumbTrail $trail) {
- 
-    $trail->push('', route('dashboard'));
-});
-
-// Home > Stok Barang
-Breadcrumbs::for('stok-barang', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
-    $trail->push('Stok Barang', route('stok-barang'));
+    $trail->push('Dashboard', route('dashboard'));
 });
 
-// Home > Stok Barang > Data Barang
-Breadcrumbs::for('data-barang', function (BreadcrumbTrail $trail) {
-    $trail->parent('stok-barang');
-    $trail->push('Data Barang', route('data-barang'));
-});
+$models = [
+    'Barang',
+    'DetailTransaksi',
+    'Paket',
+    'Pelanggan',
+    'Point',
+    'Transaksi',
+    'TrxBarangKeluar',
+    'TrxBarangMasuk',
+    'Unit',
+    'UnitPaket'
+];
 
-// Home > Stok Barang > Barang Masuk
-Breadcrumbs::for('barang-masuk', function (BreadcrumbTrail $trail) {
-    $trail->parent('stok-barang');
-    $trail->push('Barang Masuk', route('barang-masuk'));
-});
+foreach ($models as $model) {
+    $routeName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $model));
 
-// Home > Stok Barang > Barang Keluar
-Breadcrumbs::for('barang-keluar', function (BreadcrumbTrail $trail) {
-    $trail->parent('stok-barang');
-    $trail->push('Barang Keluar', route('barang-keluar'));
-});
+    // Home > Model
+    Breadcrumbs::for($routeName, function (BreadcrumbTrail $trail) use ($routeName) {
+        $trail->parent('home');
+        $trail->push(ucwords(str_replace('-', ' ', $routeName)), route($routeName));
+    });
 
+    // Home > Model > Add
+    Breadcrumbs::for("{$routeName}.add", function (BreadcrumbTrail $trail) use ($routeName) {
+        $trail->parent($routeName);
+        $trail->push('Tambah', route("{$routeName}.add"));
+    });
 
-// Home > Transaksi
-Breadcrumbs::for('transasksi', function (BreadcrumbTrail $trail) {
-    $trail->parent('home');
-    $trail->push('Transaksi', route('transasksi'));
-});
-
-// Home > Paket
-Breadcrumbs::for('paket', function (BreadcrumbTrail $trail) {
-    $trail->parent('home');
-    $trail->push('Paket', route('paket'));
-});
-
-// Home > Pelanggan
-Breadcrumbs::for('pelanggan', function (BreadcrumbTrail $trail) {
-    $trail->parent('home');
-    $trail->push('Pelanggan', route('pelanggan'));
-});
-
-// Home > Barang
-Breadcrumbs::for('barang', function (BreadcrumbTrail $trail) {
-    $trail->parent('home');
-    $trail->push('Barang', route('barang'));
-});
+    // Home > Model > Edit
+    Breadcrumbs::for("{$routeName}.edit", function (BreadcrumbTrail $trail, $id) use ($routeName) {
+        $trail->parent($routeName);
+        $trail->push('Edit', route("{$routeName}.edit", $id));
+    });
+}
 
 // Home > Report
 Breadcrumbs::for('report', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('Report', route('report'));
 });
-

@@ -11,9 +11,31 @@ class Transaksi extends Model
 
     protected $primaryKey = 'id_transaksi';
     protected $fillable = [
-        'nama_pelanggan', 'tanggal_transaksi', 'total_harga', 'metode_pembayaran',
-        'status_pembayaran', 'status_transaksi', 'jumlah_point', 'status_bonus'
+        'id_pelanggan', 
+        'id_point', 
+        'id_paket', 
+        'tanggal_transaksi', 
+        'total_harga', 
+        'metode_pembayaran',
+        'status_pembayaran', 
+        'status_transaksi', 
+        'jumlah_point'
     ];
+    
+    public function pelanggan()
+    {
+        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
+    }
+
+    public function paket()
+    {
+        return $this->belongsTo(Paket::class, 'id_paket');
+    }
+
+    public function point()
+    {
+        return $this->belongsTo(Point::class, 'id_point');
+    }
 
     public function detailTransaksi()
     {

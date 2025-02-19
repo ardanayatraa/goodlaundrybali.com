@@ -12,8 +12,13 @@ class Pelanggan extends Model
     protected $primaryKey = 'id_pelanggan';
     protected $fillable = ['nama_pelanggan', 'no_telp', 'alamat', 'keterangan'];
 
-    public function penukaranBonus()
+    public function transaksi()
     {
-        return $this->hasMany(PenukaranBonus::class, 'id_pelanggan');
+        return $this->hasMany(Transaksi::class, 'id_pelanggan');
+    }
+
+    public function points()
+    {
+        return $this->hasMany(Point::class, 'id_pelanggan');
     }
 }

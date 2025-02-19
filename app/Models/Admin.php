@@ -21,4 +21,14 @@ class Admin extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function trxBarangMasuk()
+    {
+        return $this->hasMany(TrxBarangMasuk::class, 'id_admin');
+    }
+
+    public function trxBarangKeluar()
+    {
+        return $this->hasMany(TrxBarangKeluar::class, 'id_admin');
+    }
 }

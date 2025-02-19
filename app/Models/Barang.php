@@ -10,7 +10,12 @@ class Barang extends Model
     use HasFactory;
 
     protected $primaryKey = 'id_barang';
-    protected $fillable = ['nama_barang', 'harga'];
+    protected $fillable = ['nama_barang', 'harga', 'id_unit', 'stok'];
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'id_unit');
+    }
 
     public function trxBarangMasuk()
     {

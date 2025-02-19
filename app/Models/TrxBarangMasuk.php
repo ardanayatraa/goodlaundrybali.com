@@ -9,17 +9,17 @@ class TrxBarangMasuk extends Model
 {
     use HasFactory;
 
-    protected $table = 'trx_barang_masuk';
+    protected $table = 'trx_barang_masuks';
     protected $primaryKey = 'id_trx_brgmasuk';
-    protected $fillable = ['id_barang', 'tanggal_masuk', 'nama_admin', 'total_harga'];
+    protected $fillable = ['id_barang', 'tanggal_masuk', 'id_admin', 'unit', 'jumlah_brgmasuk'];
 
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'id_barang');
     }
 
-    public function detailTrxBarangMasuk()
+    public function admin()
     {
-        return $this->hasMany(DetailTrxBarangMasuk::class, 'id_trx_brgmasuk');
+        return $this->belongsTo(Admin::class, 'id_admin');
     }
 }

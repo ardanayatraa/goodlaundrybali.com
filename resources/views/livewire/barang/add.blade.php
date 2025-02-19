@@ -1,43 +1,42 @@
 <div>
-    <!-- Button to Open Modal -->
-    <button wire:click="$set('showModal', true)"
-        class="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
-        Tambah Barang
-    </button>
-
-    <!-- Jetstream Modal -->
-    <x-dialog-modal wire:model="showModal">
+    <!-- Directly display the form using x-form-section -->
+    <x-form-section submit="save">
         <x-slot name="title">
             Tambah Barang
         </x-slot>
 
-        <x-slot name="content">
-            <div class="mb-4">
-                <label for="nama_barang" class="block text-gray-700 font-semibold">Nama Barang</label>
-                <input type="text" id="nama_barang" wire:model="nama_barang"
-                    class="w-full mt-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                @error('nama_barang') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-            </div>
+        <x-slot name="description">
+            Masukkan data barang baru di bawah ini.
+        </x-slot>
 
-            <div class="mb-4">
-                <label for="harga" class="block text-gray-700 font-semibold">Harga</label>
-                <div class="flex items-center">
-                    <span class="mr-2 text-gray-500">Rp</span>
-                    <input type="number" step="0.01" id="harga" wire:model="harga"
-                        class="w-full mt-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400 focus:outline-none">
+        <x-slot name="form">
+            <div class="space-y-6">
+                <div class="mb-4">
+                    <x-label for="nama_barang" value="Nama Barang" />
+                    <x-input id="nama_barang" type="text" wire:model="nama_barang" class="w-full mt-2" />
+                    @error('nama_barang') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
-                @error('harga') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+
+                <div class="mb-4">
+                    <x-label for="harga" value="Harga" />
+                    <x-input id="harga" type="text" wire:model="harga" class="w-full mt-2" />
+                    @error('harga') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="mb-4">
+                    <x-label for="stok" value="Stok" />
+                    <x-input id="stok" type="text" wire:model="stok" class="w-full mt-2" />
+                    @error('stok') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                </div>
             </div>
         </x-slot>
 
-        <x-slot name="footer">
-            <x-secondary-button wire:click="$set('showModal', false)" wire:loading.attr="disabled">
-                Batal
-            </x-secondary-button>
-
-            <x-button class="ml-2" wire:click="submit" wire:loading.attr="disabled">
-                Simpan
-            </x-button>
+        <x-slot name="actions">
+            <x-button type="submit" class="bg-blue-500 text-white">Simpan</x-button>
+            <a href="{{ route('barang') }}" 
+            class="inline-flex items-center gap-2 px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+             <i data-lucide="x-circle" class="w-5 h-5"></i>
+             <span>Batal</span>
         </x-slot>
-    </x-dialog-modal>
+    </x-form-section>
 </div>

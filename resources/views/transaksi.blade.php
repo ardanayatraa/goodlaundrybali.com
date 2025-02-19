@@ -8,7 +8,7 @@
                 Transaksi
             </div>
             <div>
-                {!! Breadcrumbs::render('transasksi') !!}
+                {!! Breadcrumbs::render('transaksi') !!}
             </div>
         </div>
    

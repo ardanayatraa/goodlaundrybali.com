@@ -7,27 +7,29 @@ use App\Models\Paket;
 
 class Add extends Component
 {
-    public $jenis_paket;
-    public $harga;
-    public $waktu_pengerjaan;
-    public $showModal = false; // Untuk kontrol modal
+    public $jenis_paket, $harga, $unit, $waktu_pengerjaan;
 
     protected $rules = [
-        'jenis_paket' => 'required|string|max:255',
+        'jenis_paket' => 'required|string|max:50',
         'harga' => 'required|numeric|min:0',
-        'waktu_pengerjaan' => 'required|integer|min:1',
+        'unit' => 'required|string|max:10',
+        'waktu_pengerjaan' => 'required|string|max:50',
     ];
 
-    public function submit()
+    public function save()
     {
-        $validatedData = $this->validate();
+        $this->validate();
 
-        Paket::create($validatedData);
+        Paket::create([
+            'jenis_paket' => $this->jenis_paket,
+            'harga' => $this->harga,
+            'unit' => $this->unit,
+            'waktu_pengerjaan' => $this->waktu_pengerjaan,
+        ]);
 
-        session()->flash('success', 'Paket berhasil ditambahkan.');
-        $this->resetExcept('showModal'); // Hanya reset input, modal tetap terbuka
-        $this->emit('refreshLivewireDatatable'); // Untuk refresh datatable
-        $this->showModal = false; // Tutup modal setelah submit
+        // Reset form after save
+        $this->reset();
+        return redirect('/paket');
     }
 
     public function render()

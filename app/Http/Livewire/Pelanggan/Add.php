@@ -2,40 +2,26 @@
 
 namespace App\Http\Livewire\Pelanggan;
 
-use App\Models\Pelanggan;
 use Livewire\Component;
+use App\Models\Pelanggan;
 
 class Add extends Component
 {
-    public $nama_pelanggan;
-    public $no_telp;
-    public $alamat;
-    public $keterangan;
-
-    public $isOpen = false;
-
-    protected $rules = [
-        'nama_pelanggan' => 'required|string|max:255',
-        'no_telp' => 'required|string|max:20',
-        'alamat' => 'required|string',
-        'keterangan' => 'nullable|string',
-    ];
+    public $showModal = false;
+    public $nama_pelanggan, $no_telp, $alamat, $keterangan;
 
     public function openModal()
     {
-        $this->isOpen = true;
+        $this->showModal = true;
     }
 
     public function closeModal()
     {
-        $this->reset(['nama_pelanggan', 'no_telp', 'alamat', 'keterangan']);
-        $this->isOpen = false;
+        $this->reset(['showModal', 'nama_pelanggan', 'no_telp', 'alamat', 'keterangan']);
     }
 
     public function save()
     {
-        $this->validate();
-
         Pelanggan::create([
             'nama_pelanggan' => $this->nama_pelanggan,
             'no_telp' => $this->no_telp,
@@ -43,11 +29,7 @@ class Add extends Component
             'keterangan' => $this->keterangan,
         ]);
 
-        session()->flash('message', 'Pelanggan berhasil ditambahkan.');
-
         $this->closeModal();
-
-        $this->emit('refreshLivewireDatatable');
     }
 
     public function render()

@@ -19,114 +19,120 @@
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased">
-    <x-banner />
+<body>
 
-    <div class="min-h-screen flex">
 
+    <div class="min-h-screen flex" x-data="{ open: false }">
         <!-- Sidebar -->
-        <aside class="w-64 bg-white shadow-xl md:w-1/4 lg:w-1/5 xl:w-1/6">
-            <div class="p-4 eco-gradient">
-                <h2 class="text-white font-bold text-xl">Good Laundry</h2>
-            </div>
-
-            <div class="py-4">
-                <div class="px-4 py-3">
+        <aside 
+            :class="open ? 'translate-x-0' : '-translate-x-full'" 
+            class="fixed top-0 left-0 w-64 min-h-screen bg-white border-r z-50 transition-transform sm:translate-x-0 sm:w-72">
+            <div class="p-4 border-b flex justify-between items-center">
+                <div class="px-4 mx-auto py-3">
                     <img src="https://ui-avatars.com/api/?name=Admin&background=4CAF50&color=fff" alt="Admin"
                         class="w-16 h-16 rounded-full mx-auto mb-2">
                     <h3 class="text-center font-semibold text-gray-800">Administrator</h3>
                 </div>
-
-                <nav class="mt-6">
-                    <a href="{{ route('dashboard') }}"
-                        class="flex items-center px-6 py-3 text-gray-700 {{ request()->routeIs('dashboard') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                        </svg>
-                        Dashboard
-                    </a>
-
-                    <a href="{{ route('paket') }}"
-                        class="flex items-center px-6 py-3 text-gray-600 {{ request()->routeIs('paket') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                        Paket Laundry
-                    </a>
-
-                    <a href="{{ route('pelanggan') }}"
-                        class="flex items-center px-6 py-3 text-gray-600 {{ request()->routeIs('pelanggan') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        Pelanggan
-                    </a>
-
-                    <div x-data="{ open: false }">
-                        <div class="flex items-center px-6 py-3 text-gray-600 {{ request()->routeIs('stok-barang') || request()->routeIs('barang-masuk') || request()->routeIs('barang-keluar') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors"
-                            @click="open = !open">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                            Stok Barang
-                            <svg class="w-5 h-5 ml-auto transition-transform transform" :class="{ 'rotate-180': open }">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </div>
-                        <div x-show="open" @click.away="open = false" class="ml-10 mt-2 space-y-2 pl-6">
-                            <a href="{{ route('stok-barang') }}"
-                                class="block px-6 py-2 text-gray-600 {{ request()->routeIs('stok-barang') ? 'bg-green-50' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">Data
-                                Barang</a>
-                            <a href="{{ route('barang-masuk') }}"
-                                class="block px-6 py-2 text-gray-600 {{ request()->routeIs('barang-masuk') ? 'bg-green-50' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">Barang
-                                Masuk</a>
-                            <a href="{{ route('barang-keluar') }}"
-                                class="block px-6 py-2 text-gray-600 {{ request()->routeIs('barang-keluar') ? 'bg-green-50' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">Barang
-                                Keluar</a>
-                        </div>
-                    </div>
-
-                    <a href="{{ route('transasksi') }}"
-                        class="flex items-center px-6 py-3 text-gray-600 {{ request()->routeIs('transasksi') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                        </svg>
-                        Transaksi
-                    </a>
-
-                    <div x-data="{ open: false }">
-                        <a href="#"
-                            class="flex items-center px-6 py-3 text-gray-600 {{ request()->routeIs('report') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors"
-                            @click="open = !open">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Report
-                            <svg class="w-5 h-5 ml-auto transition-transform transform" :class="{ 'rotate-180': open }">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </a>
-                        <div x-show="open" @click.away="open = false" class="ml-10 mt-2 space-y-2 pl-6">
-                            <a href="#"
-                                class="block px-6 py-2 text-gray-600 {{ request()->routeIs('report') ? 'bg-green-50' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">Data
-                                Report</a>
-                        </div>
-                    </div>
-                </nav>
+                <button @click="open = false" class="sm:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"> 
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
-        </aside>
+            <nav>
+                <a href="{{ route('dashboard') }}"
+                    class="flex items-center px-6 py-3 text-gray-700 {{ request()->routeIs('dashboard') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Dashboard
+                </a>
 
-        <!-- Page Content -->
-        <main class="flex-1 p-4">
-            <!-- Header -->
+                <a href="{{ route('paket') }}"
+                class="flex items-center px-6 py-3 text-gray-600 {{ request()->routeIs('paket') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                Paket Laundry
+            </a>
+
+            <a href="{{ route('pelanggan') }}"
+                class="flex items-center px-6 py-3 text-gray-600 {{ request()->routeIs('pelanggan') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Pelanggan
+            </a>
+
+            <div x-data="{ open: false }">
+                <div class="flex items-center px-6 py-3 text-gray-600 {{ request()->routeIs('stok-barang') || request()->routeIs('barang-masuk') || request()->routeIs('barang-keluar') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors"
+                    @click="open = !open">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    Stok Barang
+                    <svg class="w-5 h-5 ml-auto transition-transform transform" :class="{ 'rotate-180': open }">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+                <div x-show="open" @click.away="open = false" class="ml-10 mt-2 space-y-2 pl-6">
+                    <a href="{{ route('barang') }}"
+                        class="block px-6 py-2 text-gray-600 {{ request()->routeIs('stok-barang') ? 'bg-green-50' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">Data
+                        Barang</a>
+                    <a href="{{ route('trx-barang-masuk') }}"
+                        class="block px-6 py-2 text-gray-600 {{ request()->routeIs('barang-masuk') ? 'bg-green-50' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">Barang
+                        Masuk</a>
+                    <a href="{{ route('trx-barang-keluar') }}"
+                        class="block px-6 py-2 text-gray-600 {{ request()->routeIs('barang-keluar') ? 'bg-green-50' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">Barang
+                        Keluar</a>
+                </div>
+            </div>
+
+            <a href="{{ route('transaksi') }}"
+                class="flex items-center px-6 py-3 text-gray-600 {{ request()->routeIs('transaksi') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                Transaksi
+            </a>
+
+            <div x-data="{ open: false }">
+                <a href="#"
+                    class="flex items-center px-6 py-3 text-gray-600 {{ request()->routeIs('report') ? 'bg-green-50 border-r-4 border-green-500' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors"
+                    @click="open = !open">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Report
+                    <svg class="w-5 h-5 ml-auto transition-transform transform" :class="{ 'rotate-180': open }">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 9l-7 7-7-7" />
+                    </svg>
+                </a>
+                <div x-show="open" @click.away="open = false" class="ml-10 mt-2 space-y-2 pl-6">
+                    <a href="#"
+                        class="block px-6 py-2 text-gray-600 {{ request()->routeIs('report') ? 'bg-green-50' : 'hover:bg-green-50 hover:text-gray-700' }} transition-colors">Data
+                        Report</a>
+                </div>
+            </div>
+            </nav>
+        </aside>
+    
+
+
+           <!-- Page Content -->
+           <div class="flex-1 p-4">
+            <!-- Header -->                 
+                <button @click="open = true" class="sm:hidden p-2 bg-green-500 text-white rounded-md">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
             <div class="flex flex-col items-end">
                 <div class="flex items-center space-x-2">
                     <!-- Administrator Text -->
@@ -153,15 +159,21 @@
             </div>
 
             <!-- Content Slot -->
-            <div class="mt-4">
+            <div class="mt-4 md:ml-72">
                 {{ $slot }}
             </div>
-        </main>
-
+        </div>
     </div>
-
+    
     @stack('modals')
+<!-- Development version -->
+{{-- <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script> --}}
 
+<!-- Production version -->
+<script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+      </script>
     @livewireScripts
 </body>
 

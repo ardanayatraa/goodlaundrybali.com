@@ -44,59 +44,36 @@ Route::middleware('admin')->group(function () {
         })->name('dashboard');
     });
 
-    // Transaction Routes
-    Route::prefix('transaksi')->group(function () {
-        Route::get('/', function () {
-            return view('transaksi');
-        })->name('transasksi');
 
-        Route::put('update/{id}', [ActionController::class, 'transaksiUpdate'])->name('transaksi.update');
-        Route::delete('delete/{id}', [ActionController::class, 'transaksiDelete'])->name('transaksi.delete');
-    });
+    $models = [
+        'Barang',
+        'DetailTransaksi',
+        'Paket',
+        'Pelanggan',
+        'Point',
+        'Transaksi',
+        'TrxBarangKeluar',
+        'TrxBarangMasuk',
+        'Unit',
+        'UnitPaket'
+    ];
+    
+    foreach ($models as $model) {
+        $routeName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $model)); 
+    
+        Route::get("/{$routeName}", function () use ($routeName) {
+            return view("page.{$routeName}.index");
+        })->name("{$routeName}");
+    
+        Route::get("/{$routeName}/add", function () use ($routeName) {
+            return view("page.{$routeName}.add");
+        })->name("{$routeName}.add");
+    
+        Route::get("/{$routeName}/edit/{id}", function ($id) use ($routeName) {
+            return view("page.{$routeName}.edit", compact('id'));
+        })->name("{$routeName}.edit");
+    }
 
-    // Paket Routes
-    Route::prefix('paket')->group(function () {
-        Route::get('/', function () {
-            return view('paket');
-        })->name('paket');
-        Route::put('update/{id}', [ActionController::class, 'paketUpdate'])->name('paket.update');
-        Route::delete('delete/{id}', [ActionController::class, 'paketDelete'])->name('paket.delete');
-    });
-
-    // Pelanggan Routes
-    Route::prefix('pelanggan')->group(function () {
-        Route::get('/', function () {
-            return view('pelanggan');
-        })->name('pelanggan');
-
-        Route::put('update/{id}', [ActionController::class, 'pelangganUpdate'])->name('pelanggan.update');
-        Route::delete('delete/{id}', [ActionController::class, 'pelangganDelete'])->name('pelanggan.delete');
-        Route::get('cetak/{id}', [ActionController::class, 'printMember'])->name('pelanggan.print');
-    });
-
-    // Stok Barang Routes
-    Route::prefix('barang')->group(function () {
-        Route::get('/', function () {
-            return view('barang');
-        })->name('stok-barang');
-        Route::put('update/{id}', [ActionController::class, 'barangUpdate'])->name('barang.update');
-        Route::delete('delete/{id}', [ActionController::class, 'barangDelete'])->name('barang.delete');
-        // Barang Masuk Routes
-        Route::get('masuk', function () {
-            return view('barang-masuk');
-        })->name('barang-masuk');
-
-        Route::put('masuk/update/{id}', [ActionController::class, 'barangMasukUpdate'])->name('trx_barang_masuk.update');
-        Route::delete('masuk/delete/{id}', [ActionController::class, 'barangMasukDelete'])->name('trx_barang_masuk.delete');
-
-        // Barang Keluar Routes
-        Route::get('keluar', function () {
-            return view('barang-keluar');
-        })->name('barang-keluar');
-
-        Route::put('keluar/update/{id}', [ActionController::class, 'barangKeluarUpdate'])->name('trx_barang_keluar.update');
-        Route::delete('keluar/delete/{id}', [ActionController::class, 'barangKeluarDelete'])->name('trx_barang_keluar.delete');
-    });
 
     // Report Routes
     Route::get('report', function () {
