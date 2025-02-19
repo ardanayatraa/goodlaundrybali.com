@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('detail_transaksis', function (Blueprint $table) {
             $table->id('id_detail_transaksi');
             $table->foreignId('id_transaksi');
-            $table->timestamp('tanggal_ambil');
+            $table->timestamp('tanggal_ambil')->nullable();
             $table->timestamp('jam_ambil');
             $table->string('jumlah', 50);
             $table->decimal('total_diskon', 12, 2);
