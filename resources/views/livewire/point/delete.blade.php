@@ -1,10 +1,6 @@
 <div>
-    <x-button wire:click="openModal" class="bg-red-500 text-white w-full">
-        Hapus Point
-    </x-button>
-
     <x-dialog-modal wire:model="showModal">
-        <x-slot name="title">Hapus Point</x-slot>
+        <x-slot name="title">Konfirmasi Hapus</x-slot>
 
         <x-slot name="content">
             <p>Apakah Anda yakin ingin menghapus point ini?</p>

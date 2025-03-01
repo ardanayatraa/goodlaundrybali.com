@@ -8,7 +8,6 @@ use App\Models\UnitPaket;
 class Edit extends Component
 {
     public $id_unit_paket, $id_paket, $id_unit, $jumlah;
-    public $showModal = false;
 
     protected $rules = [
         'id_paket' => 'required|exists:pakets,id_paket',
@@ -25,11 +24,6 @@ class Edit extends Component
         $this->jumlah = $unitPaket->jumlah;
     }
 
-    public function openModal()
-    {
-        $this->showModal = true;
-    }
-
     public function update()
     {
         $this->validate();
@@ -40,8 +34,7 @@ class Edit extends Component
             'jumlah' => $this->jumlah,
         ]);
 
-        $this->showModal = false;
-        session()->flash('success', 'Unit Paket berhasil diperbarui!');
+        return redirect('/unit-paket')->with('success', 'Unit Paket berhasil diperbarui!');
     }
 
     public function render()

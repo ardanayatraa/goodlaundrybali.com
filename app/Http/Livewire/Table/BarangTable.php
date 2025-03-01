@@ -8,6 +8,8 @@ use App\Models\Barang;
 
 class BarangTable extends LivewireDatatable
 {
+    public $model = Barang::class;
+
     public function builder()
     {
         return Barang::query();
@@ -19,13 +21,17 @@ class BarangTable extends LivewireDatatable
             Column::name('id_barang')->label('ID')->sortable(),
             Column::name('nama_barang')->label('Nama Barang')->sortable()->searchable(),
             Column::name('harga')->label('Harga')->sortable(),
-            Column::callback(['id_barang'], function($id) {
-                $barang = Barang::find($id);
-                return view('action.barang', ['barang' => $barang]); 
+
+            Column::callback(['id_barang'], function ($id) {
+                return view('action.barang', ['id' => $id]);
             })
                 ->label('Actions')
                 ->excludeFromExport(),
-            
         ];
+    }
+
+    public function deleteConfirm($id)
+    {
+        $this->emit('deleteModal', $id);
     }
 }

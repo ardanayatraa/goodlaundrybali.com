@@ -7,21 +7,19 @@ use App\Models\Pelanggan;
 
 class Add extends Component
 {
-    public $showModal = false;
     public $nama_pelanggan, $no_telp, $alamat, $keterangan;
 
-    public function openModal()
-    {
-        $this->showModal = true;
-    }
-
-    public function closeModal()
-    {
-        $this->reset(['showModal', 'nama_pelanggan', 'no_telp', 'alamat', 'keterangan']);
-    }
+    protected $rules = [
+        'nama_pelanggan' => 'required|string|max:100',
+        'no_telp' => 'required|string|max:15',
+        'alamat' => 'required|string|max:255',
+        'keterangan' => 'nullable|string|max:255',
+    ];
 
     public function save()
     {
+        $this->validate();
+
         Pelanggan::create([
             'nama_pelanggan' => $this->nama_pelanggan,
             'no_telp' => $this->no_telp,
@@ -29,7 +27,9 @@ class Add extends Component
             'keterangan' => $this->keterangan,
         ]);
 
-        $this->closeModal();
+        // Reset form setelah simpan
+        $this->reset();
+        return redirect('/pelanggan');
     }
 
     public function render()

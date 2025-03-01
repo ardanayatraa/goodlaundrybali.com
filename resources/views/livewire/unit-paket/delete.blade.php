@@ -1,11 +1,9 @@
 <div>
-    <x-button wire:click="openModal" class="bg-red-500 text-white w-full">Hapus Unit Paket</x-button>
-
     <x-dialog-modal wire:model="showModal">
         <x-slot name="title">Konfirmasi Hapus</x-slot>
 
         <x-slot name="content">
-            <p>Apakah Anda yakin ingin menghapus Unit Paket ini?</p>
+            Apakah Anda yakin ingin menghapus unit paket ini?
         </x-slot>
 
         <x-slot name="footer">

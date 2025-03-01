@@ -8,7 +8,12 @@ use App\Models\Point;
 class Edit extends Component
 {
     public $id_point, $id_pelanggan, $tanggal, $jumlah_point;
-    public $showModal = false;
+
+    protected $rules = [
+        'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
+        'tanggal' => 'required|date',
+        'jumlah_point' => 'required|integer|min:0',
+    ];
 
     public function mount($id_point)
     {
@@ -19,18 +24,9 @@ class Edit extends Component
         $this->jumlah_point = $point->jumlah_point;
     }
 
-    public function openModal()
-    {
-        $this->showModal = true;
-    }
-
     public function update()
     {
-        $this->validate([
-            'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
-            'tanggal' => 'required|date',
-            'jumlah_point' => 'required|integer|min:0',
-        ]);
+        $this->validate();
 
         Point::where('id_point', $this->id_point)->update([
             'id_pelanggan' => $this->id_pelanggan,
@@ -38,7 +34,7 @@ class Edit extends Component
             'jumlah_point' => $this->jumlah_point,
         ]);
 
-        $this->showModal = false;
+        return redirect('/point');
     }
 
     public function render()

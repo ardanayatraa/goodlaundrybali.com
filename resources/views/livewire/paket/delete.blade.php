@@ -1,8 +1,4 @@
 <div>
-    <x-button wire:click="openModal" class="bg-red-500 text-white px-4 py-2">
-        Hapus Paket
-    </x-button>
-
     <x-dialog-modal wire:model="showModal">
         <x-slot name="title">Konfirmasi Hapus</x-slot>
 

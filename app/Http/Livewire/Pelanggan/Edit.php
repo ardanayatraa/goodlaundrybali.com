@@ -7,8 +7,14 @@ use App\Models\Pelanggan;
 
 class Edit extends Component
 {
-    public $showModal = false;
     public $id_pelanggan, $nama_pelanggan, $no_telp, $alamat, $keterangan;
+
+    protected $rules = [
+        'nama_pelanggan' => 'required|string|max:255',
+        'no_telp' => 'required|string|max:15',
+        'alamat' => 'required|string|max:255',
+        'keterangan' => 'nullable|string|max:255',
+    ];
 
     public function mount($id_pelanggan)
     {
@@ -20,18 +26,10 @@ class Edit extends Component
         $this->keterangan = $pelanggan->keterangan;
     }
 
-    public function openModal()
-    {
-        $this->showModal = true;
-    }
-
-    public function closeModal()
-    {
-        $this->showModal = false;
-    }
-
     public function update()
     {
+        $this->validate();
+
         Pelanggan::where('id_pelanggan', $this->id_pelanggan)->update([
             'nama_pelanggan' => $this->nama_pelanggan,
             'no_telp' => $this->no_telp,
@@ -39,7 +37,7 @@ class Edit extends Component
             'keterangan' => $this->keterangan,
         ]);
 
-        $this->closeModal();
+        return redirect('/pelanggan');
     }
 
     public function render()
@@ -47,4 +45,3 @@ class Edit extends Component
         return view('livewire.pelanggan.edit');
     }
 }
-

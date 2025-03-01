@@ -1,6 +1,4 @@
 <div>
-    <x-button wire:click="openModal" class="bg-red-500 text-white w-full">Hapus Barang Masuk</x-button>
-
     <x-dialog-modal wire:model="showModal">
         <x-slot name="title">Konfirmasi Hapus</x-slot>
 

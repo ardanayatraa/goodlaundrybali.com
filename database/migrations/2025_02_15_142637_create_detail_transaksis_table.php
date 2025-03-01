@@ -10,17 +10,16 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('detail_transaksis', function (Blueprint $table) {
-            $table->id('id_detail_transaksi');
-            $table->foreignId('id_transaksi');
-            $table->timestamp('tanggal_ambil')->nullable();
-            $table->timestamp('jam_ambil');
-            $table->string('jumlah', 50);
-            $table->decimal('total_diskon', 12, 2);
-            $table->string('keterangan', 50);
-            $table->timestamps();
-        });
+    { Schema::create('detail_transaksis', function (Blueprint $table) {
+        $table->id('id_detail_transaksi');
+        $table->foreignId('id_transaksi');
+        $table->dateTime('tanggal_ambil');
+        $table->time('jam_ambil');
+        $table->integer('jumlah'); 
+        $table->decimal('total_diskon', 12, 2);
+        $table->text('keterangan')->nullable(); 
+        $table->timestamps();
+    });
     }
 
     /**

@@ -1,20 +1,40 @@
 <div>
-    <x-button wire:click="openModal" class="bg-yellow-500 text-white w-full">Edit Unit</x-button>
-
-    <x-dialog-modal wire:model="showModal">
-        <x-slot name="title">Edit Unit</x-slot>
-
-        <x-slot name="content">
-            <x-label for="nama_unit" value="Nama Unit" />
-            <x-input id="nama_unit" type="text" class="w-full" wire:model.defer="nama_unit" />
-
-            <x-label for="keterangan" value="Keterangan" class="mt-3" />
-            <textarea id="keterangan" class="w-full border-gray-300" wire:model.defer="keterangan"></textarea>
+    <x-form-section submit="update">
+        <x-slot name="title">
+            Edit Unit
         </x-slot>
 
-        <x-slot name="footer">
-            <x-button wire:click="update" class="bg-yellow-500">Update</x-button>
-            <x-button wire:click="$set('showModal', false)" class="bg-gray-500">Batal</x-button>
+        <x-slot name="description">
+            Perbarui data unit di bawah ini.
         </x-slot>
-    </x-dialog-modal>
+
+        <x-slot name="form">
+            <div class="space-y-6">
+                <div>
+                    <x-label for="nama_unit" value="Nama Unit" />
+                    <x-input id="nama_unit" type="text" wire:model="nama_unit" class="w-full mt-2" />
+                    @error('nama_unit')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div>
+                    <x-label for="keterangan" value="Keterangan" />
+                    <textarea id="keterangan" wire:model="keterangan" class="w-full mt-2 border-gray-300 rounded-lg"></textarea>
+                    @error('keterangan')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+        </x-slot>
+
+        <x-slot name="actions">
+            <x-button type="submit" class="bg-yellow-500 text-white">Update</x-button>
+            <a href="{{ route('unit') }}"
+                class="inline-flex items-center gap-2 px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                <i data-lucide="x-circle" class="w-5 h-5"></i>
+                <span>Batal</span>
+            </a>
+        </x-slot>
+    </x-form-section>
 </div>

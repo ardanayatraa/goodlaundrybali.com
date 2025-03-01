@@ -7,11 +7,14 @@ use App\Models\Unit;
 
 class Delete extends Component
 {
-    public $id_unit;
     public $showModal = false;
+    public $id_unit;
 
-    public function openModal()
+    protected $listeners = ['deleteModal' => 'openModal'];
+
+    public function openModal($id_unit)
     {
+        $this->id_unit = $id_unit;
         $this->showModal = true;
     }
 
@@ -20,6 +23,7 @@ class Delete extends Component
         Unit::where('id_unit', $this->id_unit)->delete();
         $this->showModal = false;
         session()->flash('success', 'Unit berhasil dihapus!');
+        $this->emit('refreshLivewireDatatable');
     }
 
     public function render()

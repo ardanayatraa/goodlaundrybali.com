@@ -10,13 +10,11 @@ class Delete extends Component
     public $showModal = false;
     public $id_paket;
 
-    public function mount($id_paket)
+    protected $listeners = ['deleteModal' => 'openModal'];
+
+    public function openModal($id_paket)
     {
         $this->id_paket = $id_paket;
-    }
-
-    public function openModal()
-    {
         $this->showModal = true;
     }
 
@@ -24,7 +22,7 @@ class Delete extends Component
     {
         Paket::where('id_paket', $this->id_paket)->delete();
         $this->showModal = false;
-        return redirect()->to('/paket');
+        $this->emit('refreshLivewireDatatable'); 
     }
 
     public function render()

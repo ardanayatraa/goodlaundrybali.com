@@ -10,13 +10,11 @@ class Delete extends Component
     public $id_detail_transaksi;
     public $showModal = false;
 
-    public function mount($id_detail_transaksi)
+    protected $listeners = ['deleteModal' => 'openModal'];
+
+    public function openModal($id_detail_transaksi)
     {
         $this->id_detail_transaksi = $id_detail_transaksi;
-    }
-
-    public function openModal()
-    {
         $this->showModal = true;
     }
 
@@ -24,6 +22,8 @@ class Delete extends Component
     {
         DetailTransaksi::where('id_detail_transaksi', $this->id_detail_transaksi)->delete();
         $this->showModal = false;
+        session()->flash('success', 'Detail transaksi berhasil dihapus!');
+        $this->emit('refreshLivewireDatatable');
     }
 
     public function render()

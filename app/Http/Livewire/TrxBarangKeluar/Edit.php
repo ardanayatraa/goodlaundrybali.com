@@ -8,7 +8,6 @@ use App\Models\TrxBarangKeluar;
 class Edit extends Component
 {
     public $id_trx_barang_keluar, $id_barang, $jumlah, $tanggal_keluar;
-    public $showModal = false;
 
     protected $rules = [
         'id_barang' => 'required|exists:barangs,id_barang',
@@ -25,11 +24,6 @@ class Edit extends Component
         $this->tanggal_keluar = $trx->tanggal_keluar;
     }
 
-    public function openModal()
-    {
-        $this->showModal = true;
-    }
-
     public function update()
     {
         $this->validate();
@@ -40,8 +34,7 @@ class Edit extends Component
             'tanggal_keluar' => $this->tanggal_keluar,
         ]);
 
-        $this->showModal = false;
-        session()->flash('success', 'Barang keluar berhasil diperbarui!');
+        return redirect('/trx-barang-keluar')->with('success', 'Barang keluar berhasil diperbarui!');
     }
 
     public function render()

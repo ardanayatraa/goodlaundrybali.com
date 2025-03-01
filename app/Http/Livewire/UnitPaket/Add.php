@@ -4,23 +4,18 @@ namespace App\Http\Livewire\UnitPaket;
 
 use Livewire\Component;
 use App\Models\UnitPaket;
+use App\Models\Paket;
+use App\Models\Unit;
 
 class Add extends Component
 {
     public $id_paket, $id_unit, $jumlah;
-    public $showModal = false;
 
     protected $rules = [
         'id_paket' => 'required|exists:pakets,id_paket',
         'id_unit' => 'required|exists:units,id_unit',
         'jumlah' => 'required|integer|min:1',
     ];
-
-    public function openModal()
-    {
-        $this->reset();
-        $this->showModal = true;
-    }
 
     public function save()
     {
@@ -32,12 +27,15 @@ class Add extends Component
             'jumlah' => $this->jumlah,
         ]);
 
-        $this->showModal = false;
-        session()->flash('success', 'Unit Paket berhasil ditambahkan!');
+        $this->reset();
+        return redirect('/unit-paket')->with('success', 'Unit Paket berhasil ditambahkan!');
     }
 
     public function render()
     {
-        return view('livewire.unit-paket.add');
+        return view('livewire.unit-paket.add', [
+            'pakets' => Paket::all(),
+            'units' => Unit::all(),
+        ]);
     }
 }

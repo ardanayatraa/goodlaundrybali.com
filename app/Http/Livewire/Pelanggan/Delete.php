@@ -10,25 +10,20 @@ class Delete extends Component
     public $showModal = false;
     public $id_pelanggan;
 
-    public function mount($id_pelanggan)
+    protected $listeners = ['deleteModal' => 'openModal'];
+
+    public function openModal($id_pelanggan)
     {
         $this->id_pelanggan = $id_pelanggan;
-    }
-
-    public function openModal()
-    {
         $this->showModal = true;
-    }
-
-    public function closeModal()
-    {
-        $this->showModal = false;
     }
 
     public function delete()
     {
         Pelanggan::where('id_pelanggan', $this->id_pelanggan)->delete();
-        $this->closeModal();
+        $this->showModal = false;
+        session()->flash('success', 'Pelanggan berhasil dihapus!');
+        $this->emit('refreshLivewireDatatable');
     }
 
     public function render()

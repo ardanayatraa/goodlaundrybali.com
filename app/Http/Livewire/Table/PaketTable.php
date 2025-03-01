@@ -15,12 +15,7 @@ class PaketTable extends LivewireDatatable
         return Paket::query();
     }
 
-    public function delete($id)
-{
-    $this->dispatchBrowserEvent('paket-delete', [
-        'id' => $id
-    ]);
-}
+
     public function columns()
     {
         return [
@@ -37,16 +32,18 @@ class PaketTable extends LivewireDatatable
 
             Column::name('waktu_pengerjaan')
                 ->label('Waktu Pengerjaan'),
-
-            Column::callback(['id_paket'], function($id) {
-                $paket = Paket::find($id);
-                return view('action.paket', ['paket' => $paket]);
+       
+            Column::callback(['id_paket'], function ($id) {
+                return view('components.table-action', ['id' => $id]);
             })
                 ->label('Actions')
                 ->excludeFromExport(),
 
 
-
         ];
     }
+
+        public function deleteConfirm($id){
+            $this->emit('deleteModal',$id);
+        }
 }

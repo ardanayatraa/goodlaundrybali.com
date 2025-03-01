@@ -1,25 +1,48 @@
 <div>
-    <x-button wire:click="openModal" class="bg-blue-500 text-white w-full">
-        Tambah Point
-    </x-button>
-
-    <x-dialog-modal wire:model="showModal">
-        <x-slot name="title">Tambah Point</x-slot>
-
-        <x-slot name="content">
-            <x-label for="id_pelanggan" value="Pelanggan" />
-            <x-input id="id_pelanggan" wire:model="id_pelanggan" type="number" class="w-full mt-2"/>
-
-            <x-label for="tanggal" value="Tanggal" />
-            <x-input id="tanggal" wire:model="tanggal" type="date" class="w-full mt-2"/>
-
-            <x-label for="jumlah_point" value="Jumlah Point" />
-            <x-input id="jumlah_point" wire:model="jumlah_point" type="number" class="w-full mt-2"/>
+    <x-form-section submit="save">
+        <x-slot name="title">
+            Tambah Point
         </x-slot>
 
-        <x-slot name="footer">
-            <x-button wire:click="save" class="bg-blue-500">Simpan</x-button>
-            <x-button wire:click="$set('showModal', false)" class="bg-gray-500">Batal</x-button>
+        <x-slot name="description">
+            Masukkan data point pelanggan di bawah ini.
         </x-slot>
-    </x-dialog-modal>
+
+        <x-slot name="form">
+            <div class="space-y-6">
+                <div class="mb-4">
+                    <x-label for="id_pelanggan" value="Pelanggan" />
+                    <x-input id="id_pelanggan" type="number" wire:model="id_pelanggan" class="mt-2 w-full" />
+                    @error('id_pelanggan')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <x-label for="tanggal" value="Tanggal" />
+                    <x-input id="tanggal" type="date" wire:model="tanggal" class="mt-2 w-full" />
+                    @error('tanggal')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <x-label for="jumlah_point" value="Jumlah Point" />
+                    <x-input id="jumlah_point" type="number" wire:model="jumlah_point" class="mt-2 w-full" />
+                    @error('jumlah_point')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+        </x-slot>
+
+        <x-slot name="actions">
+            <x-button type="submit" class="bg-blue-500 text-white px-4 py-2">Simpan</x-button>
+            <a href="{{ route('point') }}"
+                class="inline-flex items-center gap-2 px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                <i data-lucide="x-circle" class="w-5 h-5"></i>
+                <span>Batal</span>
+            </a>
+        </x-slot>
+    </x-form-section>
 </div>

@@ -7,16 +7,14 @@ use App\Models\Point;
 
 class Delete extends Component
 {
-    public $id_point;
     public $showModal = false;
+    public $id_point;
 
-    public function mount($id_point)
+    protected $listeners = ['deleteModal' => 'openModal'];
+
+    public function openModal($id_point)
     {
         $this->id_point = $id_point;
-    }
-
-    public function openModal()
-    {
         $this->showModal = true;
     }
 
@@ -24,6 +22,8 @@ class Delete extends Component
     {
         Point::where('id_point', $this->id_point)->delete();
         $this->showModal = false;
+        session()->flash('success', 'Point berhasil dihapus!');
+        $this->emit('refreshLivewireDatatable');
     }
 
     public function render()

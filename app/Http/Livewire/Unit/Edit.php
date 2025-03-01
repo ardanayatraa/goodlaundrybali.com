@@ -8,7 +8,6 @@ use App\Models\Unit;
 class Edit extends Component
 {
     public $id_unit, $nama_unit, $keterangan;
-    public $showModal = false;
 
     protected $rules = [
         'nama_unit' => 'required|string|max:50',
@@ -23,11 +22,6 @@ class Edit extends Component
         $this->keterangan = $unit->keterangan;
     }
 
-    public function openModal()
-    {
-        $this->showModal = true;
-    }
-
     public function update()
     {
         $this->validate();
@@ -37,8 +31,7 @@ class Edit extends Component
             'keterangan' => $this->keterangan,
         ]);
 
-        $this->showModal = false;
-        session()->flash('success', 'Unit berhasil diperbarui!');
+        return redirect('/unit')->with('success', 'Unit berhasil diperbarui!');
     }
 
     public function render()

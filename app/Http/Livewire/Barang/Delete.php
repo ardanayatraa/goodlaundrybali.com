@@ -10,13 +10,11 @@ class Delete extends Component
     public $id_barang;
     public $showModal = false;
 
-    public function mount($id_barang)
+    protected $listeners = ['deleteModal' => 'openModal'];
+
+    public function openModal($id_barang)
     {
         $this->id_barang = $id_barang;
-    }
-
-    public function openModal()
-    {
         $this->showModal = true;
     }
 
@@ -24,6 +22,8 @@ class Delete extends Component
     {
         Barang::where('id_barang', $this->id_barang)->delete();
         $this->showModal = false;
+        session()->flash('success', 'Barang berhasil dihapus!');
+        $this->emit('refreshLivewireDatatable');
     }
 
     public function render()

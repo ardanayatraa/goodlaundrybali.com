@@ -8,21 +8,17 @@ use App\Models\DetailTransaksi;
 class Add extends Component
 {
     public $id_transaksi, $id_paket, $jumlah, $subtotal;
-    public $showModal = false;
 
-    public function openModal()
-    {
-        $this->showModal = true;
-    }
+    protected $rules = [
+        'id_transaksi' => 'required|exists:transaksis,id_transaksi',
+        'id_paket' => 'required|exists:pakets,id_paket',
+        'jumlah' => 'required|integer|min:1',
+        'subtotal' => 'required|numeric',
+    ];
 
     public function save()
     {
-        $this->validate([
-            'id_transaksi' => 'required|exists:transaksis,id_transaksi',
-            'id_paket' => 'required|exists:pakets,id_paket',
-            'jumlah' => 'required|integer|min:1',
-            'subtotal' => 'required|numeric',
-        ]);
+        $this->validate();
 
         DetailTransaksi::create([
             'id_transaksi' => $this->id_transaksi,
@@ -31,7 +27,9 @@ class Add extends Component
             'subtotal' => $this->subtotal,
         ]);
 
-        $this->showModal = false;
+        // Reset form setelah simpan
+        $this->reset();
+        return redirect('/detail-transaksi');
     }
 
     public function render()
