@@ -36,7 +36,12 @@
 
                 <div class="mb-4">
                     <x-label for="keterangan" value="Keterangan" />
-                    <x-input id="keterangan" type="text" wire:model="keterangan" class="mt-2 w-full" />
+                    <select id="keterangan" wire:model="keterangan"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-2">
+                        <option value="">Pilih Keterangan</option>
+                        <option value="Member">Member</option>
+                        <option value="Non-Member">Non Member</option>
+                    </select>
                     @error('keterangan')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror

@@ -9,6 +9,7 @@ use App\Models\Transaksi;
 use App\Models\TrxBarangMasuk;
 use App\Models\TrxBarangKeluar;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ActionController extends Controller
 {
@@ -61,15 +62,17 @@ class ActionController extends Controller
 
     public function printMember($id)
     {
-        $pelanggan = Pelanggan::find($id);
+        $pelanggan = Pelanggan::findOrFail($id);
 
-        // Pastikan pelanggan ditemukan
-        if (!$pelanggan) {
-            abort(404, 'Pelanggan tidak ditemukan');
-        }
+        // Render view ke PDF
+        $pdf = Pdf::loadView('print-member', compact('pelanggan'))
+            ->setPaper('a4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true
+            ]);
 
- 
-        return view('print-member', compact('pelanggan'));
+        return $pdf->stream("Customer_Card_{$pelanggan->id_pelanggan}.pdf");
     }
 
     // ============================ BARANG ===================================
@@ -112,7 +115,7 @@ class ActionController extends Controller
 
     public function barangMasukDelete($id)
     {
-        
+
         $barangMasuk = TrxBarangMasuk::findOrFail($id);
         $barangMasuk->delete();
 

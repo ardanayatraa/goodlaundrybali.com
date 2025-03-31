@@ -11,7 +11,7 @@ class Paket extends Model
 
     protected $table = 'pakets';
     protected $primaryKey = 'id_paket';
-    protected $fillable = ['jenis_paket', 'harga', 'unit', 'waktu_pengerjaan'];
+    protected $fillable = ['jenis_paket', 'harga', 'unit', 'waktu_pengerjaan','id_unit_paket'];
 
     public function transaksi()
     {

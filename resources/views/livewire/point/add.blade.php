@@ -10,9 +10,37 @@
 
         <x-slot name="form">
             <div class="space-y-6">
-                <div class="mb-4">
-                    <x-label for="id_pelanggan" value="Pelanggan" />
-                    <x-input id="id_pelanggan" type="number" wire:model="id_pelanggan" class="mt-2 w-full" />
+                <div>
+                    <x-label for="searchPelanggan" value="Cari Pelanggan" />
+                    @if ($id_pelanggan)
+                        <div class="mt-2 flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2 bg-white">
+                            <span class="text-sm text-gray-700 flex-1">
+                                {{ $pelanggans->firstWhere('id_pelanggan', $id_pelanggan)?->nama_pelanggan }}
+                            </span>
+                            <button type="button" wire:click="$set('id_pelanggan', null)"
+                                class="text-red-500 hover:underline font-bold">
+                                &times;
+                            </button>
+                        </div>
+                    @else
+                        <x-input id="searchPelanggan" type="text" wire:model="searchPelanggan" class="w-full mt-2"
+                            placeholder="Ketik nama pelanggan..." wire:focus="$set('focusedPelanggan', true)"
+                            wire:blur="$set('focusedPelanggan', false)" />
+                        @if ($focusedPelanggan)
+                            <ul class="mt-2 border border-gray-300 rounded-lg max-h-40 overflow-y-auto">
+                                @forelse ($pelanggans as $pelanggan)
+                                    <li class="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                        wire:click="$set('id_pelanggan', '{{ $pelanggan->id_pelanggan }}')">
+                                        {{ $pelanggan->nama_pelanggan }}
+                                    </li>
+                                @empty
+                                    <li class="px-4 py-2 text-gray-500">
+                                        Tidak ada hasil untuk "{{ $searchPelanggan }}"
+                                    </li>
+                                @endforelse
+                            </ul>
+                        @endif
+                    @endif
                     @error('id_pelanggan')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror

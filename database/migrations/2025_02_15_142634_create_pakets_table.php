@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pakets', function (Blueprint $table) {
             $table->id('id_paket');
+            $table->unsignedBigInteger('id_unit_paket');
             $table->string('jenis_paket', 50);
             $table->decimal('harga', 12, 2);
             $table->string('unit', 10);

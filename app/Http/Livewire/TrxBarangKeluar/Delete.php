@@ -20,7 +20,7 @@ class Delete extends Component
 
     public function delete()
     {
-        TrxBarangKeluar::where('id_trx_barang_keluar', $this->id_trx_barang_keluar)->delete();
+        TrxBarangKeluar::where('id_trx_brgkeluar', $this->id_trx_barang_keluar)->delete();
         $this->showModal = false;
         session()->flash('success', 'Barang keluar berhasil dihapus!');
         $this->emit('refreshLivewireDatatable');

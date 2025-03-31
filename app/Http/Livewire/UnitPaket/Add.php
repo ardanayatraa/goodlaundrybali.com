@@ -9,12 +9,11 @@ use App\Models\Unit;
 
 class Add extends Component
 {
-    public $id_paket, $id_unit, $jumlah;
+    public $nama_unit, $keterangan;
 
     protected $rules = [
-        'id_paket' => 'required|exists:pakets,id_paket',
-        'id_unit' => 'required|exists:units,id_unit',
-        'jumlah' => 'required|integer|min:1',
+        'nama_unit' => 'required|string|max:255',
+        'keterangan' => 'nullable|string',
     ];
 
     public function save()
@@ -22,9 +21,8 @@ class Add extends Component
         $this->validate();
 
         UnitPaket::create([
-            'id_paket' => $this->id_paket,
-            'id_unit' => $this->id_unit,
-            'jumlah' => $this->jumlah,
+            'nama_unit' => $this->nama_unit,
+            'keterangan' => $this->keterangan,
         ]);
 
         $this->reset();
@@ -33,9 +31,6 @@ class Add extends Component
 
     public function render()
     {
-        return view('livewire.unit-paket.add', [
-            'pakets' => Paket::all(),
-            'units' => Unit::all(),
-        ]);
+        return view('livewire.unit-paket.add');
     }
 }

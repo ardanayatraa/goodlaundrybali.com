@@ -8,6 +8,7 @@ use App\Models\Point;
 class Add extends Component
 {
     public $id_pelanggan, $tanggal, $jumlah_point;
+    public $searchPelanggan = '', $focusedPelanggan = false;
 
     protected $rules = [
         'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
@@ -31,6 +32,10 @@ class Add extends Component
 
     public function render()
     {
-        return view('livewire.point.add');
+        return view('livewire.point.add', [
+            'pelanggans' => \App\Models\Pelanggan::where('nama_pelanggan', 'like', '%' . $this->searchPelanggan . '%')
+                                ->limit(5)
+                                ->get(),
+        ]);
     }
 }

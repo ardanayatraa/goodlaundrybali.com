@@ -33,11 +33,14 @@ class PaketTable extends LivewireDatatable
             Column::name('waktu_pengerjaan')
                 ->label('Waktu Pengerjaan'),
        
-            Column::callback(['id_paket'], function ($id) {
-                return view('components.table-action', ['id' => $id]);
-            })
-                ->label('Actions')
-                ->excludeFromExport(),
+                Column::callback(['id_paket'], function ($id) {
+                    return view('components.table-action', [
+                        'id' => $id,
+                        'route'=>'paket.edit'
+                    ]);
+                })
+                    ->label('Actions')
+                    ->excludeFromExport(),
 
 
         ];

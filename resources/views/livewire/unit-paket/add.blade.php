@@ -10,36 +10,20 @@
 
         <x-slot name="form">
             <div class="space-y-6">
+                <!-- Input Nama Unit -->
                 <div>
-                    <x-label for="id_paket" value="Paket" />
-                    <select id="id_paket" wire:model="id_paket" class="w-full mt-2 border-gray-300 rounded-lg">
-                        <option value="">Pilih Paket</option>
-                        @foreach ($pakets as $paket)
-                            <option value="{{ $paket->id_paket }}">{{ $paket->nama_paket }}</option>
-                        @endforeach
-                    </select>
-                    @error('id_paket')
+                    <x-label for="nama_unit" value="Nama Unit" />
+                    <x-input id="nama_unit" type="text" wire:model="nama_unit" class="w-full mt-2" />
+                    @error('nama_unit')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
+                <!-- Input Keterangan -->
                 <div>
-                    <x-label for="id_unit" value="Unit" />
-                    <select id="id_unit" wire:model="id_unit" class="w-full mt-2 border-gray-300 rounded-lg">
-                        <option value="">Pilih Unit</option>
-                        @foreach ($units as $unit)
-                            <option value="{{ $unit->id_unit }}">{{ $unit->nama_unit }}</option>
-                        @endforeach
-                    </select>
-                    @error('id_unit')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div>
-                    <x-label for="jumlah" value="Jumlah" />
-                    <x-input id="jumlah" type="number" wire:model="jumlah" class="w-full mt-2" />
-                    @error('jumlah')
+                    <x-label for="keterangan" value="Keterangan" />
+                    <textarea id="keterangan" wire:model="keterangan" class="w-full mt-2 border-gray-300 rounded-lg"></textarea>
+                    @error('keterangan')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>

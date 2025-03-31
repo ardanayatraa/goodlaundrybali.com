@@ -7,12 +7,15 @@ use App\Models\Barang;
 
 class Add extends Component
 {
-    public $nama_barang, $harga, $stok;
+    public $nama_barang, $harga, $stok, $id_unit;
+    public $searchUnit = '';
+    public $focusedUnit = false;
 
     protected $rules = [
         'nama_barang' => 'required|string|max:50',
-        'harga' => 'required|numeric|min:0',
-        'stok' => 'required|integer|min:0',
+        'harga' => 'required',
+        'stok' => 'required',
+        'id_unit' => 'required|exists:units,id_unit',
     ];
 
     public function save()
@@ -23,11 +26,18 @@ class Add extends Component
             'nama_barang' => $this->nama_barang,
             'harga' => $this->harga,
             'stok' => $this->stok,
+            'id_unit' => $this->id_unit,
         ]);
+
+        return redirect('/barang');
     }
 
     public function render()
     {
-        return view('livewire.barang.add');
+        return view('livewire.barang.add', [
+            'units' => \App\Models\Unit::where('nama_unit', 'like', '%' . $this->searchUnit . '%')
+                                       ->limit(5)
+                                       ->get(),
+        ]);
     }
 }

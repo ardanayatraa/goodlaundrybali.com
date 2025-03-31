@@ -14,9 +14,10 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
-
-
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.3.1/css/tom-select.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.3.1/js/tom-select.complete.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
     @livewireStyles
 </head>
 
@@ -186,7 +187,7 @@
 
                     <!-- Tombol Dropdown -->
                     <button id="stokToggle"
-                        class="flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150 
+                        class="flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150
                                 {{ $stokActive ? 'text-green-600 font-bold' : 'text-gray-800 hover:text-gray-800' }}">
                         <div class="inline-flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -281,10 +282,6 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" />
                                     </svg>
                                     ',
-                        'Report' => '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                                    </svg>
-                                    ',
                     ];
                 @endphp
 
@@ -303,6 +300,76 @@
                         </a>
                     </li>
                 @endforeach
+                <!-- Dropdown Report -->
+                @php
+                    $reportActive =
+                        request()->routeIs('laporan-transaksi') || request()->routeIs('laporan-stok-barang');
+                @endphp
+                <li class="relative px-6 py-3">
+                    <span
+                        class="absolute inset-y-0 left-0 w-1 {{ $reportActive ? 'bg-blue-600' : '' }} rounded-tr-lg rounded-br-lg"
+                        aria-hidden="true"></span>
+
+                    <!-- Tombol Dropdown -->
+                    <button id="reportToggle"
+                        class="flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150
+                {{ $reportActive ? 'text-blue-600 font-bold' : 'text-gray-800 hover:text-gray-800' }}">
+                        <div class="inline-flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 3h18M3 9h18M3 15h18M3 21h18" />
+                            </svg>
+                            <span class="ml-4">Report</span>
+                        </div>
+                        <svg id="reportIcon" class="w-4 h-4 transition-transform transform" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M5.23 7.21a.75.75 0 011.06 0L10 10.94l3.71-3.73a.75.75 0 011.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <ul id="reportDropdown" class="pl-6 mt-4 hidden space-y-2 transition-all duration-300">
+                        <li>
+                            <a href="{{ route('laporan-transaksi') }}"
+                                class="inline-flex items-center w-full text-sm font-medium px-3 py-2 rounded-lg
+                     {{ request()->routeIs('laporan-transaksi') ? 'bg-blue-100 text-blue-600' : 'text-gray-700 hover:text-gray-800 hover:bg-gray-100' }}">
+                                - Laporan Transaksi
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('laporan-stok-barang') }}"
+                                class="inline-flex items-center w-full text-sm font-medium px-3 py-2 rounded-lg
+                     {{ request()->routeIs('laporan-stok-barang') ? 'bg-blue-100 text-blue-600' : 'text-gray-700 hover:text-gray-800 hover:bg-gray-100' }}">
+                                - Laporan Stok Barang
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- JavaScript untuk Toggle Dropdown -->
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        let dropdown = document.getElementById("reportDropdown");
+                        let toggleBtn = document.getElementById("reportToggle");
+                        let icon = document.getElementById("reportIcon");
+                        let reportActive = {{ $reportActive ? 'true' : 'false' }};
+
+                        // Jika reportActive true, tampilkan dropdown saat halaman dimuat
+                        if (reportActive) {
+                            dropdown.classList.remove("hidden");
+                            icon.classList.add("rotate-180");
+                        }
+
+                        // Toggle saat tombol diklik
+                        toggleBtn.addEventListener("click", function() {
+                            dropdown.classList.toggle("hidden");
+                            icon.classList.toggle("rotate-180");
+                        });
+                    });
+                </script>
 
             </ul>
         </div>
@@ -319,7 +386,7 @@
         <!-- Page Content -->
         <main>
 
-            <div class="py-12">
+            <div class="py-4">
                 <div class="mx-auto sm:px-6 lg:px-8">
                     <div class="bg-white overflow-hidden p-8 border sm:rounded-lg">
                         <div id="loading-screen"
@@ -401,7 +468,10 @@
     <x-livewire-alert::scripts />
     <script src="{{ asset('vendor/livewire-alert/livewire-alert.js') }}"></script>
     <x-livewire-alert::flash />
-
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
     <x-toaster-hub />
 </body>
 

@@ -7,12 +7,15 @@ use App\Models\Barang;
 
 class Edit extends Component
 {
-    public $id_barang, $nama_barang, $harga, $stok;
+    public $id_barang, $nama_barang, $harga, $stok, $id_unit;
+    public $searchUnit = '';
+    public $focusedUnit = false;
 
     protected $rules = [
         'nama_barang' => 'required|string|max:50',
         'harga' => 'required|numeric|min:0',
         'stok' => 'required|integer|min:0',
+        'id_unit' => 'required|integer|exists:units,id_unit',
     ];
 
     public function mount($id_barang)
@@ -22,6 +25,7 @@ class Edit extends Component
         $this->nama_barang = $barang->nama_barang;
         $this->harga = $barang->harga;
         $this->stok = $barang->stok;
+        $this->id_unit = $barang->id_unit;
     }
 
     public function update()
@@ -32,11 +36,18 @@ class Edit extends Component
             'nama_barang' => $this->nama_barang,
             'harga' => $this->harga,
             'stok' => $this->stok,
+            'id_unit' => $this->id_unit,
         ]);
+
+        return redirect('/barang');
     }
 
     public function render()
     {
-        return view('livewire.barang.edit');
+        return view('livewire.barang.edit', [
+            'units' => \App\Models\Unit::where('nama_unit', 'like', '%' . $this->searchUnit . '%')
+                                       ->limit(5)
+                                       ->get(),
+        ]);
     }
 }

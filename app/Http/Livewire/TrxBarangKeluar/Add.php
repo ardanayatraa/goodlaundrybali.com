@@ -4,25 +4,44 @@ namespace App\Http\Livewire\TrxBarangKeluar;
 
 use Livewire\Component;
 use App\Models\TrxBarangKeluar;
+use App\Models\Barang;
+use App\Models\Admin;
 
 class Add extends Component
 {
-    public $id_barang, $jumlah, $tanggal_keluar;
+    public $id_barang, $jumlah, $tanggal_keluar, $id_admin, $harga = 0, $total_harga = 0;
+    public $searchBarang = '', $searchAdmin = '';
+    public $focusedBarang = false, $focusedAdmin = false;
 
     protected $rules = [
         'id_barang' => 'required|exists:barangs,id_barang',
         'jumlah' => 'required|integer|min:1',
         'tanggal_keluar' => 'required|date',
+        'id_admin' => 'required|exists:admins,id_admin',
     ];
+
+    public function updated($propertyName)
+    {
+        if (in_array($propertyName, ['id_barang', 'jumlah'])) {
+            if ($this->id_barang) {
+                $this->harga = Barang::where('id_barang', $this->id_barang)->value('harga') ?? 0;
+            } else {
+                $this->harga = 0;
+            }
+            $this->total_harga = $this->jumlah * $this->harga;
+        }
+    }
 
     public function save()
     {
         $this->validate();
-
         TrxBarangKeluar::create([
             'id_barang' => $this->id_barang,
-            'jumlah' => $this->jumlah,
+            'jumlah_brgkeluar' => $this->jumlah,
             'tanggal_keluar' => $this->tanggal_keluar,
+            'harga' => $this->harga,
+            'total_harga' => $this->total_harga,
+            'id_admin' => $this->id_admin,
         ]);
 
         $this->reset();
@@ -31,6 +50,13 @@ class Add extends Component
 
     public function render()
     {
-        return view('livewire.trx-barang-keluar.add');
+        return view('livewire.trx-barang-keluar.add', [
+            'barangs' => Barang::where('nama_barang', 'like', '%' . $this->searchBarang . '%')
+                                ->limit(5)
+                                ->get(),
+            'admins' => Admin::where('nama_admin', 'like', '%' . $this->searchAdmin . '%')
+                              ->limit(5)
+                              ->get(),
+        ]);
     }
 }

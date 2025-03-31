@@ -1,87 +1,59 @@
 <?php
 
 namespace App\Observers;
-
-use App\Models\DetailTransaksi;
+use Illuminate\Support\Facades\Http;
 use App\Models\Transaksi;
+use App\Models\DetailTransaksi;
 
 class TransaksiObserver
 {
-    /**
-     * Handle the Transaksi "created" event.
-     *
-     * @param  \App\Models\Transaksi  $transaksi
-     * @return void
-     */
     public function created(Transaksi $transaksi)
     {
         DetailTransaksi::create([
             'id_transaksi' => $transaksi->id_transaksi,
-            'tanggal_transaksi' => $transaksi->tanggal_transaksi,
-            'nama_pelanggan' => $transaksi->nama_pelanggan,
-            'metode_pembayaran' => $transaksi->metode_pembayaran,
-            'status_pembayaran' => $transaksi->status_pembayaran,
-            'status_transaksi' => $transaksi->status_transaksi,
-            'jumlah_point' => $transaksi->jumlah_point,
-            'status_bonus' => $transaksi->status_bonus,
-            'total_harga' => $transaksi->total_harga,
+            'tanggal_ambil' => now()->toDateString(),
+            'jam_ambil' => now()->toTimeString(),
+            'jumlah' => 1,
+            'total_diskon' => 0,
+            'keterangan' => 'Detail transaksi otomatis dibuat',
         ]);
     }
 
-    /**
-     * Handle the Transaksi "updated" event.
-     *
-     * @param  \App\Models\Transaksi  $transaksi
-     * @return void
-     */
     public function updated(Transaksi $transaksi)
     {
-        $transaksi->detailTransaksi->each(function($detail) use ($transaksi) {
+
+        $detail = DetailTransaksi::where('id_transaksi', $transaksi->id_transaksi)->first();
+        if ($detail) {
             $detail->update([
-                'tanggal_transaksi' => $transaksi->tanggal_transaksi,
-                'nama_pelanggan' => $transaksi->nama_pelanggan,
-                'metode_pembayaran' => $transaksi->metode_pembayaran,
-                'status_pembayaran' => $transaksi->status_pembayaran,
-                'status_transaksi' => $transaksi->status_transaksi,
-                'jumlah_point' => $transaksi->jumlah_point,
-                'status_bonus' => $transaksi->status_bonus,
-                'total_harga' => $transaksi->total_harga,
+                'tanggal_ambil' => now()->toDateString(),
+                'jam_ambil' => now()->toTimeString(),
+                'keterangan' => 'Detail transaksi diperbarui',
             ]);
-        });
+        }
+
+        if ($transaksi->status_transaksi=== 'siap_ambil') {
+
+            $number = '6285172003970'; 
+            $message = "Halo *{$transaksi->pelanggan->nama_pelanggan}*, laundry Anda sudah siap diambil! 🚀";
+        
+            try {
+                $response = Http::post(env('WA_API_URL') . '/send-message', [
+                    'number' => $number,
+                    'message' => $message,
+                    'mediaUrl' => 'https://res.cloudinary.com/doxsia81t/image/upload/v1741367955/blog_posts/wxmhjquutozadumcniwi.png' 
+                ]);
+        
+                // Debug response
+                \Log::info('WA Response:', $response->json());
+            } catch (\Exception $e) {
+                \Log::error('WA Error: ' . $e->getMessage());
+            }
+        }
+        
     }
 
-    /**
-     * Handle the Transaksi "deleted" event.
-     *
-     * @param  \App\Models\Transaksi  $transaksi
-     * @return void
-     */
     public function deleted(Transaksi $transaksi)
     {
-        $transaksi->detailTransaksi->each(function($detail) {
-            $detail->delete();
-        });
-    }
-
-    /**
-     * Handle the Transaksi "restored" event.
-     *
-     * @param  \App\Models\Transaksi  $transaksi
-     * @return void
-     */
-    public function restored(Transaksi $transaksi)
-    {
-        //
-    }
-
-    /**
-     * Handle the Transaksi "force deleted" event.
-     *
-     * @param  \App\Models\Transaksi  $transaksi
-     * @return void
-     */
-    public function forceDeleted(Transaksi $transaksi)
-    {
-        //
+        DetailTransaksi::where('id_transaksi', $transaksi->id_transaksi)->delete();
     }
 }

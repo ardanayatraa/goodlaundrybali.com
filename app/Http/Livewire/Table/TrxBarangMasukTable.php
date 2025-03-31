@@ -8,9 +8,12 @@ use App\Models\TrxBarangMasuk;
 
 class TrxBarangMasukTable extends LivewireDatatable
 {
+    public $model = TrxBarangMasuk::class;
+
     public function builder()
     {
-        return TrxBarangMasuk::query()->join('barangs', 'trx_barang_masuks.id_barang', '=', 'barangs.id_barang');
+        return TrxBarangMasuk::query()
+            ->join('barangs', 'trx_barang_masuks.id_barang', '=', 'barangs.id_barang');
     }
 
     public function columns()
@@ -19,9 +22,23 @@ class TrxBarangMasukTable extends LivewireDatatable
             Column::name('trx_barang_masuks.id_trx_brgmasuk')->label('ID Transaksi')->sortable(),
             Column::name('barangs.nama_barang')->label('Nama Barang')->sortable()->searchable(),
             Column::name('trx_barang_masuks.tanggal_masuk')->label('Tanggal Masuk')->sortable(),
-            Column::name('trx_barang_masuks.id_admin')->label('Nama Admin')->searchable(),
+            Column::name('admin.nama_admin')->label('Nama Admin')->searchable(),
             Column::name('trx_barang_masuks.total_harga')->label('Total Harga')->sortable(),
-         
+
+            Column::callback(['id_trx_brgmasuk'], function ($id) {
+                return view('components.table-action', [
+                    'id' => $id,
+                 'route'=>'trx-barang-masuk.edit'
+                ]);
+            })
+                ->label('Actions')
+                ->excludeFromExport(),
+
         ];
+    }
+
+    public function deleteConfirm($id)
+    {
+        $this->emit('deleteModal', $id);
     }
 }

@@ -4,16 +4,20 @@ namespace App\Http\Livewire\Paket;
 
 use Livewire\Component;
 use App\Models\Paket;
+use App\Models\UnitPaket;
 
 class Edit extends Component
 {
-    public $id_paket, $jenis_paket, $harga, $unit, $waktu_pengerjaan;
+    public $id_paket, $jenis_paket, $harga, $unit, $waktu_pengerjaan, $id_unit_paket;
+    public $searchUnitPaket = '';
+    public $focusedUnitPaket = false;
 
     protected $rules = [
         'jenis_paket' => 'required|string|max:50',
         'harga' => 'required|numeric|min:0',
         'unit' => 'required|string|max:10',
         'waktu_pengerjaan' => 'required|string|max:50',
+        'id_unit_paket' => 'required',
     ];
 
     public function mount($id_paket)
@@ -24,6 +28,7 @@ class Edit extends Component
         $this->harga = $paket->harga;
         $this->unit = $paket->unit;
         $this->waktu_pengerjaan = $paket->waktu_pengerjaan;
+        $this->id_unit_paket = $paket->id_unit_paket;
     }
 
     public function update()
@@ -35,6 +40,7 @@ class Edit extends Component
             'harga' => $this->harga,
             'unit' => $this->unit,
             'waktu_pengerjaan' => $this->waktu_pengerjaan,
+            'id_unit_paket' => $this->id_unit_paket,
         ]);
 
         return redirect('/paket');
@@ -42,6 +48,19 @@ class Edit extends Component
 
     public function render()
     {
-        return view('livewire.paket.edit');
+        $unitPakets = UnitPaket::where('nama_unit', 'like', '%' . $this->searchUnitPaket . '%')
+            ->limit(5)
+            ->get();
+
+        if ($this->id_unit_paket && !$unitPakets->contains('id_unit_paket', $this->id_unit_paket)) {
+            $selectedUnit = UnitPaket::where('id_unit_paket', $this->id_unit_paket)->first();
+            if ($selectedUnit) {
+                $unitPakets->prepend($selectedUnit);
+            }
+        }
+
+        return view('livewire.paket.edit', [
+            'unitPakets' => $unitPakets,
+        ]);
     }
 }

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('id_admin');
             $table->foreignId('id_barang');
             $table->date('tanggal_masuk');
-            $table->string('unit', 50);
             $table->decimal('harga', 12, 2);
             $table->decimal('total_harga', 12, 2);
             $table->integer('jumlah_brgmasuk');

@@ -4,8 +4,10 @@ use App\Http\Controllers\ActionController;
 use Illuminate\Support\Facades\Route;
 use Twilio\Rest\Client;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Http;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -37,12 +39,10 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('admin')->group(function () {
 
-    // Dashboard Routes
     Route::prefix('dashboard')->group(function () {
-        Route::get('/', function () {
-            return view('dashboard');
-        })->name('dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     });
+
 
 
     $models = [
@@ -56,19 +56,20 @@ Route::middleware('admin')->group(function () {
         'TrxBarangMasuk',
         'Unit',
         'UnitPaket'
+
     ];
-    
+
     foreach ($models as $model) {
-        $routeName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $model)); 
-    
+        $routeName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $model));
+
         Route::get("/{$routeName}", function () use ($routeName) {
             return view("page.{$routeName}.index");
         })->name("{$routeName}");
-    
+
         Route::get("/{$routeName}/add", function () use ($routeName) {
             return view("page.{$routeName}.add");
         })->name("{$routeName}.add");
-    
+
         Route::get("/{$routeName}/edit/{id}", function ($id) use ($routeName) {
             return view("page.{$routeName}.edit", compact('id'));
         })->name("{$routeName}.edit");
@@ -76,9 +77,15 @@ Route::middleware('admin')->group(function () {
 
 
     // Report Routes
-    Route::get('report', function () {
+    Route::get('1', function () {
         return 1;
-    })->name('report');
+    })->name('laporan-stok-barang');
+    Route::get('report', function () {
+        return view('page.report.index');
+    })->name('laporan-transaksi');
+
+    Route::get('/pelanggan/cetak/{id}', [ActionController::class, 'printMember'])->name('pelanggan.cetak');
+
 });
 
 
@@ -140,4 +147,102 @@ Total : {$data['total']}
     } catch (\Exception $e) {
         return response()->json(['success' => false, 'error' => $e->getMessage()]);
     }
+});
+
+
+
+Route::get('/sen1d', function (Illuminate\Http\Request $request) {
+    $message = "Hai, ini pesan nya";
+    $phoneNumbers = [
+        '6285925007446', '6285158039855'
+    ];
+
+    $responses = [];
+
+    foreach ($phoneNumbers as $number) {
+
+        $response = Http::post('https://wa-laundry-production.up.railway.app/send-message', [
+            'number' => '6285925007446',
+            'message' => $message,
+        ]);
+
+        if ($response->successful()) {
+            $responses[] = [
+                'status' => 'success',
+                'message' => 'Pesan terkirim!',
+                'number' => $number,
+                'message_content' => $message,
+            ];
+        } else {
+            $responses[] = [
+                'status' => 'failed',
+                'message' => 'Gagal mengirim pesan.',
+                'number' => $number,
+                'message_content' => $message,
+            ];
+        }
+    }
+
+    return response()->json($responses);
+});
+
+
+
+
+Route::get('/send', function (Illuminate\Http\Request $request) {
+    $message = "Hai, ini pesan nya";
+    $phoneNumbers = [
+        '6285925007446', '6285158039855'
+    ];
+
+    $responses = [];
+
+    foreach ($phoneNumbers as $number) {
+        // Kirim request POST ke API eksternal
+        try {
+            // Misalnya API mengharuskan Anda mengirim data dalam format JSON
+            $response = Http::post('https://wa-laundry-production.up.railway.app/send-message', [
+                'phone_number' => $number,  // Nomor telepon yang menerima pesan
+                'message' => $message,      // Isi pesan
+            ]);
+
+            // Cek apakah request berhasil
+            if ($response->successful()) {
+                $responses[] = [
+                    'status' => 'success',
+                    'message' => 'Pesan terkirim!',
+                    'number' => $number,
+                    'message_content' => $message,
+                ];
+            } else {
+                // Jika gagal, log detail error dan respons
+                Log::error('Gagal mengirim pesan', [
+                    'number' => $number,
+                    'response' => $response->body(),
+                ]);
+                $responses[] = [
+                    'status' => 'failed',
+                    'message' => 'Gagal mengirim pesan.',
+                    'number' => $number,
+                    'message_content' => $message,
+                    'error_details' => $response->body(),
+                ];
+            }
+        } catch (\Exception $e) {
+            // Tangani error jika API tidak dapat dijangkau
+            Log::error('Terjadi kesalahan saat menghubungi API', [
+                'number' => $number,
+                'error' => $e->getMessage(),
+            ]);
+            $responses[] = [
+                'status' => 'failed',
+                'message' => 'Terjadi kesalahan saat menghubungi API.',
+                'number' => $number,
+                'message_content' => $message,
+                'error_details' => $e->getMessage(),
+            ];
+        }
+    }
+
+    return response()->json($responses);
 });

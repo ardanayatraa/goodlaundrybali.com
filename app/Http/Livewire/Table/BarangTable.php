@@ -21,9 +21,13 @@ class BarangTable extends LivewireDatatable
             Column::name('id_barang')->label('ID')->sortable(),
             Column::name('nama_barang')->label('Nama Barang')->sortable()->searchable(),
             Column::name('harga')->label('Harga')->sortable(),
-
+            
             Column::callback(['id_barang'], function ($id) {
-                return view('action.barang', ['id' => $id]);
+
+                return view('components.table-action', [
+                    'id' => $id,
+                    'route'=>'barang.edit'
+                ]);
             })
                 ->label('Actions')
                 ->excludeFromExport(),

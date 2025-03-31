@@ -8,9 +8,14 @@ use App\Models\Transaksi;
 
 class TransaksiTable extends LivewireDatatable
 {
+    public $model = Transaksi::class;
+    public $selectedTransaksiId, $selectedStatus, $modalType = '';
+
+    protected $listeners = ['refreshLivewireDatatable' => '$refresh'];
+
     public function builder()
     {
-        return Transaksi::query()->with('pelanggan'); // Join ke pelanggan
+        return Transaksi::query()->with('pelanggan');
     }
 
     public function columns()
@@ -18,17 +23,36 @@ class TransaksiTable extends LivewireDatatable
         return [
             Column::name('id_transaksi')->label('ID Transaksi')->sortable(),
             Column::name('pelanggan.nama_pelanggan')->label('Nama Pelanggan')->sortable()->searchable(),
-            Column::name('tanggal_transaksi')->label('Tanggal Transaksi')->sortable(),
-            Column::name('total_harga')->label('Total Harga (Rp)')->sortable(),
-            Column::name('metode_pembayaran')->label('Metode Pembayaran')->searchable(),
-            Column::name('status_pembayaran')->label('Status Pembayaran')->searchable(),
-            Column::name('status_transaksi')->label('Status Transaksi')->searchable(),
-            Column::name('jumlah_point')->label('Point')->sortable(),
-            Column::callback(['id_transaksi'], function ($id) {
-                return view('action.transaksi', compact('id'));
+            Column::name('tanggal_transaksi')->label('Tanggal Transaksi')->sortable()->searchable(),
+            Column::name('total_harga')->label('Total Harga (Rp)')->sortable()->searchable(),
+
+            Column::callback(['id_transaksi', 'status_pembayaran'], function ($id, $status) {
+                return view('components.table-transaksi-pembayaran', compact('id', 'status'));
             })
-                ->label('Actions')
+                ->label('Status Pembayaran')
                 ->excludeFromExport(),
+
+            Column::callback(['id_transaksi', 'status_transaksi'], function ($id, $status) {
+                return view('components.table-transaksi-status', compact('id', 'status'));
+            })
+                ->label('Status Transaksi')
+                ->excludeFromExport(),
+
         ];
+    }
+
+    public function updateStatus($id, $status, $type)
+    {
+        $column = $type === 'pembayaran' ? 'status_pembayaran' : 'status_transaksi';
+
+        $transaksi = Transaksi::findOrFail($id);
+        $transaksi->update([$column => $status]);
+
+        $this->emit('refreshLivewireDatatable'); 
+    }
+
+    public function updateStatusTransaksiConfirm($id)
+    {
+        $this->emit('updateStatus', $id);
     }
 }

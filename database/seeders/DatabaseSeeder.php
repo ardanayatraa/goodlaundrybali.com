@@ -23,21 +23,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Paket::factory(50)->create();
-        UnitPaket::factory(50)->create();
-        Pelanggan::factory(50)->create();
-        TrxBarangMasuk::factory(50)->create();
-        TrxBarangKeluar::factory(50)->create();
-        Transaksi::factory(50)->create();
-        DetailTransaksi::factory(50)->create();
-        Barang::factory(50)->create();
-        Unit::factory(50)->create();
-        Point::factory(50)->create();
+        // Paket::factory(50)->create();
+        // UnitPaket::factory(50)->create();
+        // Pelanggan::factory(50)->create();
+        // TrxBarangMasuk::factory(50)->create();
+        // TrxBarangKeluar::factory(50)->create();
+        // Transaksi::factory(50)->create();
+        // DetailTransaksi::factory(50)->create();
+        // Barang::factory(50)->create();
+        // Unit::factory(50)->create();
+        // Point::factory(50)->create();
 
 
         $this->call([
             AdminSeeder::class,
-      
+
         ]);
     }
 }

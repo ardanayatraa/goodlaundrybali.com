@@ -11,7 +11,7 @@ class TrxBarangMasuk extends Model
 
     protected $table = 'trx_barang_masuks';
     protected $primaryKey = 'id_trx_brgmasuk';
-    protected $fillable = ['id_barang', 'tanggal_masuk', 'id_admin', 'unit', 'jumlah_brgmasuk'];
+    protected $fillable = ['id_barang', 'tanggal_masuk','harga','total_harga', 'id_admin', 'jumlah_brgmasuk'];
 
     public function barang()
     {

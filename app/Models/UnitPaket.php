@@ -11,5 +11,5 @@ class UnitPaket extends Model
 
     protected $table = 'unit_pakets';
     protected $primaryKey = 'id_unit_paket';
-    protected $fillable = ['nama_paket', 'keterangan'];
+    protected $fillable = ['nama_unit', 'keterangan'];
 }

@@ -31,6 +31,6 @@ class AppServiceProvider extends ServiceProvider
     {
         // TrxBarangKeluar::observe(TrxBarangKeluarObserver::class);
         // TrxBarangMasuk::observe(TrxBarangMasukObserver::class);
-        // Transaksi::observe(TransaksiObserver::class);
+        Transaksi::observe(TransaksiObserver::class);
     }
 }

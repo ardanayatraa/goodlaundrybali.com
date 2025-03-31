@@ -1,3 +1,3 @@
-<a href="{{ route('paket.edit', $id) }}" class="px-2 py-1 text-green-500 rounded hover:text-green-600">
+<a href="{{ $route ? route($route, $id) : '#' }}" class="px-2 py-1 text-blue-500 rounded hover:text-blue-600">
     Edit
 </a>
