@@ -20,8 +20,9 @@ class TransaksiObserver
     public function updated(Transaksi $transaksi)
     {
         if ($transaksi->status_transaksi === 'siap_ambil') {
-            // Dispatch job to handle WhatsApp and image generation
-            SendWhatsAppAndGenerateImage::dispatch($transaksi);
+            // Dispatch job to handle WhatsApp and image generation asynchronously
+            SendWhatsAppAndGenerateImage::dispatch($transaksi)->onQueue('default');
+            // No need to wait for the job to complete, status remains 'siap_ambil'
         }
 
         if ($transaksi->status_transaksi === 'terambil') {
