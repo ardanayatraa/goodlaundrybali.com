@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Twilio\Rest\Client;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Models\DetailTransaksi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transaksi;
@@ -249,9 +250,7 @@ Route::get('/send', function (Illuminate\Http\Request $request) {
 });
 
 Route::get('/transaksi/{id}/image', function ($id) {
-    $transaksi = Transaksi::findOrFail($id);
+    $transaksi = Transaksi::with(['pelanggan', 'paket', 'point', 'detailTransaksi'])->findOrFail($id);
 
-    return view('transaksi.template', [
-        'transaksi' => $transaksi
-    ]);
+    return view('transaksi.template', compact('transaksi'));
 })->name('transaksi.image');
