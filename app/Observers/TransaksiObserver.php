@@ -8,6 +8,7 @@ use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use App\Models\Point;
 use Illuminate\Support\Facades\Http;
+use App\Jobs\SendWhatsAppAndGenerateImage;
 
 class TransaksiObserver
 {
@@ -19,53 +20,8 @@ class TransaksiObserver
     public function updated(Transaksi $transaksi)
     {
         if ($transaksi->status_transaksi === 'siap_ambil') {
-            // API Node.js untuk generate gambar
-            $apiUrl = env('HTML_TO_IMAGE_API');
-            $url = route('transaksi.image', ['id' => $transaksi->id_transaksi], true);
-            $filename = 'transaksi_' . $transaksi->id_transaksi . '.png';
-
-            try {
-                $client = new Client(['timeout' => 60]);
-                $response = $client->post($apiUrl, [
-                    'headers' => ['Content-Type' => 'application/json'],
-                    'json' => [
-                        'url' => $url,
-                        'width' => 720,
-                        'height' => 1280,
-                        'format' => 'png'
-                    ]
-                ]);
-
-                if ($response->getStatusCode() === 200) {
-                    // Menyimpan gambar ke storage/public
-                    Storage::disk('public')->put($filename, $response->getBody()->getContents());
-                    \Log::info("Gambar berhasil disimpan: storage/app/public/{$filename}");
-                } else {
-                    \Log::error("Gagal generate gambar: " . $response->getBody()->getContents());
-                    return;
-                }
-            } catch (\Exception $e) {
-                \Log::error('Error API HTML to Image: ' . $e->getMessage());
-                return;
-            }
-
-            // Kirim WhatsApp dengan gambar
-
-            $number = $transaksi->pelanggan->no_telp;
-            $message = "Halo *{$transaksi->pelanggan->nama_pelanggan}*, laundry Anda sudah siap diambil! 🚀";
-
-            try {
-                $response = Http::post(env('WA_API_URL') . '/send-message', [
-                    'number' => $number,
-                    'message' => $message,
-                    'mediaUrl' => env('APP_URL') . '/storage/' . $filename
-                ]);
-
-                // Debug response
-                \Log::info('WA Response:', $response->json());
-            } catch (\Exception $e) {
-                \Log::error('WA Error: ' . $e->getMessage());
-            }
+            // Dispatch job to handle WhatsApp and image generation
+            SendWhatsAppAndGenerateImage::dispatch($transaksi);
         }
 
         if ($transaksi->status_transaksi === 'terambil') {
