@@ -6,8 +6,9 @@ use Twilio\Rest\Client;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Http;
+use App\Models\Transaksi;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -246,3 +247,11 @@ Route::get('/send', function (Illuminate\Http\Request $request) {
 
     return response()->json($responses);
 });
+
+Route::get('/transaksi/{id}/image', function ($id) {
+    $transaksi = Transaksi::findOrFail($id);
+
+    return view('transaksi.template', [
+        'transaksi' => $transaksi
+    ]);
+})->name('transaksi.image');

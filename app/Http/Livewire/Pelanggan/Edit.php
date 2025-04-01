@@ -30,6 +30,11 @@ class Edit extends Component
     {
         $this->validate();
 
+        // Ensure no_telp starts with 62
+        if (substr($this->no_telp, 0, 1) === '0') {
+            $this->no_telp = '62' . substr($this->no_telp, 1);
+        }
+
         Pelanggan::where('id_pelanggan', $this->id_pelanggan)->update([
             'nama_pelanggan' => $this->nama_pelanggan,
             'no_telp' => $this->no_telp,

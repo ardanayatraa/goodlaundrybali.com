@@ -20,6 +20,11 @@ class Add extends Component
     {
         $this->validate();
 
+        // Format no_telp to start with 62 if it begins with 0
+        if (substr($this->no_telp, 0, 1) === '0') {
+            $this->no_telp = '62' . substr($this->no_telp, 1);
+        }
+
         Pelanggan::create([
             'nama_pelanggan' => $this->nama_pelanggan,
             'no_telp' => $this->no_telp,

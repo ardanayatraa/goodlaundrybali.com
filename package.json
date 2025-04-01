@@ -18,6 +18,8 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
-        "lucide": "^0.475.0"
+        "lucide": "^0.475.0",
+        "puppeteer": "^24.5.0",
+        "puppeteer-core": "^24.5.0"
     }
 }

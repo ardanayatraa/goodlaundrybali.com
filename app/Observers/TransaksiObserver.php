@@ -1,55 +1,87 @@
 <?php
 
 namespace App\Observers;
-use Illuminate\Support\Facades\Http;
+
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
+use App\Models\Point;
 
 class TransaksiObserver
 {
     public function created(Transaksi $transaksi)
     {
-        DetailTransaksi::create([
-            'id_transaksi' => $transaksi->id_transaksi,
-            'tanggal_ambil' => now()->toDateString(),
-            'jam_ambil' => now()->toTimeString(),
-            'jumlah' => 1,
-            'total_diskon' => 0,
-            'keterangan' => 'Detail transaksi otomatis dibuat',
-        ]);
+        // ...existing code...
     }
 
     public function updated(Transaksi $transaksi)
     {
+        if ($transaksi->status_transaksi === 'siap_ambil') {
+            // API Node.js untuk generate gambar
+            $apiUrl = env('HTML_TO_IMAGE_API');
+            $url = route('transaksi.image', ['id' => $transaksi->id_transaksi], true);
+            $filename = 'transaksi_' . $transaksi->id_transaksi . '.png';
 
-        $detail = DetailTransaksi::where('id_transaksi', $transaksi->id_transaksi)->first();
-        if ($detail) {
-            $detail->update([
-                'tanggal_ambil' => now()->toDateString(),
-                'jam_ambil' => now()->toTimeString(),
-                'keterangan' => 'Detail transaksi diperbarui',
-            ]);
-        }
-
-        if ($transaksi->status_transaksi=== 'siap_ambil') {
-
-            $number = '6285172003970'; 
-            $message = "Halo *{$transaksi->pelanggan->nama_pelanggan}*, laundry Anda sudah siap diambil! 🚀";
-        
             try {
-                $response = Http::post(env('WA_API_URL') . '/send-message', [
-                    'number' => $number,
-                    'message' => $message,
-                    'mediaUrl' => 'https://res.cloudinary.com/doxsia81t/image/upload/v1741367955/blog_posts/wxmhjquutozadumcniwi.png' 
+                $client = new Client(['timeout' => 60]);
+                $response = $client->post($apiUrl, [
+                    'headers' => ['Content-Type' => 'application/json'],
+                    'json' => [
+                        'url' => $url,
+                        'width' => 720,
+                        'height' => 1280,
+                        'format' => 'png'
+                    ]
                 ]);
-        
-                // Debug response
-                \Log::info('WA Response:', $response->json());
+
+                if ($response->getStatusCode() === 200) {
+                    // Menyimpan gambar ke storage/public
+                    Storage::disk('public')->put($filename, $response->getBody()->getContents());
+                    \Log::info("Gambar berhasil disimpan: storage/app/public/{$filename}");
+                } else {
+                    \Log::error("Gagal generate gambar: " . $response->getBody()->getContents());
+                    return;
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error API HTML to Image: ' . $e->getMessage());
+                return;
+            }
+
+            // Kirim WhatsApp dengan gambar
+            $number = $transaksi->pelanggan->no_telp;
+            $message = "Halo *{$transaksi->pelanggan->nama_pelanggan}*, laundry Anda sudah siap diambil! 🚀";
+
+            try {
+                $waClient = new Client();
+                $waResponse = $waClient->post(env('WA_API_URL') . '/send-message', [
+                    'form_params' => [
+                        'number' => $number,
+                        'message' => $message,
+                        'mediaUrl' => asset('storage/' . $filename) // Pastikan asset storage sesuai
+                    ]
+                ]);
+
+                \Log::info('WA Response:', json_decode($waResponse->getBody()->getContents(), true));
             } catch (\Exception $e) {
                 \Log::error('WA Error: ' . $e->getMessage());
             }
         }
-        
+
+        if ($transaksi->status_transaksi === 'terambil') {
+            // Mengelola poin setelah transaksi terambil
+            $point = Point::where('id_pelanggan', $transaksi->pelanggan->id_pelanggan)->first();
+
+            if ($point) {
+                $point->increment('jumlah_point', 1);
+            } else {
+                Point::create([
+                    'id_pelanggan' => $transaksi->pelanggan->id_pelanggan,
+                    'tanggal' => now(),
+                    'jumlah_point' => 1,
+                ]);
+            }
+        }
     }
 
     public function deleted(Transaksi $transaksi)

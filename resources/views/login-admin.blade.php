@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Good Laundry Kedonganan - Eco-Friendly Login</title>
+    <title>Good Laundry | Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -33,9 +34,17 @@
     </script>
     <style>
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
+
         .float {
             animation: float 3s ease-in-out infinite;
         }
@@ -54,9 +63,12 @@
             <div class="text-center space-y-2">
                 <div class="flex justify-center mb-4">
                     <div class="relative w-20 h-20 md:w-24 md:h-24 float">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-full w-full text-eco-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18v-3M8 18v-3m8 3v-3" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-full w-full text-eco-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M12 18v-3M8 18v-3m8 3v-3" />
                         </svg>
                         <div class="absolute inset-0 bg-eco-100 rounded-full -z-10 transform rotate-45"></div>
                     </div>
@@ -66,40 +78,45 @@
             </div>
 
             <form action="/login" method="POST" class="space-y-6">
-    @csrf
-    <div class="space-y-2">
-        <label for="username" class="text-sm font-medium text-eco-800 block">Username</label>
-        <div class="relative">
-            <input type="text" id="username" name="username" 
-                class="w-full px-4 py-3 rounded-lg border-2 border-eco-200 focus:ring-2 focus:ring-eco-500 focus:border-transparent transition duration-200 pl-10"
-                placeholder="Enter your username" required>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-eco-500 absolute left-3 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-        </div>
-    </div>
+                @csrf
+                <div class="space-y-2">
+                    <label for="username" class="text-sm font-medium text-eco-800 block">Username</label>
+                    <div class="relative">
+                        <input type="text" id="username" name="username"
+                            class="w-full px-4 py-3 rounded-lg border-2 border-eco-200 focus:ring-2 focus:ring-eco-500 focus:border-transparent transition duration-200 pl-10"
+                            placeholder="Enter your username" required>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-eco-500 absolute left-3 top-3.5"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                </div>
 
-    <div class="space-y-2">
-        <label for="password" class="text-sm font-medium text-eco-800 block">Password</label>
-        <div class="relative">
-            <input type="password" id="password" name="password" 
-                class="w-full px-4 py-3 rounded-lg border-2 border-eco-200 focus:ring-2 focus:ring-eco-500 focus:border-transparent transition duration-200 pl-10"
-                placeholder="Enter your password" required>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-eco-500 absolute left-3 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-        </div>
-    </div>
+                <div class="space-y-2">
+                    <label for="password" class="text-sm font-medium text-eco-800 block">Password</label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password"
+                            class="w-full px-4 py-3 rounded-lg border-2 border-eco-200 focus:ring-2 focus:ring-eco-500 focus:border-transparent transition duration-200 pl-10"
+                            placeholder="Enter your password" required>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-eco-500 absolute left-3 top-3.5"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                </div>
 
-    <button type="submit" 
-        class="w-full py-3 px-4 bg-gradient-to-r from-eco-500 to-eco-600 text-white font-medium rounded-lg hover:from-eco-600 hover:to-eco-700 focus:outline-none focus:ring-2 focus:ring-eco-500 focus:ring-offset-2 transform transition duration-200 hover:-translate-y-0.5 shadow-lg shadow-eco-500/30">
-        Sign In
-    </button>
-</form>
+                <button type="submit"
+                    class="w-full py-3 px-4 bg-gradient-to-r from-eco-500 to-eco-600 text-white font-medium rounded-lg hover:from-eco-600 hover:to-eco-700 focus:outline-none focus:ring-2 focus:ring-eco-500 focus:ring-offset-2 transform transition duration-200 hover:-translate-y-0.5 shadow-lg shadow-eco-500/30">
+                    Sign In
+                </button>
+            </form>
 
 
             <!-- Decorative bottom border -->
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-eco-300 via-eco-500 to-eco-700"></div>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-eco-300 via-eco-500 to-eco-700">
+            </div>
         </div>
     </div>
 </body>
