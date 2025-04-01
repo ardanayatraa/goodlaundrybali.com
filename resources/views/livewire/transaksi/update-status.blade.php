@@ -5,12 +5,17 @@
         <x-slot name="content">
             <x-label for="status_transaksi" value="Status Transaksi" />
             <select wire:model="status_transaksi" id="status_transaksi"
-                class="w-full mt-2 p-2 border rounded-lg bg-white dark:bg-gray-800 dark:text-white 
+                class="w-full mt-2 p-2 border rounded-lg bg-white dark:bg-gray-800 dark:text-white
                        focus:ring focus:ring-blue-500 focus:outline-none transition duration-200">
                 <option value="diproses" class="text-yellow-500">⚙️ Diproses</option>
                 <option value="siap_ambil" class="text-blue-500">📦 Siap Ambil</option>
                 <option value="terambil" class="text-green-500">✅ Terambil</option>
             </select>
+
+            <!-- Loading indicator -->
+            <div wire:loading wire:target="status_transaksi" class="mt-4 text-center text-blue-500">
+                Memproses perubahan status ke "Siap Ambil", harap tunggu...
+            </div>
         </x-slot>
 
         <x-slot name="footer">
