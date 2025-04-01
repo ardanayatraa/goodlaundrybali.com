@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use App\Models\Point;
+use Illuminate\Support\Facades\Http;
 
 class TransaksiObserver
 {
@@ -49,20 +50,19 @@ class TransaksiObserver
             }
 
             // Kirim WhatsApp dengan gambar
+
             $number = $transaksi->pelanggan->no_telp;
             $message = "Halo *{$transaksi->pelanggan->nama_pelanggan}*, laundry Anda sudah siap diambil! 🚀";
 
             try {
-                $waClient = new Client();
-                $waResponse = $waClient->post(env('WA_API_URL') . '/send-message', [
-                    'form_params' => [
-                        'number' => $number,
-                        'message' => $message,
-                        'mediaUrl' => asset('storage/' . $filename) // Pastikan asset storage sesuai
-                    ]
+                $response = Http::post(env('WA_API_URL') . '/send-message', [
+                    'number' => $number,
+                    'message' => $message,
+                    'mediaUrl' => env('APP_URL') . '/storage/' . $filename
                 ]);
 
-                \Log::info('WA Response:', json_decode($waResponse->getBody()->getContents(), true));
+                // Debug response
+                \Log::info('WA Response:', $response->json());
             } catch (\Exception $e) {
                 \Log::error('WA Error: ' . $e->getMessage());
             }
