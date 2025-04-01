@@ -8,8 +8,6 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 400px;
-            margin: 20px auto;
             padding: 20px;
             border: 1px solid #ccc;
         }
