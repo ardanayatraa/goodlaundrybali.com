@@ -18,6 +18,12 @@ class Edit extends Component
         'id_unit' => 'required|integer|exists:units,id_unit',
     ];
 
+    /**
+     * Fungsi untuk menginisialisasi data barang berdasarkan ID barang.
+     *
+     * @param int $id_barang ID barang yang akan di-edit.
+     * @return void
+     */
     public function mount($id_barang)
     {
         $barang = Barang::findOrFail($id_barang);
@@ -28,6 +34,11 @@ class Edit extends Component
         $this->id_unit = $barang->id_unit;
     }
 
+    /**
+     * Fungsi untuk memperbarui data barang di database.
+     *
+     * @return \Illuminate\Http\RedirectResponse Redirect ke halaman daftar barang.
+     */
     public function update()
     {
         $this->validate();
@@ -42,6 +53,11 @@ class Edit extends Component
         return redirect('/barang');
     }
 
+    /**
+     * Fungsi untuk merender tampilan Livewire.
+     *
+     * @return \Illuminate\View\View Tampilan Livewire untuk halaman edit barang.
+     */
     public function render()
     {
         return view('livewire.barang.edit', [

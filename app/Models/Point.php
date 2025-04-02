@@ -13,6 +13,11 @@ class Point extends Model
     protected $primaryKey = 'id_point';
     protected $fillable = ['id_pelanggan', 'tanggal', 'jumlah_point'];
 
+    /**
+     * Mendefinisikan relasi ke model Pelanggan.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'id_pelanggan');

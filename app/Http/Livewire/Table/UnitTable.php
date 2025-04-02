@@ -10,11 +10,21 @@ class UnitTable extends LivewireDatatable
 {
     public $model = Unit::class;
 
+    /**
+     * Membangun query builder untuk tabel Unit.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function builder()
     {
         return Unit::query();
     }
 
+    /**
+     * Mendefinisikan kolom-kolom yang akan ditampilkan di tabel.
+     *
+     * @return array
+     */
     public function columns()
     {
         return [
@@ -32,6 +42,12 @@ class UnitTable extends LivewireDatatable
         ];
     }
 
+    /**
+     * Memancarkan event untuk menampilkan modal konfirmasi penghapusan.
+     *
+     * @param int $id ID unit yang akan dihapus.
+     * @return void
+     */
     public function deleteConfirm($id)
     {
         $this->emit('deleteModal', $id);

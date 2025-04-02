@@ -16,6 +16,11 @@ class Add extends Component
         'jumlah_point' => 'required|integer|min:0',
     ];
 
+    /**
+     * Menyimpan data point baru ke database.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function save()
     {
         $this->validate();
@@ -30,6 +35,11 @@ class Add extends Component
         return redirect('/point');
     }
 
+    /**
+     * Merender tampilan komponen Livewire.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.point.add', [

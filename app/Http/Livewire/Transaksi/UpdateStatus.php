@@ -11,6 +11,11 @@ class UpdateStatus extends Component
 
     protected $listeners = ['editStatus' => 'loadStatus'];
 
+    /**
+     * Memuat status transaksi berdasarkan id_transaksi.
+     *
+     * @param int $id
+     */
     public function loadStatus($id)
     {
         $transaksi = Transaksi::findOrFail($id);
@@ -18,6 +23,9 @@ class UpdateStatus extends Component
         $this->status_transaksi = $transaksi->status_transaksi;
     }
 
+    /**
+     * Memperbarui status transaksi ketika status_transaksi diperbarui.
+     */
     public function updatedStatusTransaksi()
     {
         if ($this->id_transaksi) {
@@ -29,6 +37,11 @@ class UpdateStatus extends Component
         }
     }
 
+    /**
+     * Merender tampilan komponen Livewire.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.transaksi.update-status');

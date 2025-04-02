@@ -12,11 +12,23 @@ class Pelanggan extends Model
     protected $primaryKey = 'id_pelanggan';
     protected $fillable = ['nama_pelanggan', 'no_telp', 'alamat', 'keterangan'];
 
+    /**
+     * Relasi ke tabel transaksis.
+     * Mengembalikan semua transaksi yang terkait dengan pelanggan ini.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function transaksi()
     {
         return $this->hasMany(Transaksi::class, 'id_pelanggan');
     }
 
+    /**
+     * Relasi ke tabel points.
+     * Mengembalikan semua point yang terkait dengan pelanggan ini.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function points()
     {
         return $this->hasMany(Point::class, 'id_pelanggan');

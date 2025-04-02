@@ -12,6 +12,12 @@ class TransaksiReport extends Component
     public $filterType = 'daily', $filterDate, $filterYear, $filterMonth, $filterWeek, $filterStartDate, $filterEndDate;
     public $filterDescription; // Tambahkan properti untuk deskripsi filter
     public $apply=false;
+
+    /**
+     * Terapkan filter berdasarkan tipe filter yang dipilih.
+     * Mengatur tanggal awal dan akhir berdasarkan filter yang dipilih.
+     * Emit event 'filterUpdated' dengan parameter filter.
+     */
     public function applyFilter()
     {
         if ($this->filterType === 'monthly' && $this->filterMonth) {
@@ -66,6 +72,11 @@ class TransaksiReport extends Component
         $this->apply=true;
     }
 
+    /**
+     * Mengarahkan pengguna ke rute untuk menghasilkan PDF berdasarkan parameter filter.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function generatePdf()
     {
         $queryParams = [
@@ -81,6 +92,11 @@ class TransaksiReport extends Component
         return redirect()->route('report.generate', $queryParams);
     }
 
+    /**
+     * Render komponen Livewire dan mengirimkan data transaksi ke tampilan.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $transaksi = Transaksi::all();

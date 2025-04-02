@@ -10,11 +10,21 @@ class BarangTable extends LivewireDatatable
 {
     public $model = Barang::class;
 
+    /**
+     * Membangun query builder untuk tabel Barang.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function builder()
     {
         return Barang::query();
     }
 
+    /**
+     * Mendefinisikan kolom-kolom yang akan ditampilkan di tabel.
+     *
+     * @return array
+     */
     public function columns()
     {
         return [
@@ -35,6 +45,12 @@ class BarangTable extends LivewireDatatable
         ];
     }
 
+    /**
+     * Memancarkan event untuk menampilkan modal konfirmasi penghapusan.
+     *
+     * @param int $id ID barang yang akan dihapus.
+     * @return void
+     */
     public function deleteConfirm($id)
     {
         $this->emit('deleteModal', $id);

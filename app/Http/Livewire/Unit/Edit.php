@@ -14,6 +14,12 @@ class Edit extends Component
         'keterangan' => 'nullable|string|max:300',
     ];
 
+    /**
+     * Menginisialisasi data unit berdasarkan ID unit.
+     *
+     * @param int $id_unit
+     * @return void
+     */
     public function mount($id_unit)
     {
         $unit = Unit::findOrFail($id_unit);
@@ -22,6 +28,11 @@ class Edit extends Component
         $this->keterangan = $unit->keterangan;
     }
 
+    /**
+     * Memperbarui data unit di dalam database.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update()
     {
         $this->validate();
@@ -34,6 +45,11 @@ class Edit extends Component
         return redirect('/unit')->with('success', 'Unit berhasil diperbarui!');
     }
 
+    /**
+     * Merender tampilan untuk mengedit unit.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.unit.edit');

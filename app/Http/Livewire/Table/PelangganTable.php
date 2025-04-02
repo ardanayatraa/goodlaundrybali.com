@@ -10,11 +10,21 @@ class PelangganTable extends LivewireDatatable
 {
     public $model = Pelanggan::class;
 
+    /**
+     * Membangun query builder untuk tabel Pelanggan.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function builder()
     {
         return Pelanggan::query();
     }
 
+    /**
+     * Mendefinisikan kolom-kolom yang akan ditampilkan di tabel.
+     *
+     * @return array
+     */
     public function columns()
     {
         return [
@@ -34,6 +44,12 @@ class PelangganTable extends LivewireDatatable
         ];
     }
 
+    /**
+     * Memancarkan event untuk menampilkan modal konfirmasi penghapusan.
+     *
+     * @param int $id ID pelanggan yang akan dihapus.
+     * @return void
+     */
     public function deleteConfirm($id)
     {
         $this->emit('deleteModal', $id);

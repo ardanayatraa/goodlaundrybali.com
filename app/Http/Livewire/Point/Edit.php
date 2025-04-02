@@ -16,6 +16,12 @@ class Edit extends Component
         'jumlah_point' => 'required|integer|min:0',
     ];
 
+    /**
+     * Menginisialisasi data point berdasarkan ID point.
+     *
+     * @param int $id_point
+     * @return void
+     */
     public function mount($id_point)
     {
         $point = Point::findOrFail($id_point);
@@ -25,6 +31,11 @@ class Edit extends Component
         $this->jumlah_point = $point->jumlah_point;
     }
 
+    /**
+     * Memperbarui data point di database.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update()
     {
         $this->validate();
@@ -38,6 +49,11 @@ class Edit extends Component
         return redirect('/point');
     }
 
+    /**
+     * Merender tampilan komponen Livewire.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.point.edit', [

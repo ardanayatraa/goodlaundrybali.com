@@ -20,6 +20,11 @@ class Edit extends Component
         'jumlah_point' => 'nullable|integer',
     ];
 
+    /**
+     * Memuat data transaksi berdasarkan id_transaksi.
+     *
+     * @param int $id_transaksi
+     */
     public function mount($id_transaksi)
     {
         $transaksi = Transaksi::findOrFail($id_transaksi);
@@ -34,6 +39,9 @@ class Edit extends Component
         $this->jumlah_point = $transaksi->jumlah_point;
     }
 
+    /**
+     * Memperbarui data transaksi di database.
+     */
     public function update()
     {
         $this->validate();
@@ -52,6 +60,11 @@ class Edit extends Component
         return redirect('/transaksi');
     }
 
+    /**
+     * Merender tampilan komponen Livewire.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.transaksi.edit');

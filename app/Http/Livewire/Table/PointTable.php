@@ -10,11 +10,21 @@ class PointTable extends LivewireDatatable
 {
     public $model = Point::class;
 
+    /**
+     * Membangun query builder untuk tabel Point.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function builder()
     {
         return Point::query()->with('pelanggan');
     }
 
+    /**
+     * Mendefinisikan kolom-kolom yang akan ditampilkan di tabel.
+     *
+     * @return array
+     */
     public function columns()
     {
         return [
@@ -34,6 +44,12 @@ class PointTable extends LivewireDatatable
         ];
     }
 
+    /**
+     * Memancarkan event untuk menampilkan modal konfirmasi penghapusan.
+     *
+     * @param int $id ID point yang akan dihapus.
+     * @return void
+     */
     public function deleteConfirm($id)
     {
         $this->emit('deleteModal', $id);

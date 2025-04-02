@@ -20,6 +20,11 @@ class Add extends Component
         'id_unit_paket' => 'required',
     ];
 
+    /**
+     * Menyimpan data paket baru ke database.
+     * Melakukan validasi terlebih dahulu sebelum menyimpan.
+     * Jika id_unit_paket tidak valid, akan menampilkan pesan error.
+     */
     public function save()
     {
         $this->validate();
@@ -43,6 +48,13 @@ class Add extends Component
         return redirect('/paket');
     }
 
+    /**
+     * Merender tampilan komponen Livewire.
+     * Mengambil daftar UnitPaket berdasarkan pencarian.
+     * Jika id_unit_paket dipilih tetapi tidak ada dalam daftar, tambahkan ke awal daftar.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $unitPakets = UnitPaket::where('nama_unit', 'like', '%' . $this->searchUnitPaket . '%')

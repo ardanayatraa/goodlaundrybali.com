@@ -20,6 +20,12 @@ class Edit extends Component
         'id_admin' => 'required|exists:admins,id_admin',
     ];
 
+    /**
+     * Menginisialisasi data transaksi barang keluar berdasarkan ID.
+     *
+     * @param int $id_trx_barang_keluar ID transaksi barang keluar.
+     * @return void
+     */
     public function mount($id_trx_barang_keluar)
     {
         $trx = TrxBarangKeluar::findOrFail($id_trx_barang_keluar);
@@ -32,6 +38,12 @@ class Edit extends Component
         $this->total_harga = $trx->total_harga;
     }
 
+    /**
+     * Memperbarui properti tertentu dan menghitung total harga jika diperlukan.
+     *
+     * @param string $propertyName Nama properti yang diperbarui.
+     * @return void
+     */
     public function updated($propertyName)
     {
         if (in_array($propertyName, ['id_barang', 'jumlah'])) {
@@ -44,6 +56,11 @@ class Edit extends Component
         }
     }
 
+    /**
+     * Memperbarui data transaksi barang keluar di database dan memperbarui stok barang.
+     *
+     * @return \Illuminate\Http\RedirectResponse Redirect ke halaman transaksi barang keluar dengan pesan sukses.
+     */
     public function update()
     {
         $this->validate();
@@ -69,7 +86,11 @@ class Edit extends Component
         return redirect('/trx-barang-keluar')->with('success', 'Barang keluar berhasil diperbarui dan stok diperbarui!');
     }
 
-
+    /**
+     * Merender tampilan Livewire untuk mengedit transaksi barang keluar.
+     *
+     * @return \Illuminate\View\View Tampilan Livewire.
+     */
     public function render()
     {
         return view('livewire.trx-barang-keluar.edit', [

@@ -18,6 +18,11 @@ class Add extends Component
         'id_unit' => 'required|exists:units,id_unit',
     ];
 
+    /**
+     * Menyimpan data barang ke dalam database.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function save()
     {
         $this->validate();
@@ -32,6 +37,11 @@ class Add extends Component
         return redirect('/barang');
     }
 
+    /**
+     * Merender tampilan Livewire untuk menambahkan barang.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.barang.add', [

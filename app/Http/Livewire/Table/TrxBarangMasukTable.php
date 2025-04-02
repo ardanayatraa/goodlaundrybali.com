@@ -10,12 +10,22 @@ class TrxBarangMasukTable extends LivewireDatatable
 {
     public $model = TrxBarangMasuk::class;
 
+    /**
+     * Membangun query builder untuk tabel Transaksi Barang Masuk.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function builder()
     {
         return TrxBarangMasuk::query()
             ->join('barangs', 'trx_barang_masuks.id_barang', '=', 'barangs.id_barang');
     }
 
+    /**
+     * Mendefinisikan kolom-kolom yang akan ditampilkan di tabel.
+     *
+     * @return array
+     */
     public function columns()
     {
         return [
@@ -37,6 +47,12 @@ class TrxBarangMasukTable extends LivewireDatatable
         ];
     }
 
+    /**
+     * Memancarkan event untuk menampilkan modal konfirmasi penghapusan.
+     *
+     * @param int $id ID transaksi barang masuk yang akan dihapus.
+     * @return void
+     */
     public function deleteConfirm($id)
     {
         $this->emit('deleteModal', $id);

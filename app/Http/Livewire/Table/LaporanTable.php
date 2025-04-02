@@ -14,6 +14,12 @@ class LaporanTable extends LivewireDatatable
 
     protected $listeners = ['filterUpdated' => 'updateFilters', 'refreshLivewireDatatable' => '$refresh'];
 
+    /**
+     * Memperbarui filter berdasarkan input pengguna.
+     *
+     * @param array $filters Data filter yang diperbarui.
+     * @return void
+     */
     public function updateFilters($filters)
     {
         $this->filterType = $filters['filterType'];
@@ -27,6 +33,11 @@ class LaporanTable extends LivewireDatatable
         $this->emit('refreshLivewireDatatable');
     }
 
+    /**
+     * Membangun query builder untuk tabel Laporan.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function builder()
     {
         $query = Transaksi::query();
@@ -56,6 +67,11 @@ class LaporanTable extends LivewireDatatable
         return $query;
     }
 
+    /**
+     * Mendefinisikan kolom-kolom yang akan ditampilkan di tabel.
+     *
+     * @return array
+     */
     public function columns()
     {
         return [

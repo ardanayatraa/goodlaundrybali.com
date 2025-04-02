@@ -12,12 +12,23 @@ class Delete extends Component
 
     protected $listeners = ['deleteModal' => 'openModal'];
 
+    /**
+     * Membuka modal konfirmasi penghapusan unit.
+     *
+     * @param int $id_unit
+     * @return void
+     */
     public function openModal($id_unit)
     {
         $this->id_unit = $id_unit;
         $this->showModal = true;
     }
 
+    /**
+     * Menghapus data unit dari database.
+     *
+     * @return void
+     */
     public function delete()
     {
         Unit::where('id_unit', $this->id_unit)->delete();
@@ -26,6 +37,11 @@ class Delete extends Component
         $this->emit('refreshLivewireDatatable');
     }
 
+    /**
+     * Merender tampilan untuk menghapus unit.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.unit.delete');

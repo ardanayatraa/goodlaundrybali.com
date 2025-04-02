@@ -10,12 +10,21 @@ class PaketTable extends LivewireDatatable
 {
     public $model = Paket::class;
 
+    /**
+     * Membangun query builder untuk tabel Paket.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function builder()
     {
         return Paket::query();
     }
 
-
+    /**
+     * Mendefinisikan kolom-kolom yang akan ditampilkan di tabel.
+     *
+     * @return array
+     */
     public function columns()
     {
         return [
@@ -32,7 +41,7 @@ class PaketTable extends LivewireDatatable
 
             Column::name('waktu_pengerjaan')
                 ->label('Waktu Pengerjaan'),
-       
+
                 Column::callback(['id_paket'], function ($id) {
                     return view('components.table-action', [
                         'id' => $id,
@@ -41,12 +50,17 @@ class PaketTable extends LivewireDatatable
                 })
                     ->label('Actions')
                     ->excludeFromExport(),
-
-
         ];
     }
 
-        public function deleteConfirm($id){
-            $this->emit('deleteModal',$id);
-        }
+    /**
+     * Memancarkan event untuk menampilkan modal konfirmasi penghapusan.
+     *
+     * @param int $id ID paket yang akan dihapus.
+     * @return void
+     */
+    public function deleteConfirm($id)
+    {
+        $this->emit('deleteModal', $id);
+    }
 }

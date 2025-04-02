@@ -19,6 +19,12 @@ class DetailTransaksi extends Model
        'keterangan',
     ];
 
+    /**
+     * Relasi ke tabel transaksis.
+     * Mengembalikan transaksi yang terkait dengan detail transaksi ini.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function transaksi()
     {
         return $this->belongsTo(Transaksi::class, 'id_transaksi');

@@ -12,12 +12,23 @@ class Delete extends Component
 
     protected $listeners = ['deleteModal' => 'openModal'];
 
+    /**
+     * Membuka modal untuk menghapus detail transaksi.
+     *
+     * @param int $id_detail_transaksi ID detail transaksi yang akan dihapus.
+     * @return void
+     */
     public function openModal($id_detail_transaksi)
     {
         $this->id_detail_transaksi = $id_detail_transaksi;
         $this->showModal = true;
     }
 
+    /**
+     * Menghapus detail transaksi berdasarkan ID.
+     *
+     * @return void
+     */
     public function delete()
     {
         DetailTransaksi::where('id_detail_transaksi', $this->id_detail_transaksi)->delete();
@@ -26,6 +37,11 @@ class Delete extends Component
         $this->emit('refreshLivewireDatatable');
     }
 
+    /**
+     * Merender tampilan komponen Livewire.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.detail-transaksi.delete');

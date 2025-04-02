@@ -16,6 +16,11 @@ class Add extends Component
         'keterangan' => 'nullable|string|max:255',
     ];
 
+    /**
+     * Simpan data pelanggan baru ke database.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function save()
     {
         $this->validate();
@@ -37,6 +42,11 @@ class Add extends Component
         return redirect('/pelanggan');
     }
 
+    /**
+     * Render tampilan komponen Livewire.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.pelanggan.add');

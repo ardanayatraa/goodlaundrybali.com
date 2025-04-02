@@ -15,6 +15,11 @@ class BarangReport extends Component
 
     protected $primaryKey = 'id_barang';
 
+    /**
+     * Terapkan filter berdasarkan tipe filter yang dipilih.
+     * Mengatur tanggal awal dan akhir berdasarkan filter yang dipilih.
+     * Emit event 'filterUpdated' dengan parameter filter.
+     */
     public function applyFilter()
     {
         if ($this->filterType === 'monthly' && $this->filterMonth) {
@@ -66,6 +71,11 @@ class BarangReport extends Component
         $this->apply = true;
     }
 
+    /**
+     * Mengarahkan pengguna ke rute untuk menghasilkan PDF berdasarkan parameter filter.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function generatePdf()
     {
         $queryParams = [
@@ -81,6 +91,11 @@ class BarangReport extends Component
         return redirect()->route('report-barang.generate', $queryParams);
     }
 
+    /**
+     * Render komponen Livewire dan mengirimkan data barang ke tampilan.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $barang = Barang::all();

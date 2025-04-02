@@ -13,11 +13,21 @@ class TransaksiTable extends LivewireDatatable
 
     protected $listeners = ['refreshLivewireDatatable' => '$refresh'];
 
+    /**
+     * Membangun query builder untuk tabel Transaksi.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function builder()
     {
         return Transaksi::query()->with('pelanggan');
     }
 
+    /**
+     * Mendefinisikan kolom-kolom yang akan ditampilkan di tabel.
+     *
+     * @return array
+     */
     public function columns()
     {
         return [
@@ -41,6 +51,14 @@ class TransaksiTable extends LivewireDatatable
         ];
     }
 
+    /**
+     * Memperbarui status pembayaran atau transaksi.
+     *
+     * @param int $id ID transaksi.
+     * @param string $status Status baru.
+     * @param string $type Jenis status (pembayaran/transaksi).
+     * @return void
+     */
     public function updateStatus($id, $status, $type)
     {
         $column = $type === 'pembayaran' ? 'status_pembayaran' : 'status_transaksi';
@@ -48,9 +66,15 @@ class TransaksiTable extends LivewireDatatable
         $transaksi = Transaksi::findOrFail($id);
         $transaksi->update([$column => $status]);
 
-        $this->emit('refreshLivewireDatatable'); 
+        $this->emit('refreshLivewireDatatable');
     }
 
+    /**
+     * Memancarkan event untuk konfirmasi pembaruan status transaksi.
+     *
+     * @param int $id ID transaksi.
+     * @return void
+     */
     public function updateStatusTransaksiConfirm($id)
     {
         $this->emit('updateStatus', $id);

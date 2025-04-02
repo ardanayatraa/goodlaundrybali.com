@@ -10,11 +10,21 @@ class Add extends Component
     public $showModal = false;
     public $nama_admin, $username, $password;
 
+    /**
+     * Membuka modal untuk menambahkan admin baru.
+     *
+     * @return void
+     */
     public function openModal()
     {
         $this->showModal = true;
     }
 
+    /**
+     * Menyimpan data admin baru ke dalam database.
+     *
+     * @return void
+     */
     public function save()
     {
         $this->validate([
@@ -33,6 +43,11 @@ class Add extends Component
         $this->showModal = false;
     }
 
+    /**
+     * Merender tampilan Livewire untuk menambahkan admin.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.admin.add');

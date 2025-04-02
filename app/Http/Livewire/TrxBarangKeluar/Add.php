@@ -20,6 +20,12 @@ class Add extends Component
         'id_admin' => 'required|exists:admins,id_admin',
     ];
 
+    /**
+     * Memperbarui properti tertentu dan menghitung total harga jika diperlukan.
+     *
+     * @param string $propertyName Nama properti yang diperbarui.
+     * @return void
+     */
     public function updated($propertyName)
     {
         if ($propertyName === 'id_barang' && $this->id_barang) {
@@ -31,6 +37,11 @@ class Add extends Component
         }
     }
 
+    /**
+     * Menyimpan data transaksi barang keluar ke database dan memperbarui stok barang.
+     *
+     * @return \Illuminate\Http\RedirectResponse Redirect ke halaman transaksi barang keluar dengan pesan sukses.
+     */
     public function save()
     {
         $this->validate();
@@ -52,6 +63,11 @@ class Add extends Component
         return redirect('/trx-barang-keluar')->with('success', 'Barang keluar berhasil ditambahkan dan stok diperbarui!');
     }
 
+    /**
+     * Merender tampilan Livewire untuk menambahkan transaksi barang keluar.
+     *
+     * @return \Illuminate\View\View Tampilan Livewire.
+     */
     public function render()
     {
         return view('livewire.trx-barang-keluar.add', [

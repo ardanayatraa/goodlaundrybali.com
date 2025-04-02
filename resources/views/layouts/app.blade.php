@@ -307,13 +307,13 @@
                 @endphp
                 <li class="relative px-6 py-3">
                     <span
-                        class="absolute inset-y-0 left-0 w-1 {{ $reportActive ? 'bg-blue-600' : '' }} rounded-tr-lg rounded-br-lg"
+                        class="absolute inset-y-0 left-0 w-1 {{ $reportActive ? 'bg-green-600' : '' }} rounded-tr-lg rounded-br-lg"
                         aria-hidden="true"></span>
 
                     <!-- Tombol Dropdown -->
                     <button id="reportToggle"
                         class="flex items-center justify-between w-full text-sm font-semibold transition-colors duration-150
-                {{ $reportActive ? 'text-blue-600 font-bold' : 'text-gray-800 hover:text-gray-800' }}">
+                {{ $reportActive ? 'text-green-600 font-bold' : 'text-gray-800 hover:text-gray-800' }}">
                         <div class="inline-flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke-width="1.5" stroke="currentColor" class="size-5">
@@ -335,15 +335,15 @@
                         <li>
                             <a href="{{ route('laporan-transaksi') }}"
                                 class="inline-flex items-center w-full text-sm font-medium px-3 py-2 rounded-lg
-                     {{ request()->routeIs('laporan-transaksi') ? 'bg-blue-100 text-blue-600' : 'text-gray-700 hover:text-gray-800 hover:bg-gray-100' }}">
+                     {{ request()->routeIs('laporan-transaksi') ? 'bg-green-100 text-green-600' : 'text-gray-700 hover:text-gray-800 hover:bg-gray-100' }}">
                                 - Laporan Transaksi
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('laporan-stok-barang') }}"
                                 class="inline-flex items-center w-full text-sm font-medium px-3 py-2 rounded-lg
-                     {{ request()->routeIs('laporan-stok-barang') ? 'bg-blue-100 text-blue-600' : 'text-gray-700 hover:text-gray-800 hover:bg-gray-100' }}">
-                                - Laporan Stok Barang
+                     {{ request()->routeIs('laporan-stok-barang') ? 'bg-green-100 text-green-600' : 'text-gray-700 hover:text-gray-800 hover:bg-gray-100' }}">
+                                - Laporan Barang
                             </a>
                         </li>
                     </ul>

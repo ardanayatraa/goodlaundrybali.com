@@ -35,22 +35,34 @@ class Add extends Component
         'keterangan' => 'nullable|string|max:255',
     ];
 
+    /**
+     * Memperbarui jumlah poin pelanggan berdasarkan id_pelanggan yang dipilih.
+     */
     public function updatedIdPelanggan()
     {
         // Automatically fetch the latest jumlah_point for the selected pelanggan
         $this->jumlah_point = Point::where('id_pelanggan', $this->id_pelanggan)->latest('tanggal')->value('jumlah_point');
     }
 
+    /**
+     * Menghitung total harga ketika id_paket diperbarui.
+     */
     public function updatedIdPaket()
     {
         $this->calculateTotalHarga();
     }
 
+    /**
+     * Menghitung total harga ketika jumlah diperbarui.
+     */
     public function updatedJumlah()
     {
         $this->calculateTotalHarga();
     }
 
+    /**
+     * Mengatur diskon berdasarkan penggunaan poin ketika checkbox diperbarui.
+     */
     public function updatedUsePointCheckbox()
     {
         if ($this->usePointCheckbox) {
@@ -61,6 +73,9 @@ class Add extends Component
         }
     }
 
+    /**
+     * Menerapkan diskon berdasarkan poin yang dimiliki pelanggan.
+     */
     private function applyPoints()
     {
         if ($this->jumlah_point >= 10) {
@@ -74,6 +89,9 @@ class Add extends Component
         }
     }
 
+    /**
+     * Menghitung total harga transaksi berdasarkan paket dan jumlah.
+     */
     private function calculateTotalHarga()
     {
         if ($this->id_paket && $this->jumlah) {
@@ -93,6 +111,9 @@ class Add extends Component
         }
     }
 
+    /**
+     * Menggunakan poin pelanggan untuk mendapatkan diskon.
+     */
     public function usePoints()
     {
         if ($this->jumlah_point >= 10) {
@@ -116,6 +137,9 @@ class Add extends Component
         $this->calculateTotalHarga();
     }
 
+    /**
+     * Menyimpan data transaksi ke dalam database.
+     */
     public function save()
     {
         $this->validate(); // Ensure all fields, including id_paket, are validated
@@ -206,6 +230,11 @@ class Add extends Component
         }
     }
 
+    /**
+     * Merender tampilan komponen Livewire.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.transaksi.add', [

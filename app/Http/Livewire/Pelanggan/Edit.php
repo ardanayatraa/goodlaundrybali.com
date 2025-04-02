@@ -16,6 +16,12 @@ class Edit extends Component
         'keterangan' => 'nullable|string|max:255',
     ];
 
+    /**
+     * Inisialisasi data pelanggan berdasarkan ID pelanggan.
+     *
+     * @param int $id_pelanggan
+     * @return void
+     */
     public function mount($id_pelanggan)
     {
         $pelanggan = Pelanggan::findOrFail($id_pelanggan);
@@ -26,6 +32,11 @@ class Edit extends Component
         $this->keterangan = $pelanggan->keterangan;
     }
 
+    /**
+     * Perbarui data pelanggan di database.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update()
     {
         $this->validate();
@@ -45,6 +56,11 @@ class Edit extends Component
         return redirect('/pelanggan');
     }
 
+    /**
+     * Render tampilan komponen Livewire.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.pelanggan.edit');

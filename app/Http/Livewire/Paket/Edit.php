@@ -20,6 +20,11 @@ class Edit extends Component
         'id_unit_paket' => 'required',
     ];
 
+    /**
+     * Menginisialisasi data paket berdasarkan id_paket.
+     *
+     * @param int $id_paket ID dari paket yang akan diedit.
+     */
     public function mount($id_paket)
     {
         $paket = Paket::findOrFail($id_paket);
@@ -31,6 +36,10 @@ class Edit extends Component
         $this->id_unit_paket = $paket->id_unit_paket;
     }
 
+    /**
+     * Memperbarui data paket di database.
+     * Melakukan validasi terlebih dahulu sebelum memperbarui.
+     */
     public function update()
     {
         $this->validate();
@@ -46,6 +55,13 @@ class Edit extends Component
         return redirect('/paket');
     }
 
+    /**
+     * Merender tampilan komponen Livewire.
+     * Mengambil daftar UnitPaket berdasarkan pencarian.
+     * Jika id_unit_paket dipilih tetapi tidak ada dalam daftar, tambahkan ke awal daftar.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $unitPakets = UnitPaket::where('nama_unit', 'like', '%' . $this->searchUnitPaket . '%')

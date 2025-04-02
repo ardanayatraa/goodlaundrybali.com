@@ -20,6 +20,12 @@ class Add extends Component
         'id_admin' => 'required|exists:admins,id_admin',
     ];
 
+    /**
+     * Fungsi ini akan dipanggil setiap properti yang di-bind diperbarui.
+     * Menghitung total harga berdasarkan jumlah dan harga barang.
+     *
+     * @param string $propertyName Nama properti yang diperbarui.
+     */
     public function updated($propertyName)
     {
         if (in_array($propertyName, ['id_barang', 'jumlah'])) {
@@ -30,6 +36,12 @@ class Add extends Component
         }
     }
 
+    /**
+     * Fungsi untuk menyimpan data barang masuk ke database.
+     * Melakukan validasi, menyimpan data, dan memperbarui stok barang.
+     *
+     * @return \Illuminate\Http\RedirectResponse Redirect ke halaman daftar barang masuk dengan pesan sukses.
+     */
     public function save()
     {
         $this->validate();
@@ -49,7 +61,12 @@ class Add extends Component
         return redirect('/trx-barang-masuk')->with('success', 'Barang masuk berhasil ditambahkan dan stok diperbarui!');
     }
 
-
+    /**
+     * Fungsi untuk merender tampilan komponen Livewire.
+     * Mengambil data barang dan admin berdasarkan pencarian.
+     *
+     * @return \Illuminate\View\View View untuk komponen Livewire.
+     */
     public function render()
     {
         return view('livewire.trx-barang-masuk.add', [

@@ -16,6 +16,12 @@ class Edit extends Component
         'subtotal' => 'required|numeric',
     ];
 
+    /**
+     * Menginisialisasi properti dengan data dari DetailTransaksi berdasarkan ID.
+     *
+     * @param int $id_detail_transaksi ID dari detail transaksi yang akan diedit.
+     * @return void
+     */
     public function mount($id_detail_transaksi)
     {
         $detail = DetailTransaksi::findOrFail($id_detail_transaksi);
@@ -26,6 +32,12 @@ class Edit extends Component
         $this->subtotal = $detail->subtotal;
     }
 
+    /**
+     * Validasi dan perbarui data DetailTransaksi di database.
+     * Setelah data diperbarui, pengguna akan diarahkan ke halaman detail transaksi.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update()
     {
         $this->validate();
@@ -40,6 +52,11 @@ class Edit extends Component
         return redirect('/detail-transaksi');
     }
 
+    /**
+     * Render tampilan komponen Livewire untuk mengedit detail transaksi.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.detail-transaksi.edit');

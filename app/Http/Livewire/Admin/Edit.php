@@ -10,6 +10,11 @@ class Edit extends Component
     public $showModal = false;
     public $id_admin, $nama_admin, $username;
 
+    /**
+     * Fungsi untuk menginisialisasi data admin berdasarkan ID.
+     *
+     * @param int $id_admin ID admin yang akan di-edit.
+     */
     public function mount($id_admin)
     {
         $admin = Admin::findOrFail($id_admin);
@@ -18,11 +23,19 @@ class Edit extends Component
         $this->username = $admin->username;
     }
 
+    /**
+     * Fungsi untuk membuka modal.
+     */
     public function openModal()
     {
         $this->showModal = true;
     }
 
+    /**
+     * Fungsi untuk memperbarui data admin.
+     *
+     * @return void
+     */
     public function update()
     {
         $this->validate([
@@ -38,6 +51,11 @@ class Edit extends Component
         $this->showModal = false;
     }
 
+    /**
+     * Fungsi untuk merender tampilan komponen Livewire.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.admin.edit');

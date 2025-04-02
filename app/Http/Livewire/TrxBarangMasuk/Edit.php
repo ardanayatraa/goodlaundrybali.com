@@ -20,6 +20,11 @@ class Edit extends Component
         'id_admin' => 'required|exists:admins,id_admin',
     ];
 
+    /**
+     * Fungsi untuk menginisialisasi data berdasarkan ID transaksi barang masuk.
+     *
+     * @param int $id_trx_barang_masuk ID transaksi barang masuk.
+     */
     public function mount($id_trx_barang_masuk)
     {
         $trx = TrxBarangMasuk::findOrFail($id_trx_barang_masuk);
@@ -32,6 +37,12 @@ class Edit extends Component
         $this->total_harga = $trx->total_harga;
     }
 
+    /**
+     * Fungsi ini akan dipanggil setiap properti yang di-bind diperbarui.
+     * Menghitung total harga berdasarkan jumlah dan harga barang.
+     *
+     * @param string $propertyName Nama properti yang diperbarui.
+     */
     public function updated($propertyName)
     {
         if (in_array($propertyName, ['id_barang', 'jumlah'])) {
@@ -40,6 +51,12 @@ class Edit extends Component
         }
     }
 
+    /**
+     * Fungsi untuk memperbarui data barang masuk di database.
+     * Melakukan validasi, memperbarui data, dan memperbarui stok barang.
+     *
+     * @return \Illuminate\Http\RedirectResponse Redirect ke halaman daftar barang masuk dengan pesan sukses.
+     */
     public function update()
     {
         $this->validate();
@@ -64,6 +81,12 @@ class Edit extends Component
         return redirect('/trx-barang-masuk')->with('success', 'Barang masuk berhasil diperbarui dan stok diperbarui!');
     }
 
+    /**
+     * Fungsi untuk merender tampilan komponen Livewire.
+     * Mengambil data barang dan admin berdasarkan pencarian.
+     *
+     * @return \Illuminate\View\View View untuk komponen Livewire.
+     */
     public function render()
     {
         return view('livewire.trx-barang-masuk.edit', [

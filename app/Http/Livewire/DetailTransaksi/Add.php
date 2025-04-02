@@ -16,6 +16,12 @@ class Add extends Component
         'subtotal' => 'required|numeric',
     ];
 
+    /**
+     * Validasi dan simpan data DetailTransaksi ke database.
+     * Setelah data disimpan, form akan di-reset dan pengguna akan diarahkan ke halaman detail transaksi.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function save()
     {
         $this->validate();
@@ -32,6 +38,11 @@ class Add extends Component
         return redirect('/detail-transaksi');
     }
 
+    /**
+     * Render tampilan komponen Livewire untuk menambahkan detail transaksi.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.detail-transaksi.add');

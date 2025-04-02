@@ -14,6 +14,11 @@ class Add extends Component
         'keterangan' => 'nullable|string|max:300',
     ];
 
+    /**
+     * Menyimpan data unit baru ke dalam database.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function save()
     {
         $this->validate();
@@ -27,6 +32,11 @@ class Add extends Component
         return redirect('/unit')->with('success', 'Unit berhasil ditambahkan!');
     }
 
+    /**
+     * Merender tampilan untuk menambahkan unit.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.unit.add');
