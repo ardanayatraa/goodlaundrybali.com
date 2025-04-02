@@ -51,13 +51,7 @@
                 <span class="text-sm font-medium text-gray-400">Total Transaksi</span>
             </div>
             <h3 class="text-2xl font-bold text-gray-800">Rp {{ number_format($totalTransaksi, 0, ',', '.') }}</h3>
-            <p class="text-sm text-purple-500 mt-2">
-                @if ($growthTransaksi >= 0)
-                    +{{ number_format($growthTransaksi, 2) }}% minggu ini
-                @else
-                    {{ number_format($growthTransaksi, 2) }}% minggu ini
-                @endif
-            </p>
+
         </div>
     </div>
 

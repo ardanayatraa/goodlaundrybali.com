@@ -1,5 +1,5 @@
 <div class="p-4">
-    <div class="filters mb-6 bg-white shadow rounded-lg p-4">
+    <div class="filters  mb-6 bg-white shadow rounded-lg p-4">
         <div class="mb-4">
             <label for="filterType" class="block text-sm font-medium text-gray-700">Filter Berdasarkan</label>
             <select id="filterType" wire:model="filterType"
@@ -50,7 +50,7 @@
             @endif
         </div>
 
-        <div class="flex gap-2 mt-4">
+        <div class="flex flex-col md:flex-row gap-2 mt-4">
             <button wire:click="applyFilter"
                 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                 Apply
@@ -63,10 +63,7 @@
                 </button>
             @endif
         </div>
-
-
     </div>
-
 
     <div class="bg-white shadow rounded-lg p-4">
         @livewire('table.laporan-table', [

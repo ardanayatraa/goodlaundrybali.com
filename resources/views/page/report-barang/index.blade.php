@@ -8,7 +8,7 @@
                 Report Barang
             </div>
             <div>
-
+                {{ Breadcrumbs::render('report.barang') }}
             </div>
         </div>
         @livewire('report.barang-report')

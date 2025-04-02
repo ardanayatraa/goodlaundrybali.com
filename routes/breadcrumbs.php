@@ -48,8 +48,13 @@ foreach ($models as $model) {
     });
 }
 
-// Home > Report
-Breadcrumbs::for('report', function (BreadcrumbTrail $trail) {
-    $trail->parent('home');
-    $trail->push('Report', route('report'));
-});
+    // Home > Report
+    Breadcrumbs::for('report.barang', function (BreadcrumbTrail $trail) {
+        $trail->parent('home');
+        $trail->push('Laporan Barang', route('laporan-stok-barang'));
+    });
+    Breadcrumbs::for('report.transaksi', function (BreadcrumbTrail $trail) {
+        $trail->parent('home');
+        $trail->push('Laporan Transaksi', route('laporan-transaksi'));
+    });
+    
