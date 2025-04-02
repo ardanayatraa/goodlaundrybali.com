@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('id_admin');
             $table->foreignId('id_barang');
             $table->date('tanggal_keluar');
-            $table->string('unit', 50);
             $table->integer('jumlah_brgkeluar');
             $table->timestamps();
         });

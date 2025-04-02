@@ -22,12 +22,11 @@ class Add extends Component
 
     public function updated($propertyName)
     {
+        if ($propertyName === 'id_barang' && $this->id_barang) {
+            $this->harga = Barang::where('id_barang', $this->id_barang)->value('harga') ?? 0;
+        }
+
         if (in_array($propertyName, ['id_barang', 'jumlah'])) {
-            if ($this->id_barang) {
-                $this->harga = Barang::where('id_barang', $this->id_barang)->value('harga') ?? 0;
-            } else {
-                $this->harga = 0;
-            }
             $this->total_harga = $this->jumlah * $this->harga;
         }
     }
@@ -35,6 +34,8 @@ class Add extends Component
     public function save()
     {
         $this->validate();
+
+        // Simpan transaksi barang keluar
         TrxBarangKeluar::create([
             'id_barang' => $this->id_barang,
             'jumlah_brgkeluar' => $this->jumlah,
@@ -44,8 +45,11 @@ class Add extends Component
             'id_admin' => $this->id_admin,
         ]);
 
-        $this->reset();
-        return redirect('/trx-barang-keluar')->with('success', 'Barang keluar berhasil ditambahkan!');
+        // Kurangi stok barang
+        Barang::where('id_barang', $this->id_barang)->decrement('stok', $this->jumlah);
+
+        $this->reset(['id_barang', 'jumlah', 'tanggal_keluar', 'id_admin', 'harga', 'total_harga']);
+        return redirect('/trx-barang-keluar')->with('success', 'Barang keluar berhasil ditambahkan dan stok diperbarui!');
     }
 
     public function render()

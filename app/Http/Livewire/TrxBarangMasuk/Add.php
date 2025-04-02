@@ -23,10 +23,8 @@ class Add extends Component
     public function updated($propertyName)
     {
         if (in_array($propertyName, ['id_barang', 'jumlah'])) {
-            if ($this->id_barang) {
-                $this->harga = Barang::where('id_barang', $this->id_barang)->value('harga') ?? 0;
-            } else {
-                $this->harga = 0;
+            if ($propertyName === 'id_barang' && $this->id_barang) {
+                $this->harga = Barang::find($this->id_barang)?->harga ?? 0;
             }
             $this->total_harga = $this->jumlah * $this->harga;
         }
@@ -35,6 +33,7 @@ class Add extends Component
     public function save()
     {
         $this->validate();
+
         TrxBarangMasuk::create([
             'id_barang' => $this->id_barang,
             'jumlah_brgmasuk' => $this->jumlah,
@@ -44,9 +43,12 @@ class Add extends Component
             'id_admin' => $this->id_admin,
         ]);
 
+        Barang::find($this->id_barang)?->increment('stok', $this->jumlah);
+
         $this->reset();
-        return redirect('/trx-barang-masuk')->with('success', 'Barang masuk berhasil ditambahkan!');
+        return redirect('/trx-barang-masuk')->with('success', 'Barang masuk berhasil ditambahkan dan stok diperbarui!');
     }
+
 
     public function render()
     {

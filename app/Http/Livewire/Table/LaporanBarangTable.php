@@ -62,7 +62,11 @@ class LaporanBarangTable extends LivewireDatatable
             Column::name('id_barang')->label('ID Barang')->sortable(),
             Column::name('nama_barang')->label('Nama Barang')->sortable()->searchable(),
             Column::name('harga')->label('Harga (Rp)')->sortable(),
+            Column::name('trxBarangKeluar.jumlah_brgkeluar')->label('ransaksi Masuk')->sortable(),
+            Column::name('trxBarangMasuk.jumlah_brgmasuk')->label('Transaksi Keluar')->sortable(),
             Column::name('stok')->label('Stok')->sortable(),
+            Column::name('created_at')->label('Dibuat')->sortable(),
         ];
+
     }
 }

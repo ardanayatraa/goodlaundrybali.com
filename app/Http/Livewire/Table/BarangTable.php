@@ -20,8 +20,9 @@ class BarangTable extends LivewireDatatable
         return [
             Column::name('id_barang')->label('ID')->sortable(),
             Column::name('nama_barang')->label('Nama Barang')->sortable()->searchable(),
+            Column::name('stok')->label('Stok')->sortable()->searchable(),
             Column::name('harga')->label('Harga')->sortable(),
-            
+
             Column::callback(['id_barang'], function ($id) {
 
                 return view('components.table-action', [

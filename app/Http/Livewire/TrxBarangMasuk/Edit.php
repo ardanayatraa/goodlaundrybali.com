@@ -22,7 +22,7 @@ class Edit extends Component
 
     public function mount($id_trx_barang_masuk)
     {
-        $trx = TrxBarangMasuk::where('id_trx_brgmasuk', $id_trx_barang_masuk)->firstOrFail();
+        $trx = TrxBarangMasuk::findOrFail($id_trx_barang_masuk);
         $this->id_trx_barang_masuk = $trx->id_trx_brgmasuk;
         $this->id_barang = $trx->id_barang;
         $this->jumlah = $trx->jumlah_brgmasuk;
@@ -35,11 +35,7 @@ class Edit extends Component
     public function updated($propertyName)
     {
         if (in_array($propertyName, ['id_barang', 'jumlah'])) {
-            if ($this->id_barang) {
-                $this->harga = Barang::where('id_barang', $this->id_barang)->value('harga') ?? 0;
-            } else {
-                $this->harga = 0;
-            }
+            $this->harga = $this->id_barang ? Barang::find($this->id_barang)->harga ?? 0 : 0;
             $this->total_harga = $this->jumlah * $this->harga;
         }
     }
@@ -48,16 +44,24 @@ class Edit extends Component
     {
         $this->validate();
 
-        TrxBarangMasuk::where('id_trx_brgmasuk', $this->id_trx_barang_masuk)->update([
-            'id_barang' => $this->id_barang,
-            'jumlah_brgmasuk' => $this->jumlah,
-            'tanggal_masuk' => $this->tanggal_masuk,
-            'harga' => $this->harga,
-            'total_harga' => $this->total_harga,
-            'id_admin' => $this->id_admin,
-        ]);
+        $trxLama = TrxBarangMasuk::find($this->id_trx_barang_masuk);
 
-        return redirect('/trx-barang-masuk')->with('success', 'Barang masuk berhasil diperbarui!');
+        if ($trxLama) {
+            Barang::find($trxLama->id_barang)->decrement('stok', $trxLama->jumlah_brgmasuk);
+
+            $trxLama->update([
+                'id_barang' => $this->id_barang,
+                'jumlah_brgmasuk' => $this->jumlah,
+                'tanggal_masuk' => $this->tanggal_masuk,
+                'harga' => $this->harga,
+                'total_harga' => $this->total_harga,
+                'id_admin' => $this->id_admin,
+            ]);
+
+            Barang::find($this->id_barang)->increment('stok', $this->jumlah);
+        }
+
+        return redirect('/trx-barang-masuk')->with('success', 'Barang masuk berhasil diperbarui dan stok diperbarui!');
     }
 
     public function render()

@@ -78,7 +78,7 @@ class BarangReport extends Component
             'filterEndDate' => $this->filterEndDate,
         ];
 
-        return redirect()->route('report.generate', $queryParams);
+        return redirect()->route('report-barang.generate', $queryParams);
     }
 
     public function render()

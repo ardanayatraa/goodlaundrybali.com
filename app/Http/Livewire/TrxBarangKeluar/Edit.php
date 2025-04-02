@@ -51,17 +51,24 @@ class Edit extends Component
         $this->harga = Barang::where('id_barang', $this->id_barang)->first()->harga;
         $this->total_harga = $this->jumlah * $this->harga;
 
+        $trxLama = TrxBarangKeluar::where('id_trx_barang_keluar', $this->id_trx_barang_keluar)->first();
+
+        Barang::where('id_barang', $trxLama->id_barang)->increment('stok', $trxLama->jumlah_brgkeluar);
+
         TrxBarangKeluar::where('id_trx_barang_keluar', $this->id_trx_barang_keluar)->update([
             'id_barang' => $this->id_barang,
-            'jumlah' => $this->jumlah,
+            'jumlah_brgkeluar' => $this->jumlah,
             'tanggal_keluar' => $this->tanggal_keluar,
             'id_admin' => $this->id_admin,
             'harga' => $this->harga,
             'total_harga' => $this->total_harga,
         ]);
 
-        return redirect('/trx-barang-keluar')->with('success', 'Barang keluar berhasil diperbarui!');
+        Barang::where('id_barang', $this->id_barang)->decrement('stok', $this->jumlah);
+
+        return redirect('/trx-barang-keluar')->with('success', 'Barang keluar berhasil diperbarui dan stok diperbarui!');
     }
+
 
     public function render()
     {

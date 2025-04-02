@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Twilio\Rest\Client;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportBarangController;
 use App\Models\DetailTransaksi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -91,7 +92,7 @@ Route::middleware('admin')->group(function () {
     Route::get('/pelanggan/cetak/{id}', [ActionController::class, 'printMember'])->name('pelanggan.cetak');
 
     Route::get('/report-transaksi/generate', [ReportController::class, 'generate'])->name('report.generate');
-    Route::get('/report-barang/generate', [ReportController::class, 'generate'])->name('report-barang.generate');
+    Route::get('/report-barang/generate', [ReportBarangController::class, 'generate'])->name('report-barang.generate');
 
 });
 
