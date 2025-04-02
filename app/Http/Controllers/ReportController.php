@@ -64,7 +64,11 @@ class ReportController extends Controller
 
         return response()->streamDownload(
             fn () => print($pdf->output()),
-            'Laporan_Transaksi_' . now()->format('YmdHis') . '.pdf'
+            'Laporan_Transaksi_' . now()->format('YmdHis') . '.pdf',
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="Laporan_Transaksi_' . now()->format('YmdHis') . '.pdf"',
+            ]
         );
     }
 }
