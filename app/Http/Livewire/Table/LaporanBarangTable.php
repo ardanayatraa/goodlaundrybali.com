@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Http\Livewire\Table;
+
+use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
+use Mediconesystems\LivewireDatatables\Column;
+use App\Models\Barang;
+use Illuminate\Support\Carbon;
+
+class LaporanBarangTable extends LivewireDatatable
+{
+    public $model = Barang::class;
+    public $filterType, $filterDate, $filterYear, $filterMonth, $filterWeek, $filterStartDate, $filterEndDate;
+
+    protected $listeners = ['filterUpdated' => 'updateFilters', 'refreshLivewireDatatable' => '$refresh'];
+
+    public function updateFilters($filters)
+    {
+        $this->filterType = $filters['filterType'];
+        $this->filterDate = $filters['filterDate'];
+        $this->filterYear = $filters['filterYear'];
+        $this->filterMonth = $filters['filterMonth'];
+        $this->filterWeek = $filters['filterWeek'];
+        $this->filterStartDate = $filters['filterStartDate'];
+        $this->filterEndDate = $filters['filterEndDate'];
+
+        $this->emit('refreshLivewireDatatable');
+    }
+
+    public function builder()
+    {
+        $query = Barang::query();
+
+        if ($this->filterType === 'daily' && $this->filterDate) {
+            $query->whereDate('created_at', $this->filterDate);
+        }
+
+        if ($this->filterType === 'weekly' && $this->filterWeek) {
+            $query->whereBetween('created_at', [$this->filterStartDate, $this->filterEndDate]);
+        }
+
+        if ($this->filterType === 'monthly' && $this->filterMonth) {
+            $this->filterStartDate = Carbon::createFromFormat('Y-m', $this->filterMonth)->startOfMonth()->toDateString();
+            $this->filterEndDate = Carbon::createFromFormat('Y-m', $this->filterMonth)->endOfMonth()->toDateString();
+            $query->whereBetween('created_at', [$this->filterStartDate, $this->filterEndDate]);
+        }
+
+        if ($this->filterType === 'yearly' && $this->filterYear) {
+            $query->whereYear('created_at', $this->filterYear);
+        }
+
+        if ($this->filterType === 'range' && $this->filterStartDate && $this->filterEndDate) {
+            $query->whereBetween('created_at', [$this->filterStartDate, $this->filterEndDate]);
+        }
+
+        return $query;
+    }
+
+    public function columns()
+    {
+        return [
+            Column::name('id_barang')->label('ID Barang')->sortable(),
+            Column::name('nama_barang')->label('Nama Barang')->sortable()->searchable(),
+            Column::name('harga')->label('Harga (Rp)')->sortable(),
+            Column::name('stok')->label('Stok')->sortable(),
+        ];
+    }
+}

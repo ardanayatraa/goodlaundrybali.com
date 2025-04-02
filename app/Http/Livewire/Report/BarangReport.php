@@ -2,23 +2,24 @@
 
 namespace App\Http\Livewire\Report;
 
-use App\Models\Transaksi;
+use App\Models\Barang;
 use Livewire\Component;
 use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf; // Updated import statement
+use Barryvdh\DomPDF\Facade\Pdf;
 
-class TransaksiReport extends Component
+class BarangReport extends Component
 {
     public $filterType = 'daily', $filterDate, $filterYear, $filterMonth, $filterWeek, $filterStartDate, $filterEndDate;
-    public $filterDescription; // Tambahkan properti untuk deskripsi filter
-    public $apply=false;
+    public $filterDescription;
+    public $apply = false;
+
+    protected $primaryKey = 'id_barang';
+
     public function applyFilter()
     {
         if ($this->filterType === 'monthly' && $this->filterMonth) {
-
             $this->filterStartDate = Carbon::createFromFormat('Y-m', $this->filterMonth)->startOfMonth()->toDateString();
             $this->filterEndDate = Carbon::createFromFormat('Y-m', $this->filterMonth)->endOfMonth()->toDateString();
-
         }
 
         if ($this->filterType === 'yearly' && $this->filterYear) {
@@ -31,7 +32,6 @@ class TransaksiReport extends Component
             $this->filterEndDate = Carbon::parse($this->filterWeek)->endOfWeek()->toDateString();
         }
 
-        // Set filter description
         switch ($this->filterType) {
             case 'daily':
                 $this->filterDescription = "Harian: " . ($this->filterDate ?? 'Tidak dipilih');
@@ -63,7 +63,7 @@ class TransaksiReport extends Component
             'filterDescription' => $this->filterDescription,
         ]);
 
-        $this->apply=true;
+        $this->apply = true;
     }
 
     public function generatePdf()
@@ -83,7 +83,7 @@ class TransaksiReport extends Component
 
     public function render()
     {
-        $transaksi = Transaksi::all();
-        return view('livewire.report.transaksi-report',['transaksi'=>$transaksi]);
+        $barang = Barang::all();
+        return view('livewire.report.barang-report', ['barang' => $barang]);
     }
 }

@@ -8,6 +8,8 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            font-size: 18px;
+            /* Further increased font size */
             padding: 20px;
             border: 1px solid #ccc;
         }
@@ -28,7 +30,8 @@
 
         .alamat {
             text-align: center;
-            font-size: 14px;
+            font-size: 18px;
+            /* Further increased font size */
             margin-bottom: 15px;
         }
 
@@ -41,7 +44,8 @@
         td,
         th {
             padding: 5px;
-            font-size: 14px;
+            font-size: 18px;
+            /* Further increased font size */
         }
 
         .items th,
@@ -77,7 +81,8 @@
         </tr>
         <tr>
             <td>Tanggal Transaksi</td>
-            <td>: {{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->isoFormat('dddd, DD/MM/YYYY') }}</td>
+            <td>: {{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->locale('id')->translatedFormat('l, d F Y') }}
+            </td>
         </tr>
         <tr>
             <td>Nama Pelanggan</td>
@@ -123,7 +128,7 @@
             @foreach ($transaksi->detailTransaksi as $detail)
                 <tr>
                     <td>{{ $transaksi->paket->jenis_paket ?? '-' }}</td>
-                    <td>KG</td>
+                    <td>{{ $transaksi->paket->unitPaket->nama_unit ?? '-' }}</td>
                     <td>{{ $detail->jumlah }}</td>
                     <td>Rp. {{ number_format($transaksi->paket->harga ?? 0, 0, ',', '.') }}</td>
                     <td>Rp. {{ number_format(($transaksi->paket->harga ?? 0) * $detail->jumlah, 0, ',', '.') }}</td>

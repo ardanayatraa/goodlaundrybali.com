@@ -63,13 +63,10 @@
                 </button>
             @endif
         </div>
-
-
     </div>
 
-
     <div class="bg-white shadow rounded-lg p-4">
-        @livewire('table.laporan-table', [
+        @livewire('table.laporan-barang-table', [
             'filterType' => $filterType,
             'filterDate' => $filterDate,
             'filterYear' => $filterYear,

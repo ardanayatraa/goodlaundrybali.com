@@ -9,6 +9,7 @@ use App\Models\DetailTransaksi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transaksi;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,14 +80,18 @@ Route::middleware('admin')->group(function () {
 
 
     // Report Routes
-    Route::get('1', function () {
-        return 1;
+    Route::get('report-barang', function () {
+        return view('page.report-barang.index');
     })->name('laporan-stok-barang');
-    Route::get('report', function () {
+
+    Route::get('report-transaksi', function () {
         return view('page.report.index');
     })->name('laporan-transaksi');
 
     Route::get('/pelanggan/cetak/{id}', [ActionController::class, 'printMember'])->name('pelanggan.cetak');
+
+    Route::get('/report-transaksi/generate', [ReportController::class, 'generate'])->name('report.generate');
+    Route::get('/report-barang/generate', [ReportController::class, 'generate'])->name('report-barang.generate');
 
 });
 

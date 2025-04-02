@@ -11,10 +11,16 @@ class Paket extends Model
 
     protected $table = 'pakets';
     protected $primaryKey = 'id_paket';
-    protected $fillable = ['jenis_paket', 'harga', 'unit', 'waktu_pengerjaan','id_unit_paket'];
+    protected $fillable = ['jenis_paket', 'harga', 'unit', 'waktu_pengerjaan', 'id_unit_paket'];
 
     public function transaksi()
     {
         return $this->hasMany(Transaksi::class, 'id_paket');
+    }
+
+    // Relasi ke UnitPaket
+    public function unitPaket()
+    {
+        return $this->belongsTo(UnitPaket::class, 'id_unit_paket', 'id_unit_paket');
     }
 }
