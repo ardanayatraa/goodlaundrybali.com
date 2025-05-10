@@ -8,7 +8,7 @@ use App\Models\UnitPaket;
 
 class Edit extends Component
 {
-    public $id_paket, $jenis_paket, $harga, $unit, $waktu_pengerjaan, $id_unit_paket;
+    public $id_paket, $jenis_paket, $harga, $waktu_pengerjaan, $id_unit_paket;
     public $searchUnitPaket = '';
     public $focusedUnitPaket = false;
 
@@ -31,7 +31,6 @@ class Edit extends Component
         $this->id_paket = $paket->id_paket;
         $this->jenis_paket = $paket->jenis_paket;
         $this->harga = $paket->harga;
-        $this->unit = $paket->unit;
         $this->waktu_pengerjaan = $paket->waktu_pengerjaan;
         $this->id_unit_paket = $paket->id_unit_paket;
     }
@@ -47,7 +46,6 @@ class Edit extends Component
         Paket::where('id_paket', $this->id_paket)->update([
             'jenis_paket' => $this->jenis_paket,
             'harga' => $this->harga,
-            'unit' => $this->unit,
             'waktu_pengerjaan' => $this->waktu_pengerjaan,
             'id_unit_paket' => $this->id_unit_paket,
         ]);

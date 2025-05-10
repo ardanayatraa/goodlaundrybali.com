@@ -46,6 +46,7 @@ foreach ($models as $model) {
         $trail->parent($routeName);
         $trail->push('Edit', route("{$routeName}.edit", $id));
     });
+
 }
 
     // Home > Report
@@ -53,8 +54,26 @@ foreach ($models as $model) {
         $trail->parent('home');
         $trail->push('Laporan Barang', route('laporan-stok-barang'));
     });
+
+    // Home > Transaksi > Detail
+Breadcrumbs::for('transaksi.detail', function (BreadcrumbTrail $trail, $id) {
+    $trail->parent('transaksi');
+    $trail->push('Detail Transaksi', route('transaksi.detail', $id));
+});
+
+// Home > Trx Barang Keluar > Detail
+Breadcrumbs::for('trx-barang-keluar.detail', function (BreadcrumbTrail $trail, $id) {
+    $trail->parent('trx-barang-keluar');
+    $trail->push("Detail #{$id}", route('trx-barang-keluar.detail', $id));
+});
+
+// Home > Trx Barang Masuk > Detail
+Breadcrumbs::for('trx-barang-masuk.detail', function (BreadcrumbTrail $trail, $id) {
+    $trail->parent('trx-barang-masuk');
+    $trail->push("Detail #{$id}", route('trx-barang-masuk.detail', $id));
+});
+
     Breadcrumbs::for('report.transaksi', function (BreadcrumbTrail $trail) {
         $trail->parent('home');
         $trail->push('Laporan Transaksi', route('laporan-transaksi'));
     });
-    

@@ -64,16 +64,10 @@ class ActionController extends Controller
     {
         $pelanggan = Pelanggan::findOrFail($id);
 
-        // Render view ke PDF
-        $pdf = Pdf::loadView('print-member', compact('pelanggan'))
-            ->setPaper('a4', 'portrait')
-            ->setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true
-            ]);
+        return view('print-member', compact('pelanggan'));
 
-        return $pdf->stream("Customer_Card_{$pelanggan->id_pelanggan}.pdf");
     }
+
 
     // ============================ BARANG ===================================
 
@@ -172,5 +166,55 @@ class ActionController extends Controller
         $transaksi->delete();
 
         return redirect()->back()->with('success', 'Transaksi berhasil dihapus.');
+    }
+
+
+    /**
+     * Cetak detail transaksi dalam bentuk PDF.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function cetakTransaksi($id)
+    {
+        // Ambil transaksi dengan relasi
+        $transaksi = Transaksi::with(['pelanggan', 'paket.unitPaket', 'detailTransaksi'])
+            ->findOrFail($id);
+
+        // Muat view PDF (buat file resources/views/page/transaksi/cetak.blade.php)
+        $pdf = PDF::loadView('pdf.transaksi-cetak', compact('transaksi'))
+            ->setPaper('a4', 'portrait');
+
+        // Stream ke browser
+        return $pdf->stream("transaksi_{$id}.pdf");
+    }
+
+
+        /**
+     * Cetak PDF detail transaksi barang keluar.
+     */
+    public function cetakBarangKeluar($id)
+    {
+        $keluar = TrxBarangKeluar::with(['barang', 'admin'])
+                  ->findOrFail($id);
+
+        $pdf = PDF::loadView('pdf.trx-barang-keluar-cetak', compact('keluar'))
+                  ->setPaper('a4', 'portrait');
+
+        return $pdf->stream("barang_keluar_{$id}.pdf");
+    }
+
+    /**
+     * Cetak PDF detail transaksi barang masuk.
+     */
+    public function cetakBarangMasuk($id)
+    {
+        $masuk = TrxBarangMasuk::with(['barang', 'admin'])
+                  ->findOrFail($id);
+
+        $pdf = PDF::loadView('pdf.trx-barang-masuk-cetak', compact('masuk'))
+                  ->setPaper('a4', 'portrait');
+
+        return $pdf->stream("barang_masuk_{$id}.pdf");
     }
 }

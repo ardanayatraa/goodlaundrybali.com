@@ -61,13 +61,6 @@
                     @enderror
                 </div>
 
-                <div class="mb-4">
-                    <x-label for="unit" value="Unit" />
-                    <x-input id="unit" type="text" wire:model="unit" class="mt-2 w-full" />
-                    @error('unit')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
 
                 <div class="mb-4">
                     <x-label for="waktu_pengerjaan" value="Waktu Pengerjaan" />

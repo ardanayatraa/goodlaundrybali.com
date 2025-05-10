@@ -31,7 +31,19 @@ class TrxBarangMasukTable extends LivewireDatatable
         return [
             Column::name('trx_barang_masuks.id_trx_brgmasuk')->label('ID Transaksi')->sortable(),
             Column::name('barangs.nama_barang')->label('Nama Barang')->sortable()->searchable(),
-            Column::name('trx_barang_masuks.tanggal_masuk')->label('Tanggal Masuk')->sortable(),
+
+            Column::callback(
+                ['trx_barang_masuks.tanggal_masuk', 'id_trx_brgmasuk'],
+                function ($tanggal, $id) {
+                    return view('datatables::link', [
+                        'href' => route('trx-barang-masuk.detail', $id),
+                        'slot' => $tanggal,
+                    ]);
+                }
+            )
+            ->label('Tanggal Masuk')
+            ->sortable()
+            ->searchable(),
             Column::name('admin.nama_admin')->label('Nama Admin')->searchable(),
             Column::name('trx_barang_masuks.total_harga')->label('Total Harga')->sortable(),
 

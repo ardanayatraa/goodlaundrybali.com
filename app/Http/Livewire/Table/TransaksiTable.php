@@ -33,7 +33,18 @@ class TransaksiTable extends LivewireDatatable
         return [
             Column::name('id_transaksi')->label('ID Transaksi')->sortable(),
             Column::name('pelanggan.nama_pelanggan')->label('Nama Pelanggan')->sortable()->searchable(),
-            Column::name('tanggal_transaksi')->label('Tanggal Transaksi')->sortable()->searchable(),
+            Column::callback(
+                ['tanggal_transaksi', 'id_transaksi'],
+                function ($tanggal, $id) {
+                    return view('datatables::link', [
+                        'href' => route('transaksi.detail', $id),
+                        'slot' => $tanggal,
+                    ]);
+                }
+            )
+            ->label('Tanggal Transaksi')
+            ->sortable()
+            ->searchable(),
             Column::name('total_harga')->label('Total Harga (Rp)')->sortable()->searchable(),
 
             Column::callback(['id_transaksi', 'status_pembayaran'], function ($id, $status) {

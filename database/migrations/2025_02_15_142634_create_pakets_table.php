@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('id_unit_paket');
             $table->string('jenis_paket', 50);
             $table->decimal('harga', 12, 2);
-            $table->string('unit', 10);
             $table->string('waktu_pengerjaan', 50);
             $table->timestamps();
         });

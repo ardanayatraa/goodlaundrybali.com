@@ -41,219 +41,164 @@ Route::get('/register', function () {
 Route::post('login', [AuthController::class, 'login'])->name('login.post');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('admin')->group(function () {
 
+
+Route::middleware('admin')->group(function () {
+    // Dashboard
     Route::prefix('dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     });
 
+    // Barang
+    Route::get('/barang', function () {
+        return view('page.barang.index');
+    })->name('barang');
+    Route::get('/barang/add', function () {
+        return view('page.barang.add');
+    })->name('barang.add');
+    Route::get('/barang/edit/{id}', function ($id) {
+        return view('page.barang.edit', compact('id'));
+    })->name('barang.edit');
 
 
-    $models = [
-        'Barang',
-        'DetailTransaksi',
-        'Paket',
-        'Pelanggan',
-        'Point',
-        'Transaksi',
-        'TrxBarangKeluar',
-        'TrxBarangMasuk',
-        'Unit',
-        'UnitPaket'
 
-    ];
+    // Paket
+    Route::get('/paket', function () {
+        return view('page.paket.index');
+    })->name('paket');
+    Route::get('/paket/add', function () {
+        return view('page.paket.add');
+    })->name('paket.add');
+    Route::get('/paket/edit/{id}', function ($id) {
+        return view('page.paket.edit', compact('id'));
+    })->name('paket.edit');
 
-    foreach ($models as $model) {
-        $routeName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1-$2', $model));
+    // Pelanggan
+    Route::get('/pelanggan', function () {
+        return view('page.pelanggan.index');
+    })->name('pelanggan');
+    Route::get('/pelanggan/add', function () {
+        return view('page.pelanggan.add');
+    })->name('pelanggan.add');
+    Route::get('/pelanggan/edit/{id}', function ($id) {
+        return view('page.pelanggan.edit', compact('id'));
+    })->name('pelanggan.edit');
 
-        Route::get("/{$routeName}", function () use ($routeName) {
-            return view("page.{$routeName}.index");
-        })->name("{$routeName}");
+    // Point
+    Route::get('/point', function () {
+        return view('page.point.index');
+    })->name('point');
+    Route::get('/point/add', function () {
+        return view('page.point.add');
+    })->name('point.add');
+    Route::get('/point/edit/{id}', function ($id) {
+        return view('page.point.edit', compact('id'));
+    })->name('point.edit');
 
-        Route::get("/{$routeName}/add", function () use ($routeName) {
-            return view("page.{$routeName}.add");
-        })->name("{$routeName}.add");
+    // Transaksi
+    Route::get('/transaksi', function () {
+        return view('page.transaksi.index');
+    })->name('transaksi');
+    Route::get('/transaksi/add', function () {
+        return view('page.transaksi.add');
+    })->name('transaksi.add');
+    Route::get('/transaksi/edit/{id}', function ($id) {
+        return view('page.transaksi.edit', compact('id'));
+    })->name('transaksi.edit');
+    Route::get('/transaksi/detail/{id}', function ($id) {
+        return view('page.transaksi.detail', compact('id'));
+    })->name('transaksi.detail');
 
-        Route::get("/{$routeName}/edit/{id}", function ($id) use ($routeName) {
-            return view("page.{$routeName}.edit", compact('id'));
-        })->name("{$routeName}.edit");
-    }
+
+    // Trx Barang Keluar
+    Route::get('/trx-barang-keluar', function () {
+        return view('page.trx-barang-keluar.index');
+    })->name('trx-barang-keluar');
+    Route::get('/trx-barang-keluar/add', function () {
+        return view('page.trx-barang-keluar.add');
+    })->name('trx-barang-keluar.add');
+    Route::get('/trx-barang-keluar/edit/{id}', function ($id) {
+        return view('page.trx-barang-keluar.edit', compact('id'));
+    })->name('trx-barang-keluar.edit');
+
+    Route::get('/trx-barang-keluar/detail/{id}', function ($id) {
+        return view('page.trx-barang-keluar.detail', compact('id'));
+    })->name('trx-barang-keluar.detail');
 
 
-    // Report Routes
+    // Trx Barang Masuk
+    Route::get('/trx-barang-masuk', function () {
+        return view('page.trx-barang-masuk.index');
+    })->name('trx-barang-masuk');
+    Route::get('/trx-barang-masuk/add', function () {
+        return view('page.trx-barang-masuk.add');
+    })->name('trx-barang-masuk.add');
+    Route::get('/trx-barang-masuk/edit/{id}', function ($id) {
+        return view('page.trx-barang-masuk.edit', compact('id'));
+    })->name('trx-barang-masuk.edit');
+    Route::get('/trx-barang-masuk/detail/{id}', function ($id) {
+        return view('page.trx-barang-masuk.detail', compact('id'));
+    })->name('trx-barang-masuk.detail');
+
+
+
+
+    // Unit
+    Route::get('/unit', function () {
+        return view('page.unit.index');
+    })->name('unit');
+    Route::get('/unit/add', function () {
+        return view('page.unit.add');
+    })->name('unit.add');
+    Route::get('/unit/edit/{id}', function ($id) {
+        return view('page.unit.edit', compact('id'));
+    })->name('unit.edit');
+
+    // Unit Paket
+    Route::get('/unit-paket', function () {
+        return view('page.unit-paket.index');
+    })->name('unit-paket');
+    Route::get('/unit-paket/add', function () {
+        return view('page.unit-paket.add');
+    })->name('unit-paket.add');
+    Route::get('/unit-paket/edit/{id}', function ($id) {
+        return view('page.unit-paket.edit', compact('id'));
+    })->name('unit-paket.edit');
+
+    // Laporan
     Route::get('report-barang', function () {
         return view('page.report-barang.index');
     })->name('laporan-stok-barang');
-
     Route::get('report-transaksi', function () {
         return view('page.report.index');
     })->name('laporan-transaksi');
 
-    Route::get('/pelanggan/cetak/{id}', [ActionController::class, 'printMember'])->name('pelanggan.cetak');
+    // Cetak Member
+    Route::get('/pelanggan/cetak/{id}', [ActionController::class, 'printMember'])
+        ->name('pelanggan.cetak');
 
-    Route::get('/report-transaksi/generate', [ReportController::class, 'generate'])->name('report.generate');
-    Route::get('/report-barang/generate', [ReportBarangController::class, 'generate'])->name('report-barang.generate');
-
-});
-
-
-Route::get('/send-wa', function () {
-    $sid    = env('TWILIO_SID');               // SID Twilio
-    $token  = env('TWILIO_TOKEN');            // Token Twilio
-    $from   = env('TWILIO_WHATSAPP_FROM');    // Nomor WhatsApp Twilio
-    $to     = "whatsapp:+6285172003970";      // Nomor tujuan
-    $twilio = new Client($sid, $token);
-
-    // Data untuk pesan
-    $data = [
-        'title'       => 'Good Laundry',
-        'nota'        => '#Z495A/11060',
-        'tanggal'     => '2024-12-23 17:03:00',
-        'pembayaran'  => 'belum_bayar',
-        'status'      => 'Proses',
-        'nama'        => 'Kak ardana (085179799415)',
-        'estimasi'    => '1 Hari 2024-12-24',
-        'catatan'     => '',
-        'detail'      => 'Express (Rp7.000 x 3Kg)',
-        'subtotal'    => 'Rp21.000',
-        'total'       => 'Rp21.000',
-        'footer'      => 'Terimakasih',
-    ];
-
-    // Format pesan
-    $messageBody = "{$data['title']}
-------------------------------
-No Nota : {$data['nota']}
-Tanggal : {$data['tanggal']}
-Pembayaran : {$data['pembayaran']}
-Status : {$data['status']}
-Nama : {$data['nama']}
-Est : {$data['estimasi']}
-Note : {$data['catatan']}
-----------------------------
-{$data['detail']}
-{$data['subtotal']}
-------------------------------
-SubTotal : {$data['subtotal']}
-Total : {$data['total']}
-
-------------------------------
-{$data['footer']}
-------------------------------";
-
-    try {
-        // Kirim pesan WhatsApp
-        $message = $twilio->messages->create(
-            $to,
-            [
-                "from" => $from,
-                "body" => $messageBody,
-            ]
-        );
-
-        return response()->json(['success' => true, 'messageSid' => $message->sid]);
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'error' => $e->getMessage()]);
-    }
-});
+        Route::get('/transaksi/cetak/{id}', [ActionController::class, 'cetakTransaksi'])
+        ->name('transaksi.cetak');
 
 
+// Cetak Barang Keluar
+Route::get('/trx-barang-keluar/cetak/{id}', [ActionController::class, 'cetakBarangKeluar'])
+->name('trx-barang-keluar.cetak');
 
-Route::get('/sen1d', function (Illuminate\Http\Request $request) {
-    $message = "Hai, ini pesan nya";
-    $phoneNumbers = [
-        '6285925007446', '6285158039855'
-    ];
+// Cetak Barang Masuk
+Route::get('/trx-barang-masuk/cetak/{id}', [ActionController::class, 'cetakBarangMasuk'])
+->name('trx-barang-masuk.cetak');
 
-    $responses = [];
-
-    foreach ($phoneNumbers as $number) {
-
-        $response = Http::post('https://wa-laundry-production.up.railway.app/send-message', [
-            'number' => '6285925007446',
-            'message' => $message,
-        ]);
-
-        if ($response->successful()) {
-            $responses[] = [
-                'status' => 'success',
-                'message' => 'Pesan terkirim!',
-                'number' => $number,
-                'message_content' => $message,
-            ];
-        } else {
-            $responses[] = [
-                'status' => 'failed',
-                'message' => 'Gagal mengirim pesan.',
-                'number' => $number,
-                'message_content' => $message,
-            ];
-        }
-    }
-
-    return response()->json($responses);
+    // Generate Reports
+    Route::get('/report-transaksi/generate', [ReportController::class, 'generate'])
+        ->name('report.generate');
+    Route::get('/report-barang/generate', [ReportBarangController::class, 'generate'])
+        ->name('report-barang.generate');
 });
 
 
 
 
-Route::get('/send', function (Illuminate\Http\Request $request) {
-    $message = "Hai, ini pesan nya";
-    $phoneNumbers = [
-        '6285925007446', '6285158039855'
-    ];
-
-    $responses = [];
-
-    foreach ($phoneNumbers as $number) {
-        // Kirim request POST ke API eksternal
-        try {
-            // Misalnya API mengharuskan Anda mengirim data dalam format JSON
-            $response = Http::post('https://wa-laundry-production.up.railway.app/send-message', [
-                'phone_number' => $number,  // Nomor telepon yang menerima pesan
-                'message' => $message,      // Isi pesan
-            ]);
-
-            // Cek apakah request berhasil
-            if ($response->successful()) {
-                $responses[] = [
-                    'status' => 'success',
-                    'message' => 'Pesan terkirim!',
-                    'number' => $number,
-                    'message_content' => $message,
-                ];
-            } else {
-                // Jika gagal, log detail error dan respons
-                Log::error('Gagal mengirim pesan', [
-                    'number' => $number,
-                    'response' => $response->body(),
-                ]);
-                $responses[] = [
-                    'status' => 'failed',
-                    'message' => 'Gagal mengirim pesan.',
-                    'number' => $number,
-                    'message_content' => $message,
-                    'error_details' => $response->body(),
-                ];
-            }
-        } catch (\Exception $e) {
-            // Tangani error jika API tidak dapat dijangkau
-            Log::error('Terjadi kesalahan saat menghubungi API', [
-                'number' => $number,
-                'error' => $e->getMessage(),
-            ]);
-            $responses[] = [
-                'status' => 'failed',
-                'message' => 'Terjadi kesalahan saat menghubungi API.',
-                'number' => $number,
-                'message_content' => $message,
-                'error_details' => $e->getMessage(),
-            ];
-        }
-    }
-
-    return response()->json($responses);
-});
 
 Route::get('/transaksi/{id}/image', function ($id) {
     $transaksi = Transaksi::with(['pelanggan', 'paket', 'point', 'detailTransaksi'])->findOrFail($id);

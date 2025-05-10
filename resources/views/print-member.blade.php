@@ -2,86 +2,155 @@
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Card</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kartu Member</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         @page {
             size: 85.6mm 54mm;
             margin: 0;
         }
 
+        html,
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            min-height: 100vh;
         }
 
-        .card {
-            width: 85.6mm;
-            height: 54mm;
-            background: #e9d8fd;
-            border-radius: 8px;
-            border: 2px solid #9f7aea;
-            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            font-family: Arial, sans-serif;
+        .card-size {
+            width: 161.2mm;
+            /* sebelumnya 85.6mm */
+            height: 98mm;
+            /* sebelumnya 54mm */
         }
 
-        .header {
-            text-align: center;
-            font-size: 12px;
-            font-weight: bold;
-            color: #333;
+        .no-print {
+            display: none;
         }
 
-        .info {
-            font-size: 10px;
-            color: #444;
-            line-height: 1.5;
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                width: 85.6mm;
+                height: 54mm;
+            }
+
+            .print-container {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
         }
 
-        .box {
-            display: inline-block;
-            background: white;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 8px;
-            color: #555;
-            font-weight: bold;
+        .card-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
     </style>
 </head>
 
-<body>
-    <div class="card">
-        <!-- Header -->
-        <div class="header">CUSTOMER CARD</div>
+<body class="bg-gray-100 min-h-screen">
+    <div class="print-container min-h-screen w-full flex flex-col items-center justify-center p-4">
+        <!-- Card Container with Responsive Centering -->
+        <div class="max-w-xl w-full flex flex-col items-center justify-center">
+            <!-- Card -->
+            <div id="card-container"
+                class="card-size bg-green-500 rounded-xl overflow-hidden p-4 text-white font-sans relative shadow-lg card-pattern">
 
-        <!-- Informasi Pelanggan -->
-        <div class="info">
-            <p>ID Pelanggan: <span class="box">{{ $pelanggan->id_pelanggan }}</span></p>
-            <p>Nama: <span class="box">{{ $pelanggan->nama_pelanggan }}</span></p>
-            <p>Telepon: <span class="box">{{ $pelanggan->no_telp }}</span></p>
-        </div>
+                <!-- Title -->
+                <div class="text-center relative z-10">
+                    <h1 class="text-xl font-bold uppercase tracking-wider">Good Laundry</h1>
+                    <p class="text-xs">Member</p>
+                </div>
 
-        <!-- Footer -->
-        <div class="footer">
-            <p>GOOD LAUNDRY - KEDONGANAN</p>
-            <p>Jl. Raya Uluwatu, Kelan, Kedonganan, Kuta, Badung, Bali.</p>
+                <!-- Divider -->
+                <div class="border-t border-white/30 my-2"></div>
+
+                <!-- Data Table -->
+                <div class="bg-white/10 rounded-lg p-2.5">
+                    <table class="w-full text-sm">
+                        <tr>
+                            <th class="text-left py-1 font-medium text-white/90">ID Pelanggan</th>
+                            <td class="py-1 font-semibold">{{ $pelanggan->id_pelanggan }}</td>
+                        </tr>
+                        <tr class="border-t border-white/10">
+                            <th class="text-left py-1 font-medium text-white/90">Nama</th>
+                            <td class="py-1 font-semibold">{{ $pelanggan->nama_pelanggan }}</td>
+                        </tr>
+                        <tr class="border-t border-white/10">
+                            <th class="text-left py-1 font-medium text-white/90">Telepon</th>
+                            <td class="py-1 font-semibold">{{ $pelanggan->no_telp }}</td>
+                        </tr>
+                        <tr class="border-t border-white/10">
+                            <th class="text-left py-1 font-medium text-white/90">Bergabung</th>
+                            <td class="py-1 font-semibold">
+                                {{ \Carbon\Carbon::parse($pelanggan->created_at)->format('d M Y') }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Buttons - Responsive Layout -->
+            <div class="flex flex-wrap justify-center gap-3 mt-6 no-print">
+                <button onclick="history.back()"
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded shadow flex items-center gap-2 transition-colors">
+                    <i class="fas fa-arrow-left"></i><span>Kembali</span>
+                </button>
+                <button onclick="window.print()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow flex items-center gap-2 transition-colors">
+                    <i class="fas fa-print"></i><span>Cetak</span>
+                </button>
+                <button onclick="downloadAsImage()"
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow flex items-center gap-2 transition-colors">
+                    <i class="fas fa-download"></i><span>Download Gambar</span>
+                </button>
+            </div>
         </div>
     </div>
+
+    <script>
+        function downloadAsImage() {
+            const card = document.getElementById('card-container');
+            html2canvas(card, {
+                scale: 3,
+                useCORS: true,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `kartu-member-{{ $pelanggan->id_pelanggan }}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
 </body>
 
 </html>

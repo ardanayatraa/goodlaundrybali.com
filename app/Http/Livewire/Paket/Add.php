@@ -8,14 +8,13 @@ use App\Models\UnitPaket;
 
 class Add extends Component
 {
-    public $jenis_paket, $harga, $unit, $waktu_pengerjaan, $id_unit_paket;
+    public $jenis_paket, $harga, $waktu_pengerjaan, $id_unit_paket;
     public $searchUnitPaket = '';
     public $focusedUnitPaket = false;
 
     protected $rules = [
         'jenis_paket' => 'required|string|max:50',
         'harga' => 'required|numeric|min:0',
-        'unit' => 'required|string|max:10',
         'waktu_pengerjaan' => 'required|string|max:50',
         'id_unit_paket' => 'required',
     ];
@@ -38,7 +37,6 @@ class Add extends Component
         Paket::create([
             'jenis_paket' => $this->jenis_paket,
             'harga' => $this->harga,
-            'unit' => $this->unit,
             'waktu_pengerjaan' => $this->waktu_pengerjaan,
             'id_unit_paket' => $this->id_unit_paket,
         ]);
