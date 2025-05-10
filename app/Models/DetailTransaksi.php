@@ -11,11 +11,20 @@ class DetailTransaksi extends Model
 
     protected $primaryKey = 'id_detail_transaksi';
     protected $fillable = [
-        'id_transaksi', 'tanggal_transaksi', 'nama_pelanggan', 'alamat', 'no_telp',
-        'metode_pembayaran', 'status_pembayaran', 'status_transaksi', 'tanggal_ambil',
-        'jenis_paket', 'berat', 'harga', 'total_harga', 'total_diskon'
+       'id_transaksi',
+       'tanggal_ambil',
+       'jam_ambil',
+       'jumlah',
+       'total_diskon',
+       'keterangan',
     ];
 
+    /**
+     * Relasi ke tabel transaksis.
+     * Mengembalikan transaksi yang terkait dengan detail transaksi ini.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function transaksi()
     {
         return $this->belongsTo(Transaksi::class, 'id_transaksi');

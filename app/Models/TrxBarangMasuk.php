@@ -9,17 +9,29 @@ class TrxBarangMasuk extends Model
 {
     use HasFactory;
 
-    protected $table = 'trx_barang_masuk';
+    protected $table = 'trx_barang_masuks';
     protected $primaryKey = 'id_trx_brgmasuk';
-    protected $fillable = ['id_barang', 'tanggal_masuk', 'nama_admin', 'total_harga'];
+    protected $fillable = ['id_barang', 'tanggal_masuk','harga','total_harga', 'id_admin', 'jumlah_brgmasuk'];
 
+    /**
+     * Relasi ke tabel barangs.
+     * Mengembalikan barang yang terkait dengan transaksi barang masuk ini.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'id_barang');
     }
 
-    public function detailTrxBarangMasuk()
+    /**
+     * Relasi ke tabel admins.
+     * Mengembalikan admin yang terkait dengan transaksi barang masuk ini.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function admin()
     {
-        return $this->hasMany(DetailTrxBarangMasuk::class, 'id_trx_brgmasuk');
+        return $this->belongsTo(Admin::class, 'id_admin');
     }
 }

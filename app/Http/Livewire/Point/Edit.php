@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Http\Livewire\Point;
+
+use Livewire\Component;
+use App\Models\Point;
+
+class Edit extends Component
+{
+    public $id_point, $id_pelanggan, $tanggal, $jumlah_point;
+    public $searchPelanggan = '', $focusedPelanggan = false;
+
+    protected $rules = [
+        'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
+        'tanggal' => 'required|date',
+        'jumlah_point' => 'required|integer|min:0',
+    ];
+
+    /**
+     * Menginisialisasi data point berdasarkan ID point.
+     *
+     * @param int $id_point
+     * @return void
+     */
+    public function mount($id_point)
+    {
+        $point = Point::findOrFail($id_point);
+        $this->id_point = $point->id_point;
+        $this->id_pelanggan = $point->id_pelanggan;
+        $this->tanggal = $point->tanggal;
+        $this->jumlah_point = $point->jumlah_point;
+    }
+
+    /**
+     * Memperbarui data point di database.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update()
+    {
+        $this->validate();
+
+        Point::where('id_point', $this->id_point)->update([
+            'id_pelanggan' => $this->id_pelanggan,
+            'tanggal' => $this->tanggal,
+            'jumlah_point' => $this->jumlah_point,
+        ]);
+
+        return redirect('/point');
+    }
+
+    /**
+     * Merender tampilan komponen Livewire.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function render()
+    {
+        return view('livewire.point.edit', [
+            'pelanggans' => \App\Models\Pelanggan::where('nama_pelanggan', 'like', '%' . $this->searchPelanggan . '%')
+                                ->limit(5)
+                                ->get(),
+        ]);
+    }
+}
