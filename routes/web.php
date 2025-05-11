@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transaksi;
 use App\Http\Controllers\ReportController;
+use Spatie\Browsershot\Browsershot;
 
 /*
 |--------------------------------------------------------------------------
@@ -205,3 +206,71 @@ Route::get('/transaksi/{id}/image', function ($id) {
 
     return view('transaksi.template', compact('transaksi'));
 })->name('transaksi.image');
+
+
+Route::get('/g', function () {
+    // Dummy data untuk transaksi
+    $transaksi = (object)[
+        'id_transaksi' => '123456',
+        'tanggal_transaksi' => now(),
+        'metode_pembayaran' => 'Qris',
+        'status_pembayaran' => 'lunas',
+        'point' => (object)[
+            'jumlah' => 10
+        ],
+        'keterangan' => 'Pembayaran berhasil',
+        'total_harga' => 150000,
+        'detailTransaksi' => [
+            (object)[
+                'jumlah' => 2,
+                'total_diskon' => 10000
+            ]
+        ]
+    ];
+
+    // Render HTML dari view Blade
+    $htmlContent = view('transaksi.test', ['transaksi' => 1])->render();
+
+    // Tentukan path untuk menyimpan gambar
+    $filePath = storage_path('app/public/struk-laundry.jpg');
+
+    // Konversi HTML ke JPG
+    Browsershot::html($htmlContent)
+        ->setOption('width', 768) // Tentukan lebar gambar
+        ->setOption('height', 1024) // Tentukan tinggi gambar
+        ->setOption('fullPage', true) // Tangkap seluruh halaman
+        ->save($filePath);
+
+
+});
+
+
+
+
+Route::get('/send-test', function () {
+    // Data yang akan dikirim ke bot
+    $payload = [
+        'number'  => '6285172003970',           // ganti dengan nomor tujuan
+        'message' => 'Ini pesan test dari Laravel',
+         'mediaUrl' =>"http://127.0.0.1:8000/storage/transaksi_10.png"
+    ];
+
+    // Panggil API WhatsApp Bot
+    $response = Http::post('http://13.211.150.196/send-message', $payload);
+
+    // Cek apakah sukses
+    if ($response->successful()) {
+        return response()->json([
+            'status'  => 'ok',
+            'message' => 'Pesan terkirim',
+            'data'    => $response->json()
+        ]);
+    }
+
+    // Kalau error
+    return response()->json([
+        'status'  => 'error',
+        'message' => 'Gagal kirim pesan',
+        'error'   => $response->body()
+    ], $response->status());
+});
