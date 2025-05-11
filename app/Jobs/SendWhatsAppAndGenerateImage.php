@@ -12,6 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Models\Transaksi;
+use Spatie\Browsershot\Browsershot;
 
 class SendWhatsAppAndGenerateImage implements ShouldQueue
 {
@@ -26,53 +27,48 @@ class SendWhatsAppAndGenerateImage implements ShouldQueue
         $this->transaksi = $transaksi;
     }
 
-    public function handle()
-    {
-        $transaksi = $this->transaksi;
+public function handle()
+{
+    $transaksi = $this->transaksi;
 
-        // Generate image
-        $apiUrl = env('HTML_TO_IMAGE_API');
-        $url = route('transaksi.image', ['id' => $transaksi->id_transaksi], true);
-        $filename = 'transaksi_' . $transaksi->id_transaksi . '.png';
+    $htmlContent = view('transaksi.template', ['transaksi' => $transaksi])->render();
+    $filename = 'transaksi_' . $transaksi->id_transaksi . '.png';
+    $filePath = storage_path('app/public/' . $filename);
 
-        try {
-            $client = new Client(['timeout' => 60]);
-            $response = $client->post($apiUrl, [
-                'headers' => ['Content-Type' => 'application/json'],
-                'json' => [
-                    'url' => $url,
-                    'width' => 720,
-                    'height' => 1280,
-                    'format' => 'png'
-                ]
-            ]);
+    try {
+        // Generate gambar
+        Browsershot::html($htmlContent)
+            ->windowSize(720, 1280)
+            ->setOption('fullPage', true)
+            ->save($filePath);
 
-            if ($response->getStatusCode() === 200) {
-                Storage::disk('public')->put($filename, $response->getBody()->getContents());
-                Log::info("Gambar berhasil disimpan: storage/app/public/{$filename}");
-            } else {
-                Log::error("Gagal generate gambar: " . $response->getBody()->getContents());
-                return;
-            }
-        } catch (\Exception $e) {
-            Log::error('Error API HTML to Image: ' . $e->getMessage());
+        if (!file_exists($filePath)) {
+            Log::error("Gagal generate gambar: file $filePath tidak ditemukan.");
             return;
         }
-
-        // Send WhatsApp message
+sleep(5);
+        // Kirim ke WA
         $number = $transaksi->pelanggan->no_telp;
         $message = "Halo *{$transaksi->pelanggan->nama_pelanggan}*, laundry Anda sudah siap diambil! 🚀";
 
-        try {
-            $response = Http::post(env('WA_API_URL') . '/send-message', [
-                'number' => $number,
-                'message' => $message,
-                'mediaUrl' => env('APP_URL') . '/storage/' . $filename
-            ]);
+        $response = Http::post(env('WA_API_URL') . '/send-message', [
+            'number' => $number,
+            'message' => $message,
+            'mediaUrl' => env('APP_URL') . '/storage/' . $filename,
+        ]);
 
+        if ($response->successful()) {
             Log::info('WA Response:', $response->json());
-        } catch (\Exception $e) {
-            Log::error('WA Error: ' . $e->getMessage());
+
+            // Hapus file setelah sukses kirim
+            unlink($filePath);
+            Log::info("File $filename berhasil dihapus.");
+        } else {
+            Log::error("Gagal kirim WA. Status: {$response->status()}", $response->json());
         }
+    } catch (\Exception $e) {
+        Log::error('Terjadi error di job WA: ' . $e->getMessage());
     }
+}
+
 }
