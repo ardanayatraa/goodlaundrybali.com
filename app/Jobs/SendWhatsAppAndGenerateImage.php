@@ -21,6 +21,8 @@ class SendWhatsAppAndGenerateImage implements ShouldQueue
 
     public function __construct(Transaksi $transaksi)
     {
+
+
         $this->transaksi = $transaksi;
     }
 
