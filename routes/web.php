@@ -85,16 +85,7 @@ Route::middleware('admin')->group(function () {
         return view('page.pelanggan.edit', compact('id'));
     })->name('pelanggan.edit');
 
-    // Point
-    Route::get('/point', function () {
-        return view('page.point.index');
-    })->name('point');
-    Route::get('/point/add', function () {
-        return view('page.point.add');
-    })->name('point.add');
-    Route::get('/point/edit/{id}', function ($id) {
-        return view('page.point.edit', compact('id'));
-    })->name('point.edit');
+
 
     // Transaksi
     Route::get('/transaksi', function () {
@@ -202,11 +193,14 @@ Route::get('/trx-barang-masuk/cetak/{id}', [ActionController::class, 'cetakBaran
 
 
 Route::get('/transaksi/{id}/image', function ($id) {
-    $transaksi = Transaksi::with(['pelanggan', 'paket', 'point', 'detailTransaksi'])->findOrFail($id);
+    $transaksi = Transaksi::with([
+        'pelanggan',
+        'point',
+        'detailTransaksi.paket.unitPaket'  // load paket & unit
+    ])->findOrFail($id);
 
     return view('transaksi.template', compact('transaksi'));
 })->name('transaksi.image');
-
 
 Route::get('/g', function () {
     // Dummy data untuk transaksi

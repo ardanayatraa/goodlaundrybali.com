@@ -9,238 +9,181 @@ use App\Models\Pelanggan;
 use App\Models\Point;
 use App\Models\Paket;
 use Carbon\Carbon;
-use Intervention\Image\Facades\Image;
 
 class Add extends Component
 {
-    public $id_pelanggan, $jumlah_point, $id_paket, $tanggal_transaksi, $total_harga, $metode_pembayaran, $status_pembayaran, $status_transaksi='Diproses';
-    public $tanggal_ambil, $jam_ambil, $jumlah, $total_diskon=0, $keterangan;
-    public $searchPelanggan = '', $searchPaket = '';
-    public $focusedPelanggan = false, $focusedPaket = false;
-    public $usePointCheckbox = false; // Tracks the state of the checkbox
+    // pencarian pelanggan
+    public $searchPelanggan = '';
+    public $focusedPelanggan = false;
+    public $id_pelanggan;
+
+    // transaksi & pembayaran
+    public $tanggal_transaksi;
+    public $metode_pembayaran;
+    public $status_pembayaran;
+    public $status_transaksi = 'Diproses';
+    public $keterangan;
+
+    // pickup global / per-item
+    public $samePickup = true;
+    public $globalTanggalAmbil;
+    public $globalJamAmbil;
+
+    // poin & diskon
+    public $jumlah_point   = 0;
+    public $pointsToRedeem = 0;
+    public $total_diskon   = 0;
+
+    // total harga
+    public $total_harga = 0;
+
+    // items paket
+    public $items = [];
 
     protected $rules = [
-        'id_pelanggan' => 'required|exists:pelanggans,id_pelanggan',
-        'id_paket' => 'required|exists:pakets,id_paket',
-        'tanggal_transaksi' => 'required|date',
-        'total_harga' => 'required|numeric',
-        'metode_pembayaran' => 'required|string|max:50',
-        'status_pembayaran' => 'required|string|max:50',
-        'status_transaksi' => 'required|string|max:50',
-        'jumlah_point' => 'nullable|integer',
-        'tanggal_ambil' => 'required|date',
-        'jam_ambil' => 'required|date_format:H:i',
-        'jumlah' => 'required|integer',
-        'total_diskon' => 'nullable|numeric',
-        'keterangan' => 'nullable|string|max:255',
+        'id_pelanggan'         => 'required|exists:pelanggans,id_pelanggan',
+        'tanggal_transaksi'    => 'required|date',
+        'metode_pembayaran'    => 'required|string',
+        'status_pembayaran'    => 'required|string',
+        'status_transaksi'     => 'required|string',
+        'items'                => 'required|array|min:1',
+        'items.*.id_paket'     => 'required|exists:pakets,id_paket',
+        'items.*.jumlah'       => 'required|integer|min:1',
     ];
 
-    /**
-     * Memperbarui jumlah poin pelanggan berdasarkan id_pelanggan yang dipilih.
-     */
+    public function mount()
+    {
+        $this->globalTanggalAmbil = now()->format('Y-m-d');
+        $this->globalJamAmbil     = now()->format('H:i');
+        $this->addItem();
+    }
+
     public function updatedIdPelanggan()
     {
-        // Automatically fetch the latest jumlah_point for the selected pelanggan
-        $this->jumlah_point = Point::where('id_pelanggan', $this->id_pelanggan)->latest('tanggal')->value('jumlah_point');
-    }
-
-    /**
-     * Menghitung total harga ketika id_paket diperbarui.
-     */
-    public function updatedIdPaket()
-    {
+      $this->jumlah_point = Pelanggan::find($this->id_pelanggan)?->point ?? 0;
+        $this->pointsToRedeem = $this->total_diskon = 0;
         $this->calculateTotalHarga();
     }
 
-    /**
-     * Menghitung total harga ketika jumlah diperbarui.
-     */
-    public function updatedJumlah()
+    public function updated($name, $value)
     {
-        $this->calculateTotalHarga();
-    }
-
-    /**
-     * Mengatur diskon berdasarkan penggunaan poin ketika checkbox diperbarui.
-     */
-    public function updatedUsePointCheckbox()
-    {
-        if ($this->usePointCheckbox) {
-            $this->applyPoints();
-        } else {
-            $this->total_diskon = 0; // Reset discount if checkbox is unchecked
+        if (preg_match('/^items\.(\d+)\.(\w+)$/', $name, $m)) {
+            [$all, $i, $field] = $m;
+            if ($field === 'id_paket') {
+                $paket = Paket::find($value);
+                $this->items[$i]['harga'] = $paket?->harga ?? 0;
+            }
+            $j = $this->items[$i]['jumlah']  ?? 1;
+            $h = $this->items[$i]['harga']   ?? 0;
+            $this->items[$i]['subtotal'] = $j * $h;
             $this->calculateTotalHarga();
         }
     }
 
-    /**
-     * Menerapkan diskon berdasarkan poin yang dimiliki pelanggan.
-     */
-    private function applyPoints()
+    public function addItem()
     {
-        if ($this->jumlah_point >= 10) {
-            $pointsToRedeem = floor($this->jumlah_point / 10) * 10; // Redeemable points in multiples of 10
-            $discount = ($pointsToRedeem / 10) * 10000; // Calculate discount
-            $this->total_diskon = $discount;
-            $this->calculateTotalHarga();
-        } else {
-            $this->usePointCheckbox = false; // Uncheck the checkbox if points are insufficient
-            session()->flash('error', 'Jumlah poin tidak mencukupi untuk mendapatkan diskon.');
-        }
+        $this->items[] = [
+            'id_paket'      => null,
+            'jumlah'        => 1,
+            'harga'         => 0,
+            'subtotal'      => 0,
+            'tanggal_ambil' => null,
+            'jam_ambil'     => null,
+        ];
     }
 
-    /**
-     * Menghitung total harga transaksi berdasarkan paket dan jumlah.
-     */
+    public function removeItem($idx)
+    {
+        unset($this->items[$idx]);
+        $this->items = array_values($this->items);
+        $this->calculateTotalHarga();
+    }
+
     private function calculateTotalHarga()
     {
-        if ($this->id_paket && $this->jumlah) {
-            $paket = Paket::find($this->id_paket);
-            if ($paket) {
-                $this->total_harga = $this->jumlah * $paket->harga;
-
-                // Apply discount if points are used
-                if ($this->total_diskon) {
-                    $this->total_harga -= $this->total_diskon;
-                }
-            } else {
-                $this->total_harga = 0;
-            }
-        } else {
-            $this->total_harga = 0;
-        }
+        $sum = array_sum(array_column($this->items, 'subtotal'));
+        $this->total_harga = $sum - $this->total_diskon;
     }
 
-    /**
-     * Menggunakan poin pelanggan untuk mendapatkan diskon.
-     */
     public function usePoints()
     {
         if ($this->jumlah_point >= 10) {
-            $pointsToRedeem = floor($this->jumlah_point / 10) * 10; // Redeemable points in multiples of 10
-            $discount = ($pointsToRedeem / 10) * 10000; // Calculate discount
-            $this->total_diskon = $discount;
-
-            // Deduct redeemed points from the database
-            $pointRecord = Point::where('id_pelanggan', $this->id_pelanggan)->latest('tanggal')->first();
-            if ($pointRecord) {
-                $pointRecord->decrement('jumlah_point', $pointsToRedeem);
-                $this->jumlah_point = $pointRecord->jumlah_point; // Update the local property with the new value
-            }
-
-            session()->flash('success', "Berhasil menggunakan $pointsToRedeem poin untuk potongan Rp $discount.");
+            $this->pointsToRedeem = floor($this->jumlah_point / 10) * 10;
+            $this->total_diskon   = ($this->pointsToRedeem / 10) * 10000;
+            $this->calculateTotalHarga();
+            session()->flash('success', "Pakai {$this->pointsToRedeem} poin → diskon Rp " . number_format($this->total_diskon,0,',','.'));
         } else {
-            session()->flash('error', 'Jumlah poin tidak mencukupi untuk mendapatkan diskon.');
+            session()->flash('error', 'Poin minimal 10.');
         }
-
-        // Recalculate total_harga after applying discount
-        $this->calculateTotalHarga();
     }
 
-    /**
-     * Menyimpan data transaksi ke dalam database.
-     */
     public function save()
     {
-        $this->validate(); // Ensure all fields, including id_paket, are validated
+        $this->items = array_values(array_filter($this->items, fn($r) => !is_null($r['id_paket'])));
 
-        if (is_null($this->id_paket)) {
-            session()->flash('error', 'Paket harus dipilih sebelum menyimpan transaksi.');
-            return;
+        $rules = $this->rules;
+        if ($this->samePickup) {
+            $rules['globalTanggalAmbil'] = 'required|date';
+            $rules['globalJamAmbil']     = 'required|date_format:H:i';
+        } else {
+            $rules['items.*.tanggal_ambil'] = 'required|date';
+            $rules['items.*.jam_ambil']     = 'required|date_format:H:i';
         }
+        $this->validate($rules);
 
+        \DB::beginTransaction();
         try {
-            // Fetch the selected paket
-            $paket = Paket::find($this->id_paket);
-
-            if (!$paket) {
-                session()->flash('error', 'Paket tidak ditemukan.');
-                return;
-            }
-
-            // Calculate total_harga
-            $this->total_harga = $this->jumlah * $paket->harga;
-
-            // Apply discount if available
-            if ($this->total_diskon) {
-                $this->total_harga -= $this->total_diskon;
-            }
-
-            // Start a database transaction
-            \DB::beginTransaction();
-
-            // Create the Transaksi record
-            $transaksi = Transaksi::create([
-                'id_pelanggan' => $this->id_pelanggan,
-                'id_paket' => $this->id_paket,
+            $trx = Transaksi::create([
+                'id_pelanggan'      => $this->id_pelanggan,
                 'tanggal_transaksi' => $this->tanggal_transaksi,
-                'total_harga' => $this->total_harga,
+                'total_harga'       => $this->total_harga,
                 'metode_pembayaran' => $this->metode_pembayaran,
                 'status_pembayaran' => $this->status_pembayaran,
-                'status_transaksi' => $this->status_transaksi,
-                'jumlah_point' => $this->jumlah_point,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'status_transaksi'  => $this->status_transaksi,
+                'keterangan'  => $this->keterangan,
+                'jumlah_point'      => $this->jumlah_point,
+                'created_at'        => Carbon::now(),
+                'updated_at'        => Carbon::now(),
             ]);
 
-
-            // Create the DetailTransaksi record
-            $detailTransaksi = DetailTransaksi::create([
-                'id_transaksi' => $transaksi->id_transaksi, // Use the generated id from Transaksi
-                'tanggal_ambil' => $this->tanggal_ambil,
-                'jam_ambil' => $this->jam_ambil,
-                'jumlah' => $this->jumlah,
-                'total_diskon' => $this->total_diskon,
-                'keterangan' => $this->keterangan,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-
-            // Deduct points from the points table
-            if ($this->usePointCheckbox && $this->jumlah_point >= 10) {
-                $pointsToRedeem = floor($this->jumlah_point / 10) * 10; // Redeemable points in multiples of 10
-                Point::where('id_pelanggan', $this->id_pelanggan)
-                    ->latest('tanggal')
-                    ->first()
-                    ->decrement('jumlah_point', $pointsToRedeem);
+            foreach ($this->items as $row) {
+                DetailTransaksi::create([
+                    'id_transaksi'  => $trx->id_transaksi,
+                    'id_paket'      => $row['id_paket'],
+                    'tanggal_ambil' => $this->samePickup ? $this->globalTanggalAmbil : $row['tanggal_ambil'],
+                    'jam_ambil'     => $this->samePickup ? $this->globalJamAmbil   : $row['jam_ambil'],
+                    'jumlah'        => $row['jumlah'],
+                    'sub_total'     => $row['subtotal'],
+                    'total_diskon'  => 0,
+                    'keterangan'    => $this->keterangan,
+                    'created_at'    => Carbon::now(),
+                    'updated_at'    => Carbon::now(),
+                ]);
             }
 
-            // Commit the transaction
+           if ($this->pointsToRedeem > 0) {
+
+                $pelanggan = Pelanggan::find($this->id_pelanggan);
+                if ($pelanggan) {
+                    $pelanggan->point = max(0, $pelanggan->point - $this->pointsToRedeem);
+                    $pelanggan->save();
+                }
+            }
+
+
             \DB::commit();
-
-            $this->reset();
-            return redirect('/transaksi');
-        } catch (\Exception $e) {
-            // Rollback the transaction in case of an error
+            return redirect()->route('transaksi');
+        } catch (\Throwable $e) {
             \DB::rollBack();
-
-            // Log the error for debugging
-            \Log::error('Error saving transaction: ' . $e->getMessage(), [
-                'id_pelanggan' => $this->id_pelanggan,
-                'id_paket' => $this->id_paket,
-                'tanggal_transaksi' => $this->tanggal_transaksi,
-                'total_harga' => $this->total_harga,
-                'metode_pembayaran' => $this->metode_pembayaran,
-                'status_pembayaran' => $this->status_pembayaran,
-                'status_transaksi' => $this->status_transaksi,
-            ]);
-
-            // Provide a detailed error message to the user
-            session()->flash('error', 'Terjadi kesalahan saat menyimpan transaksi: ' . $e->getMessage());
+            session()->flash('error', 'Gagal simpan: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Merender tampilan komponen Livewire.
-     *
-     * @return \Illuminate\View\View
-     */
     public function render()
     {
         return view('livewire.transaksi.add', [
-            'pelanggans' => Pelanggan::where('nama_pelanggan', 'like', '%' . $this->searchPelanggan . '%')->limit(5)->get(),
-            'pakets' => Paket::where('jenis_paket', 'like', '%' . $this->searchPaket . '%')->limit(5)->get(),
-            'canUsePoints' => $this->jumlah_point >= 10, // Pass whether points can be used to the view
+            'pelanggans' => Pelanggan::where('nama_pelanggan','like',"%{$this->searchPelanggan}%")->limit(5)->get(),
+            'pakets'     => Paket::all(),
         ]);
     }
 }

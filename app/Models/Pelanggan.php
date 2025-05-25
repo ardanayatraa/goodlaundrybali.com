@@ -10,7 +10,7 @@ class Pelanggan extends Model
     use HasFactory;
 
     protected $primaryKey = 'id_pelanggan';
-    protected $fillable = ['nama_pelanggan', 'no_telp', 'alamat', 'keterangan'];
+    protected $fillable = ['nama_pelanggan', 'no_telp', 'alamat', 'keterangan','point'];
 
     /**
      * Relasi ke tabel transaksis.
@@ -23,14 +23,4 @@ class Pelanggan extends Model
         return $this->hasMany(Transaksi::class, 'id_pelanggan');
     }
 
-    /**
-     * Relasi ke tabel points.
-     * Mengembalikan semua point yang terkait dengan pelanggan ini.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function points()
-    {
-        return $this->hasMany(Point::class, 'id_pelanggan');
-    }
 }

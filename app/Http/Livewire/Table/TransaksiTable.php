@@ -10,6 +10,9 @@ class TransaksiTable extends LivewireDatatable
 {
     public $model = Transaksi::class;
     public $selectedTransaksiId, $selectedStatus, $modalType = '';
+    public $filterTanggal;
+    public $filterPembayaran;
+    public $filterTransaksi;
 
     protected $listeners = ['refreshLivewireDatatable' => '$refresh'];
 
@@ -20,7 +23,18 @@ class TransaksiTable extends LivewireDatatable
      */
     public function builder()
     {
-        return Transaksi::query()->with('pelanggan');
+
+        return Transaksi::query()
+            ->with('pelanggan')
+            ->when($this->filterTanggal, fn($q) =>
+                $q->whereDate('tanggal_transaksi', $this->filterTanggal)
+            )
+            ->when($this->filterPembayaran, fn($q) =>
+                $q->where('status_pembayaran', $this->filterPembayaran)
+            )
+            ->when($this->filterTransaksi, fn($q) =>
+                $q->where('status_transaksi', $this->filterTransaksi)
+            );
     }
 
     /**
@@ -46,7 +60,7 @@ class TransaksiTable extends LivewireDatatable
             ->sortable()
             ->searchable(),
             Column::name('total_harga')->label('Total Harga (Rp)')->sortable()->searchable(),
-
+            Column::name('keterangan')->label('Keterangan')->sortable()->searchable()->editable(),
             Column::callback(['id_transaksi', 'status_pembayaran'], function ($id, $status) {
                 return view('components.table-transaksi-pembayaran', compact('id', 'status'));
             })

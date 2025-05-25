@@ -13,14 +13,19 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id('id_transaksi');
-            $table->foreignId('id_pelanggan');
-            $table->foreignId('id_point')->nullable();
-            $table->foreignId('id_paket');
+            $table->foreignId('id_pelanggan')
+                  ->constrained('pelanggans', 'id_pelanggan')
+                  ->cascadeOnDelete();
+            $table->foreignId('id_point')
+                  ->nullable()
+                  ->constrained('points', 'id_point')
+                  ->nullOnDelete();
             $table->date('tanggal_transaksi');
             $table->decimal('total_harga', 12, 2);
             $table->string('metode_pembayaran', 50);
             $table->string('status_pembayaran', 50);
             $table->string('status_transaksi', 50);
+            $table->string('keterangan', 50)->default('Non Qris')->nullable();
             $table->integer('jumlah_point');
             $table->timestamps();
         });

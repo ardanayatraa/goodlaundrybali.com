@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('no_telp', 50);
             $table->string('alamat', 50);
             $table->string('keterangan', 50);
+            $table->integer('point')->default(0);
             $table->timestamps();
         });
     }

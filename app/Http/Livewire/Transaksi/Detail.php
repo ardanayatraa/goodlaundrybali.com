@@ -5,7 +5,6 @@ namespace App\Http\Livewire\Transaksi;
 use Livewire\Component;
 use App\Models\Transaksi;
 
-
 class Detail extends Component
 {
     /**
@@ -16,7 +15,7 @@ class Detail extends Component
     public $transaksiId;
 
     /**
-     * Model Transaksi dengan relasi pelanggan, paket, dan detailTransaksi.
+     * Model Transaksi beserta relasi pelanggan dan detailTransaksi->paket.
      *
      * @var \App\Models\Transaksi
      */
@@ -25,25 +24,18 @@ class Detail extends Component
     /**
      * Inisialisasi komponen dengan ID transaksi.
      *
-     * @param int $transaksiId ID transaksi yang diberikan dari route
-     * @return void
-     *
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
-     *         Jika transaksi dengan ID tersebut tidak ditemukan.
+     * @param int $transaksiId
      */
     public function mount($transaksiId)
     {
         $this->transaksiId = $transaksiId;
-        // Muat transaksi beserta relasi pelanggan, paket, dan detailTransaksi
-        $this->transaksi = Transaksi::with(['pelanggan', 'paket', 'detailTransaksi'])
+        $this->transaksi = Transaksi::with([
+                'pelanggan',
+                'detailTransaksi.paket'
+            ])
             ->findOrFail($this->transaksiId);
     }
 
-    /**
-     * Render view untuk komponen ini.
-     *
-     * @return \Illuminate\View\View
-     */
     public function render()
     {
         return view('livewire.transaksi.detail');

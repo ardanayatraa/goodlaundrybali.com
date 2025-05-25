@@ -19,6 +19,10 @@
                     <th class="px-6 py-4 text-left font-medium text-gray-700">Nama Barang</th>
                     <td class="px-6 py-4">{{ $masuk->barang->nama_barang }}</td>
                 </tr>
+                <tr class="bg-gray-50">
+                    <th class="px-6 py-4 text-left font-medium text-gray-700">Unit</th>
+                    <td class="px-6 py-4">{{ $masuk->barang->unit->nama_unit }}</td>
+                </tr>
                 <tr>
                     <th class="px-6 py-4 text-left font-medium text-gray-700">Tanggal Masuk</th>
                     <td class="px-6 py-4">{{ \Carbon\Carbon::parse($masuk->tanggal_masuk)->format('d M Y') }}</td>

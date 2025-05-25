@@ -9,7 +9,6 @@
         body {
             font-family: Arial, sans-serif;
             font-size: 18px;
-            /* Further increased font size */
             padding: 20px;
             border: 1px solid #ccc;
         }
@@ -31,8 +30,11 @@
         .alamat {
             text-align: center;
             font-size: 18px;
-            /* Further increased font size */
             margin-bottom: 15px;
+        }
+
+        hr {
+            margin: 10px 0;
         }
 
         table {
@@ -45,7 +47,6 @@
         th {
             padding: 5px;
             font-size: 18px;
-            /* Further increased font size */
         }
 
         .items th,
@@ -74,6 +75,7 @@
         Kec. Kuta, Kab. Badung, Bali 80363
     </div>
     <hr>
+
     <table>
         <tr>
             <td>Id Transaksi</td>
@@ -81,7 +83,8 @@
         </tr>
         <tr>
             <td>Tanggal Transaksi</td>
-            <td>: {{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->locale('id')->translatedFormat('l, d F Y') }}
+            <td>:
+                {{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->locale('id')->translatedFormat('l, d F Y') }}
             </td>
         </tr>
         <tr>
@@ -106,7 +109,7 @@
         </tr>
         <tr>
             <td>Point Saat Ini</td>
-            <td>: {{ $transaksi->point->jumlah ?? '0' }}</td>
+            <td>: {{ $transaksi->pelanggan->point ?? '0' }}</td>
         </tr>
         <tr>
             <td>Keterangan (Qris)</td>
@@ -127,11 +130,12 @@
         <tbody>
             @foreach ($transaksi->detailTransaksi as $detail)
                 <tr>
-                    <td>{{ $transaksi->paket->jenis_paket ?? '-' }}</td>
-                    <td>{{ $transaksi->paket->unitPaket->nama_unit ?? '-' }}</td>
+                    {{-- gunakan relasi detail->paket --}}
+                    <td>{{ $detail->paket->jenis_paket }}</td>
+                    <td>{{ $detail->paket->unitPaket->nama_unit ?? $detail->paket->unit }}</td>
                     <td>{{ $detail->jumlah }}</td>
-                    <td>Rp. {{ number_format($transaksi->paket->harga ?? 0, 0, ',', '.') }}</td>
-                    <td>Rp. {{ number_format(($transaksi->paket->harga ?? 0) * $detail->jumlah, 0, ',', '.') }}</td>
+                    <td>Rp. {{ number_format($detail->paket->harga, 0, ',', '.') }}</td>
+                    <td>Rp. {{ number_format($detail->sub_total, 0, ',', '.') }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -9,73 +9,99 @@ use App\Models\Admin;
 
 class Add extends Component
 {
-    public $id_barang, $jumlah, $tanggal_masuk, $id_admin, $harga = 0, $total_harga = 0;
+    // global fields
+    public $tanggal_masuk;
+    public $id_admin;
+
+    // multi-item
+    public $items = []; // tiap elemen: ['id_barang','jumlah','harga','subtotal']
+
+    // search/autocomplete
     public $searchBarang = '', $searchAdmin = '';
     public $focusedBarang = false, $focusedAdmin = false;
 
     protected $rules = [
-        'id_barang' => 'required|exists:barangs,id_barang',
-        'jumlah' => 'required|integer|min:1',
-        'tanggal_masuk' => 'required|date',
-        'id_admin' => 'required|exists:admins,id_admin',
+        'id_admin'         => 'required|exists:admins,id_admin',
+        'tanggal_masuk'    => 'required|date',
+        'items'            => 'required|array|min:1',
+        'items.*.id_barang'=> 'required|exists:barangs,id_barang',
+        'items.*.jumlah'   => 'required|integer|min:1',
     ];
 
-    /**
-     * Fungsi ini akan dipanggil setiap properti yang di-bind diperbarui.
-     * Menghitung total harga berdasarkan jumlah dan harga barang.
-     *
-     * @param string $propertyName Nama properti yang diperbarui.
-     */
-    public function updated($propertyName)
+    public function mount()
     {
-        if (in_array($propertyName, ['id_barang', 'jumlah'])) {
-            if ($propertyName === 'id_barang' && $this->id_barang) {
-                $this->harga = Barang::find($this->id_barang)?->harga ?? 0;
+        $this->tanggal_masuk = now()->format('Y-m-d');
+        $this->addItem();
+    }
+
+    public function updated($name, $value)
+    {
+        // autocomplete admin
+        if ($name === 'id_admin') {
+            $this->searchAdmin = '';
+        }
+
+        // handle dynamic items.* fields
+        if (preg_match('/^items\.(\d+)\.(\w+)$/', $name, $m)) {
+            [$all,$i,$field] = $m;
+
+            // when id_barang changes, load harga
+            if ($field === 'id_barang') {
+                $barang = Barang::find($value);
+                $this->items[$i]['harga'] = $barang?->harga ?? 0;
             }
-            $this->total_harga = $this->jumlah * $this->harga;
+
+            // recalc subtotal
+            $j = $this->items[$i]['jumlah'] ?? 1;
+            $h = $this->items[$i]['harga']  ?? 0;
+            $this->items[$i]['subtotal'] = $j * $h;
         }
     }
 
-    /**
-     * Fungsi untuk menyimpan data barang masuk ke database.
-     * Melakukan validasi, menyimpan data, dan memperbarui stok barang.
-     *
-     * @return \Illuminate\Http\RedirectResponse Redirect ke halaman daftar barang masuk dengan pesan sukses.
-     */
+    public function addItem()
+    {
+        $this->items[] = [
+            'id_barang' => null,
+            'jumlah'    => 1,
+            'harga'     => 0,
+            'subtotal'  => 0,
+        ];
+    }
+
+    public function removeItem($idx)
+    {
+        unset($this->items[$idx]);
+        $this->items = array_values($this->items);
+    }
+
     public function save()
     {
         $this->validate();
 
-        TrxBarangMasuk::create([
-            'id_barang' => $this->id_barang,
-            'jumlah_brgmasuk' => $this->jumlah,
-            'tanggal_masuk' => $this->tanggal_masuk,
-            'harga' => $this->harga,
-            'total_harga' => $this->total_harga,
-            'id_admin' => $this->id_admin,
-        ]);
+        foreach ($this->items as $row) {
+            TrxBarangMasuk::create([
+                'id_barang'      => $row['id_barang'],
+                'jumlah_brgmasuk'=> $row['jumlah'],
+                'tanggal_masuk'  => $this->tanggal_masuk,
+                'harga'          => $row['harga'],
+                'total_harga'    => $row['subtotal'],
+                'id_admin'       => $this->id_admin,
+            ]);
 
-        Barang::find($this->id_barang)?->increment('stok', $this->jumlah);
+            Barang::find($row['id_barang'])?->increment('stok', $row['jumlah']);
+        }
 
-        $this->reset();
-        return redirect('/trx-barang-masuk')->with('success', 'Barang masuk berhasil ditambahkan dan stok diperbarui!');
+        session()->flash('success','Beberapa barang masuk berhasil disimpan.');
+        return redirect()->route('trx-barang-masuk');
     }
 
-    /**
-     * Fungsi untuk merender tampilan komponen Livewire.
-     * Mengambil data barang dan admin berdasarkan pencarian.
-     *
-     * @return \Illuminate\View\View View untuk komponen Livewire.
-     */
     public function render()
     {
         return view('livewire.trx-barang-masuk.add', [
-            'barangs' => Barang::where('nama_barang', 'like', '%' . $this->searchBarang . '%')
-                                ->limit(5) // Limit to 5 results
-                                ->get(),
-            'admins' => Admin::where('nama_admin', 'like', '%' . $this->searchAdmin . '%')
-                              ->limit(5) // Limit to 5 results
-                              ->get(),
+            'barangs' => Barang::where('nama_barang','like',"%{$this->searchBarang}%")
+                               ->limit(5)->get(),
+            'admins'  => Admin::where('nama_admin','like',"%{$this->searchAdmin}%")
+                              ->limit(5)->get(),
         ]);
     }
 }

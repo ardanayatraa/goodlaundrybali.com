@@ -13,13 +13,13 @@ class Transaksi extends Model
     protected $fillable = [
         'id_pelanggan',
         'id_point',
-        'id_paket',
         'tanggal_transaksi',
         'total_harga',
         'metode_pembayaran',
         'status_pembayaran',
         'status_transaksi',
-        'jumlah_point'
+        'jumlah_point',
+        'keterangan'
     ];
 
     /**

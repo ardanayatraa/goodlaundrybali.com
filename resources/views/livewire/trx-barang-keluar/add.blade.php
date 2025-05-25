@@ -15,7 +15,10 @@
                     @if ($id_barang)
                         <div class="mt-2 flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2 bg-white">
                             <span class="text-sm text-gray-700 flex-1">
+                                {{-- Tampilkan “Nama Barang – Unit” dengan tanda strip --}}
                                 {{ $barangs->firstWhere('id_barang', $id_barang)?->nama_barang }}
+                                &nbsp;–&nbsp;
+                                {{ $barangs->firstWhere('id_barang', $id_barang)?->unit?->nama_unit }}
                             </span>
                             <button type="button" wire:click="$set('id_barang', null)"
                                 class="text-red-500 hover:underline font-bold">
@@ -23,15 +26,16 @@
                             </button>
                         </div>
                     @else
-                        <x-input id="searchBarang" type="text" wire:model="searchBarang" class="w-full mt-2"
+                        <x-input id="searchBarang" type="text" wire:model="searchBarang"
+                            class="w-full mt-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                             placeholder="Ketik nama barang..." wire:focus="$set('focusedBarang', true)"
                             wire:blur="$set('focusedBarang', false)" />
                         @if ($focusedBarang)
-                            <ul class="mt-2 border border-gray-300 rounded-lg max-h-40 overflow-y-auto">
+                            <ul class="mt-2 border border-gray-300 rounded-lg max-h-40 overflow-y-auto bg-white z-10">
                                 @forelse ($barangs as $barang)
                                     <li class="px-4 py-2 cursor-pointer hover:bg-gray-100"
                                         wire:click="$set('id_barang', '{{ $barang->id_barang }}')">
-                                        {{ $barang->nama_barang }}
+                                        {{ $barang->nama_barang }} &nbsp;–&nbsp; {{ $barang->unit?->nama_unit }}
                                     </li>
                                 @empty
                                     <li class="px-4 py-2 text-gray-500">
@@ -45,6 +49,7 @@
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+
 
                 <div>
                     <x-label for="searchAdmin" value="Cari Admin" />

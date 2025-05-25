@@ -41,6 +41,10 @@
             <td>{{ $masuk->barang->nama_barang }}</td>
         </tr>
         <tr>
+            <th>Unit Barang</th>
+            <td>{{ $masuk->barang->unit->nama_unit }}</td>
+        </tr>
+        <tr>
             <th>Tanggal Masuk</th>
             <td>{{ \Carbon\Carbon::parse($masuk->tanggal_masuk)->format('d M Y') }}</td>
         </tr>

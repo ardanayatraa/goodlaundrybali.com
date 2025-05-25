@@ -177,11 +177,14 @@ class ActionController extends Controller
      */
     public function cetakTransaksi($id)
     {
-        // Ambil transaksi dengan relasi
-        $transaksi = Transaksi::with(['pelanggan', 'paket.unitPaket', 'detailTransaksi'])
-            ->findOrFail($id);
+        // Ambil transaksi dengan relasi pelanggan, point, dan detailTransaksi beserta paket+unit
+        $transaksi = Transaksi::with([
+            'pelanggan',
+            'point',
+            'detailTransaksi.paket.unitPaket'
+        ])->findOrFail($id);
 
-        // Muat view PDF (buat file resources/views/page/transaksi/cetak.blade.php)
+        // Muat view PDF (resources/views/pdf/transaksi-cetak.blade.php)
         $pdf = PDF::loadView('pdf.transaksi-cetak', compact('transaksi'))
             ->setPaper('a4', 'portrait');
 

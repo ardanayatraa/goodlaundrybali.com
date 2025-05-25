@@ -12,11 +12,13 @@ class DetailTransaksi extends Model
     protected $primaryKey = 'id_detail_transaksi';
     protected $fillable = [
        'id_transaksi',
-       'tanggal_ambil',
-       'jam_ambil',
-       'jumlah',
-       'total_diskon',
-       'keterangan',
+        'id_paket',
+        'tanggal_ambil',
+        'jam_ambil',
+        'jumlah',
+        'sub_total',
+        'total_diskon',
+        'keterangan',
     ];
 
     /**
@@ -28,5 +30,10 @@ class DetailTransaksi extends Model
     public function transaksi()
     {
         return $this->belongsTo(Transaksi::class, 'id_transaksi');
+    }
+
+     public function paket()
+    {
+        return $this->belongsTo(Paket::class, 'id_paket', 'id_paket');
     }
 }

@@ -10,55 +10,51 @@ class PaketTable extends LivewireDatatable
 {
     public $model = Paket::class;
 
-    /**
-     * Membangun query builder untuk tabel Paket.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
     public function builder()
     {
-        return Paket::query();
+        // siapkan relasi unitPaket
+        return Paket::query()->with('unitPaket');
     }
 
-    /**
-     * Mendefinisikan kolom-kolom yang akan ditampilkan di tabel.
-     *
-     * @return array
-     */
     public function columns()
     {
         return [
             Column::name('id_paket')
-                ->label('ID Paket')
-                ->defaultSort('asc'),
+                  ->label('ID Paket')
+                  ->defaultSort('asc'),
 
             Column::name('jenis_paket')
-                ->label('Jenis Paket')
-                ->searchable(),
+                  ->label('Jenis Paket')
+                  ->searchable(),
 
-            Column::name('harga')
-                ->label('Harga'),
+            // kolom Unit
+            Column::name('unitPaket.nama_unit')
+                  ->label('Unit')
+                  ->searchable(),
+
+            // harga dengan format Rp
+            Column::callback(['harga'], function ($harga) {
+                return 'Rp ' . number_format($harga, 0, ',', '.');
+            })
+            ->label('Harga')
+            ->sortable(),
 
             Column::name('waktu_pengerjaan')
-                ->label('Waktu Pengerjaan'),
+                  ->label('Waktu Pengerjaan (Jam)')
+                  ->sortable(),
 
-                Column::callback(['id_paket'], function ($id) {
-                    return view('components.table-action', [
-                        'id' => $id,
-                        'route'=>'paket.edit'
-                    ]);
-                })
-                    ->label('Actions')
-                    ->excludeFromExport(),
+            // tombol edit/hapus
+            Column::callback(['id_paket'], function ($id) {
+                return view('components.table-action', [
+                    'id'    => $id,
+                    'route' => 'paket.edit'
+                ]);
+            })
+            ->label('Actions')
+            ->excludeFromExport(),
         ];
     }
 
-    /**
-     * Memancarkan event untuk menampilkan modal konfirmasi penghapusan.
-     *
-     * @param int $id ID paket yang akan dihapus.
-     * @return void
-     */
     public function deleteConfirm($id)
     {
         $this->emit('deleteModal', $id);

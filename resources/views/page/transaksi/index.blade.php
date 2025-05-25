@@ -21,6 +21,6 @@
 
         @livewire('transaksi.delete')
         @livewire('transaksi.update-status')
-        @livewire('table.transaksi-table')
+        @livewire('transaksi.filter-data')
     </div>
 </x-app-layout>

@@ -20,6 +20,10 @@
                     <td class="px-6 py-4">{{ $keluar->barang->nama_barang }}</td>
                 </tr>
                 <tr>
+                    <th class="px-6 py-4 text-left font-medium text-gray-700">Unit Satuan</th>
+                    <td class="px-6 py-4">{{ $keluar->barang->unit->nama_unit }}</td>
+                </tr>
+                <tr>
                     <th class="px-6 py-4 text-left font-medium text-gray-700">Tanggal Keluar</th>
                     <td class="px-6 py-4">{{ \Carbon\Carbon::parse($keluar->tanggal_keluar)->format('d M Y') }}</td>
                 </tr>
@@ -27,10 +31,7 @@
                     <th class="px-6 py-4 text-left font-medium text-gray-700">Admin</th>
                     <td class="px-6 py-4">{{ $keluar->admin->nama_admin }}</td>
                 </tr>
-                <tr>
-                    <th class="px-6 py-4 text-left font-medium text-gray-700">Unit Satuan</th>
-                    <td class="px-6 py-4">{{ $keluar->unit }}</td>
-                </tr>
+
                 <tr class="bg-gray-50">
                     <th class="px-6 py-4 text-left font-medium text-gray-700">Jumlah Keluar</th>
                     <td class="px-6 py-4">{{ $keluar->jumlah_brgkeluar }}</td>
