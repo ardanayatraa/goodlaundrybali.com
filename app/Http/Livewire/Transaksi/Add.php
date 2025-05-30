@@ -172,7 +172,7 @@ class Add extends Component
 
 
             \DB::commit();
-            return redirect()->route('transaksi');
+            return redirect()->route('transaksi.detail',['id'=>$trx->id_transaksi]);
         } catch (\Throwable $e) {
             \DB::rollBack();
             session()->flash('error', 'Gagal simpan: ' . $e->getMessage());

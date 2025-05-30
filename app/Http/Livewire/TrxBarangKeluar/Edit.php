@@ -14,10 +14,10 @@ class Edit extends Component
     public $focusedBarang = false, $focusedAdmin = false;
 
     protected $rules = [
-        'id_barang' => 'required|exists:barangs,id_barang',
-        'jumlah' => 'required|integer|min:1',
-        'tanggal_keluar' => 'required|date',
-        'id_admin' => 'required|exists:admins,id_admin',
+        'id_barang'       => 'required|exists:barangs,id_barang',
+        'jumlah'          => 'required|integer|min:1',
+        'tanggal_keluar'  => 'required|date',
+        'id_admin'        => 'required|exists:admins,id_admin',
     ];
 
     /**
@@ -29,13 +29,13 @@ class Edit extends Component
     public function mount($id_trx_barang_keluar)
     {
         $trx = TrxBarangKeluar::findOrFail($id_trx_barang_keluar);
-        $this->id_trx_barang_keluar = $trx->id_trx_barang_keluar;
-        $this->id_barang = $trx->id_barang;
-        $this->jumlah = $trx->jumlah;
-        $this->tanggal_keluar = $trx->tanggal_keluar;
-        $this->id_admin = $trx->id_admin;
-        $this->harga = $trx->harga;
-        $this->total_harga = $trx->total_harga;
+        $this->id_trx_barang_keluar = $trx->id_trx_brgkeluar;
+        $this->id_barang           = $trx->id_barang;
+        $this->jumlah              = $trx->jumlah_brgkeluar;
+        $this->tanggal_keluar      = $trx->tanggal_keluar;
+        $this->id_admin            = $trx->id_admin;
+        $this->harga               = $trx->barang->harga;
+        $this->total_harga         = $trx->jumlah_brgkeluar * $trx->barang->harga;
     }
 
     /**
@@ -59,47 +59,66 @@ class Edit extends Component
     /**
      * Memperbarui data transaksi barang keluar di database dan memperbarui stok barang.
      *
-     * @return \Illuminate\Http\RedirectResponse Redirect ke halaman transaksi barang keluar dengan pesan sukses.
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update()
     {
+        // validasi dasar
         $this->validate();
 
-        $this->harga = Barang::where('id_barang', $this->id_barang)->first()->harga;
+        // cek stok sebelum proses update
+        $barang = Barang::find($this->id_barang);
+        if (! $barang) {
+            $this->addError('id_barang', 'Barang tidak ditemukan.');
+            return;
+        }
+        if ($this->jumlah > $barang->stok + TrxBarangKeluar::find($this->id_trx_barang_keluar)->jumlah_brgkeluar) {
+            // tambahkan stok lama ke logika, karena stok akan ditambah dulu dari transaksi lama
+            $sisa = $barang->stok + TrxBarangKeluar::find($this->id_trx_barang_keluar)->jumlah_brgkeluar;
+            $this->addError('jumlah', "Stok tersisa {$sisa}, tidak cukup untuk keluar {$this->jumlah}.");
+            return;
+        }
+
+        // rollback stok dari transaksi lama
+        $trxLama = TrxBarangKeluar::findOrFail($this->id_trx_barang_keluar);
+        Barang::where('id_barang', $trxLama->id_barang)
+               ->increment('stok', $trxLama->jumlah_brgkeluar);
+
+        // hitung harga & total baru
+        $this->harga       = $barang->harga;
         $this->total_harga = $this->jumlah * $this->harga;
 
-        $trxLama = TrxBarangKeluar::where('id_trx_barang_keluar', $this->id_trx_barang_keluar)->first();
+        // update transaksi
+        TrxBarangKeluar::where('id_trx_brgkeluar', $this->id_trx_barang_keluar)
+            ->update([
+                'id_barang'        => $this->id_barang,
+                'jumlah_brgkeluar' => $this->jumlah,
+                'tanggal_keluar'   => $this->tanggal_keluar,
+                'id_admin'         => $this->id_admin,
+            ]);
 
-        Barang::where('id_barang', $trxLama->id_barang)->increment('stok', $trxLama->jumlah_brgkeluar);
+        // kurangi stok sesuai jumlah baru
+        Barang::where('id_barang', $this->id_barang)
+               ->decrement('stok', $this->jumlah);
 
-        TrxBarangKeluar::where('id_trx_barang_keluar', $this->id_trx_barang_keluar)->update([
-            'id_barang' => $this->id_barang,
-            'jumlah_brgkeluar' => $this->jumlah,
-            'tanggal_keluar' => $this->tanggal_keluar,
-            'id_admin' => $this->id_admin,
-            'harga' => $this->harga,
-            'total_harga' => $this->total_harga,
-        ]);
-
-        Barang::where('id_barang', $this->id_barang)->decrement('stok', $this->jumlah);
-
-        return redirect('/trx-barang-keluar')->with('success', 'Barang keluar berhasil diperbarui dan stok diperbarui!');
+        return redirect('/trx-barang-keluar')
+               ->with('success', 'Barang keluar berhasil diperbarui dan stok diperbarui!');
     }
 
     /**
      * Merender tampilan Livewire untuk mengedit transaksi barang keluar.
      *
-     * @return \Illuminate\View\View Tampilan Livewire.
+     * @return \Illuminate\View\View
      */
     public function render()
     {
         return view('livewire.trx-barang-keluar.edit', [
             'barangs' => Barang::where('nama_barang', 'like', '%' . $this->searchBarang . '%')
-                                ->limit(5)
-                                ->get(),
-            'admins' => Admin::where('nama_admin', 'like', '%' . $this->searchAdmin . '%')
-                              ->limit(5)
-                              ->get(),
+                               ->limit(5)
+                               ->get(),
+            'admins'  => Admin::where('nama_admin', 'like', '%' . $this->searchAdmin . '%')
+                               ->limit(5)
+                               ->get(),
         ]);
     }
 }

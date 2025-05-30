@@ -32,6 +32,7 @@ class PelangganTable extends LivewireDatatable
             Column::name('nama_pelanggan')->label('Nama Pelanggan')->sortable()->searchable(),
             Column::name('no_telp')->label('No Telepon')->sortable(),
             Column::name('alamat')->label('Alamat'),
+            Column::name('point')->label('Poin'),
             Column::name('keterangan')->label('Keterangan'),
 
             Column::callback(['id_pelanggan'], function ($id) {

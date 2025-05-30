@@ -17,8 +17,7 @@ return new class extends Migration
                   ->constrained('transaksis', 'id_transaksi')
                   ->cascadeOnDelete();
             $table->foreignId('id_paket')
-                  ->constrained('pakets', 'id_paket')
-                  ->restrictOnDelete();
+                  ->constrained('pakets', 'id_paket');
             $table->date('tanggal_ambil');
             $table->time('jam_ambil');
             $table->integer('jumlah')->default(1);
