@@ -48,11 +48,13 @@
 
                 <div class="mb-4">
                     <x-label for="tanggal" value="Tanggal" />
-                    <x-input id="tanggal" type="date" wire:model="tanggal" class="mt-2 w-full" />
+                    <x-input id="tanggal" type="date" wire:model="tanggal" value="{{ now()->format('Y-m-d') }}"
+                        class="mt-2 w-full" />
                     @error('tanggal')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+
 
                 <div class="mb-4">
                     <x-label for="jumlah_point" value="Jumlah Point" />

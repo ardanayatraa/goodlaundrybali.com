@@ -42,11 +42,13 @@
                 <div>
                     <x-label for="tanggal_transaksi" value="Tanggal Transaksi" />
                     <x-input id="tanggal_transaksi" type="date" wire:model="tanggal_transaksi"
+                        value="{{ now()->format('Y-m-d') }}"
                         class="w-full mt-2 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-xs shadow-sm" />
                     @error('tanggal_transaksi')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+
 
                 {{-- 3) Poin & Diskon --}}
                 <div class="flex items-center gap-4">

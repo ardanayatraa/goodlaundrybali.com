@@ -47,11 +47,13 @@
                 <div>
                     <x-label for="tanggal_keluar" value="Tanggal Keluar" />
                     <x-input id="tanggal_keluar" type="date" wire:model="tanggal_keluar"
+                        value="{{ now()->format('Y-m-d') }}"
                         class="w-full mt-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
                     @error('tanggal_keluar')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+
 
                 {{-- ======= Daftar Barang Keluar (multi‐item) ======= --}}
                 <div>
