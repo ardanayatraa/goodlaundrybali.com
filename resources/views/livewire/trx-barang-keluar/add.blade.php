@@ -1,56 +1,11 @@
 <div>
     <x-form-section submit="save">
-        <x-slot name="title">
-            Tambah Barang Keluar
-        </x-slot>
-
-        <x-slot name="description">
-            Silakan isi detail barang keluar di bawah ini.
-        </x-slot>
+        <x-slot name="title">Tambah Barang Keluar</x-slot>
+        <x-slot name="description">Silakan isi detail barang keluar di bawah ini.</x-slot>
 
         <x-slot name="form">
             <div class="space-y-6">
-                <div>
-                    <x-label for="searchBarang" value="Cari Barang" />
-                    @if ($id_barang)
-                        <div class="mt-2 flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2 bg-white">
-                            <span class="text-sm text-gray-700 flex-1">
-                                {{-- Tampilkan “Nama Barang – Unit” dengan tanda strip --}}
-                                {{ $barangs->firstWhere('id_barang', $id_barang)?->nama_barang }}
-                                &nbsp;–&nbsp;
-                                {{ $barangs->firstWhere('id_barang', $id_barang)?->unit?->nama_unit }}
-                            </span>
-                            <button type="button" wire:click="$set('id_barang', null)"
-                                class="text-red-500 hover:underline font-bold">
-                                &times;
-                            </button>
-                        </div>
-                    @else
-                        <x-input id="searchBarang" type="text" wire:model="searchBarang"
-                            class="w-full mt-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="Ketik nama barang..." wire:focus="$set('focusedBarang', true)"
-                            wire:blur="$set('focusedBarang', false)" />
-                        @if ($focusedBarang)
-                            <ul class="mt-2 border border-gray-300 rounded-lg max-h-40 overflow-y-auto bg-white z-10">
-                                @forelse ($barangs as $barang)
-                                    <li class="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                                        wire:click="$set('id_barang', '{{ $barang->id_barang }}')">
-                                        {{ $barang->nama_barang }} &nbsp;–&nbsp; {{ $barang->unit?->nama_unit }}
-                                    </li>
-                                @empty
-                                    <li class="px-4 py-2 text-gray-500">
-                                        Tidak ada hasil untuk "{{ $searchBarang }}"
-                                    </li>
-                                @endforelse
-                            </ul>
-                        @endif
-                    @endif
-                    @error('id_barang')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-
-
+                {{-- ======= Admin ======= --}}
                 <div>
                     <x-label for="searchAdmin" value="Cari Admin" />
                     @if ($id_admin)
@@ -64,11 +19,12 @@
                             </button>
                         </div>
                     @else
-                        <x-input id="searchAdmin" type="text" wire:model="searchAdmin" class="w-full mt-2"
+                        <x-input id="searchAdmin" type="text" wire:model="searchAdmin"
+                            class="w-full mt-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                             placeholder="Ketik nama admin..." wire:focus="$set('focusedAdmin', true)"
                             wire:blur="$set('focusedAdmin', false)" />
                         @if ($focusedAdmin)
-                            <ul class="mt-2 border border-gray-300 rounded-lg max-h-40 overflow-y-auto">
+                            <ul class="mt-2 border border-gray-300 rounded-lg max-h-40 overflow-y-auto bg-white z-10">
                                 @forelse ($admins as $admin)
                                     <li class="px-4 py-2 cursor-pointer hover:bg-gray-100"
                                         wire:click="$set('id_admin', '{{ $admin->id_admin }}')">
@@ -87,40 +43,87 @@
                     @enderror
                 </div>
 
-                <div>
-                    <x-label for="jumlah" value="Jumlah" />
-                    <x-input id="jumlah" type="text" wire:model="jumlah" class="w-full mt-2" />
-                    @error('jumlah')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-
+                {{-- ======= Tanggal Keluar ======= --}}
                 <div>
                     <x-label for="tanggal_keluar" value="Tanggal Keluar" />
-                    <x-input id="tanggal_keluar" type="date" wire:model="tanggal_keluar" class="w-full mt-2" />
+                    <x-input id="tanggal_keluar" type="date" wire:model="tanggal_keluar"
+                        class="w-full mt-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
                     @error('tanggal_keluar')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
+                {{-- ======= Daftar Barang Keluar (multi‐item) ======= --}}
                 <div>
-                    <x-label for="harga" value="Harga" />
-                    <x-input id="harga" type="text" wire:model="harga" class="w-full mt-2" disabled />
-                </div>
+                    <h3 class="font-semibold mb-2">Daftar Barang</h3>
+                    <button type="button" wire:click="addItem"
+                        class="mb-3 bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600">
+                        + Tambah Baris
+                    </button>
 
-                <div>
-                    <x-label for="total_harga" value="Total Harga" />
-                    <x-input id="total_harga" type="text" wire:model="total_harga" class="w-full mt-2" disabled />
+                    @foreach ($items as $i => $item)
+                        <div wire:key="item-{{ $i }}" class="flex items-start space-x-4 mb-4">
+                            {{-- Barang (select autocomplete) --}}
+                            <div class="flex-1 min-w-0">
+                                <x-label value="Barang #{{ $i + 1 }}" class="text-gray-700" />
+                                <select wire:model="items.{{ $i }}.id_barang"
+                                    class="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="">— pilih —</option>
+                                    @foreach ($barangs as $b)
+                                        <option value="{{ $b->id_barang }}">
+                                            {{ $b->nama_barang }} – {{ $b->unit?->nama_unit }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error("items.$i.id_barang")
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Jumlah --}}
+                            <div class="flex-none w-20">
+                                <x-label value="Jumlah" class="text-gray-700" />
+                                <x-input type="number" min="1" wire:model="items.{{ $i }}.jumlah"
+                                    class="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
+                                @error("items.$i.jumlah")
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Harga --}}
+                            <div class="flex-none w-28">
+                                <x-label value="Harga" class="text-gray-700" />
+                                <x-input type="text" wire:model="items.{{ $i }}.harga" disabled
+                                    class="w-full mt-1 bg-gray-100 border-gray-300 rounded-md shadow-sm" />
+                            </div>
+
+                            {{-- Subtotal --}}
+                            <div class="flex-none w-28">
+                                <x-label value="Subtotal" class="text-gray-700" />
+                                <x-input type="text" wire:model="items.{{ $i }}.subtotal" disabled
+                                    class="w-full mt-1 bg-gray-100 border-gray-300 rounded-md shadow-sm" />
+                            </div>
+
+                            {{-- Hapus Baris --}}
+                            <div class="flex-none">
+                                <button type="button" wire:click="removeItem({{ $i }})"
+                                    class="w-8 h-8 bg-red-500 mt-5 hover:bg-red-600 text-white rounded-full flex items-center justify-center">
+                                    &times;
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </x-slot>
 
         <x-slot name="actions">
-            <x-button type="submit" class="bg-blue-500 text-white px-4 py-2">Simpan</x-button>
+            <x-button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                Simpan Semua
+            </x-button>
             <a href="{{ route('trx-barang-keluar') }}"
-                class="inline-flex items-center gap-2 px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                <i data-lucide="x-circle" class="w-5 h-5"></i>
-                <span>Batal</span>
+                class="ml-2 inline-flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                Batal
             </a>
         </x-slot>
     </x-form-section>

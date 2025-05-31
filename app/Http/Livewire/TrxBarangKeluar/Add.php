@@ -9,85 +9,120 @@ use App\Models\Admin;
 
 class Add extends Component
 {
-    public $id_barang;
-    public $jumlah;
+    // Global fields
     public $tanggal_keluar;
     public $id_admin;
-    public $harga = 0;
-    public $total_harga = 0;
 
+    // Multi‐item: tiap elemen ['id_barang', 'jumlah', 'harga', 'subtotal']
+    public $items = [];
+
+    // Search/autocomplete
     public $searchBarang = '';
-    public $searchAdmin = '';
+    public $searchAdmin  = '';
     public $focusedBarang = false;
-    public $focusedAdmin = false;
+    public $focusedAdmin  = false;
 
+    // Aturan validasi
     protected function rules()
     {
         return [
-            'id_barang'       => 'required|exists:barangs,id_barang',
-            'jumlah'          => [
-                'required',
-                'integer',
-                'min:1',
-                // closure rule untuk cek stok
-                function ($attribute, $value, $fail) {
-                    $barang = Barang::find($this->id_barang);
-                    if (! $barang) {
-                        return $fail('Barang tidak ditemukan.');
-                    }
-                    if ($value > $barang->stok) {
-                        $fail("Stok tersisa {$barang->stok}, tidak cukup untuk keluar {$value}.");
-                    }
-                },
-            ],
-            'tanggal_keluar'  => 'required|date',
-            'id_admin'        => 'required|exists:admins,id_admin',
+            'id_admin'           => 'required|exists:admins,id_admin',
+            'tanggal_keluar'     => 'required|date',
+            'items'              => 'required|array|min:1',
+            'items.*.id_barang'  => 'required|exists:barangs,id_barang',
+            'items.*.jumlah'     => 'required|integer|min:1',
         ];
     }
 
-    // setiap properti update, recalc harga dan total
-    public function updated($property)
+    public function mount()
     {
-        if ($property === 'id_barang' && $this->id_barang) {
-            $this->harga = Barang::find($this->id_barang)->harga ?? 0;
+        // Set default tanggal ke hari ini
+        $this->tanggal_keluar = now()->format('Y-m-d');
+        $this->addItem();
+    }
+
+    /**
+     * Ketika properti berubah,
+     * - Jika field id_admin di‐set, kosongkan searchAdmin
+     * - Jika items.* field berubah:
+     *   • saat id_barang berubah → load harga
+     *   • recalc subtotal = jumlah * harga
+     */
+    public function updated($name, $value)
+    {
+        // Autocomplete admin
+        if ($name === 'id_admin') {
+            $this->searchAdmin = '';
         }
 
-        if (in_array($property, ['id_barang', 'jumlah'])) {
-            $this->total_harga = $this->jumlah * $this->harga;
+        // Tangani perubahan pada items.[index].*
+        if (preg_match('/^items\.(\d+)\.(\w+)$/', $name, $m)) {
+            [$all, $i, $field] = $m;
+
+            // Jika id_barang berubah → load harga
+            if ($field === 'id_barang') {
+                $barang = Barang::find($value);
+                $this->items[$i]['harga'] = $barang?->harga ?? 0;
+            }
+
+            // Ambil nilai jumlah & harga saat ini, lalu recalc subtotal
+            $j = $this->items[$i]['jumlah'] ?? 1;
+            $h = $this->items[$i]['harga']  ?? 0;
+            $this->items[$i]['subtotal'] = $j * $h;
         }
     }
 
+    /** Tambah baris item baru */
+    public function addItem()
+    {
+        $this->items[] = [
+            'id_barang' => null,
+            'jumlah'    => 1,
+            'harga'     => 0,
+            'subtotal'  => 0,
+        ];
+    }
+
+    /** Hapus satu baris item (by index) */
+    public function removeItem($idx)
+    {
+        unset($this->items[$idx]);
+        $this->items = array_values($this->items);
+    }
+
+    /** Simpan seluruh items ke tabel trx_barang_keluar dan kurangi stok */
     public function save()
     {
         $this->validate();
 
-        // simpan transaksi keluar
-        TrxBarangKeluar::create([
-            'id_barang'        => $this->id_barang,
-            'jumlah_brgkeluar' => $this->jumlah,
-            'tanggal_keluar'   => $this->tanggal_keluar,
-            'harga'            => $this->harga,
-            'total_harga'      => $this->total_harga,
-            'id_admin'         => $this->id_admin,
-        ]);
+        foreach ($this->items as $row) {
+            // Buat record TrxBarangKeluar
+            TrxBarangKeluar::create([
+                'id_barang'        => $row['id_barang'],
+                'jumlah_brgkeluar' => $row['jumlah'],
+                'tanggal_keluar'   => $this->tanggal_keluar,
+                'harga'            => $row['harga'],
+                'total_harga'      => $row['subtotal'],
+                'id_admin'         => $this->id_admin,
+            ]);
 
-        // kurangi stok
-        Barang::where('id_barang', $this->id_barang)
-              ->decrement('stok', $this->jumlah);
+            // Kurangi stok barang
+            Barang::find($row['id_barang'])?->decrement('stok', $row['jumlah']);
+        }
 
-        // reset form
-        $this->reset(['id_barang', 'jumlah', 'tanggal_keluar', 'id_admin', 'harga', 'total_harga']);
-        session()->flash('success', 'Barang keluar berhasil ditambahkan.');
-        return redirect()->route('trx-barang-keluar.index');
+        session()->flash('success', 'Beberapa barang keluar berhasil disimpan.');
+        return redirect()->route('trx-barang-keluar');
     }
 
     public function render()
     {
         return view('livewire.trx-barang-keluar.add', [
-            'barangs' => Barang::where('nama_barang', 'like', '%'.$this->searchBarang.'%')
-                               ->limit(5)->get(),
-            'admins'  => Admin::where('nama_admin', 'like', '%'.$this->searchAdmin.'%')
-                               ->limit(5)->get(),
+            'barangs' => Barang::where('nama_barang', 'like', "%{$this->searchBarang}%")
+                               ->limit(5)
+                               ->get(),
+            'admins'  => Admin::where('nama_admin', 'like', "%{$this->searchAdmin}%")
+                              ->limit(5)
+                              ->get(),
         ]);
     }
 }

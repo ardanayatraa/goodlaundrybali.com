@@ -92,6 +92,10 @@
             <td>: {{ $transaksi->pelanggan->nama_pelanggan ?? '-' }}</td>
         </tr>
         <tr>
+            <td>Point</td>
+            <td>: {{ $transaksi->pelanggan->point ?? '-' }}</td>
+        </tr>
+        <tr>
             <td>Alamat</td>
             <td>: {{ $transaksi->pelanggan->alamat ?? '-' }}</td>
         </tr>
