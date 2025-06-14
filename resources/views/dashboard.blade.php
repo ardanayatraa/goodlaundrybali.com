@@ -1,9 +1,8 @@
 <x-app-layout>
     {{ Breadcrumbs::render('dashboard') }}
 
-    <!-- Main Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Pelanggan Card -->
+        <!-- Pelanggan -->
         <div class="bg-white rounded-xl shadow-sm p-6 card-hover animate-fade-in" style="animation-delay: 0.1s">
             <div class="flex items-center justify-between mb-4">
                 <div class="p-3 rounded-lg bg-green-100">
@@ -24,7 +23,7 @@
             </p>
         </div>
 
-        <!-- Pesanan Card -->
+        <!-- Pesanan -->
         <div class="bg-white rounded-xl shadow-sm p-6 card-hover animate-fade-in" style="animation-delay: 0.2s">
             <div class="flex items-center justify-between mb-4">
                 <div class="p-3 rounded-lg bg-yellow-100">
@@ -39,7 +38,7 @@
             <p class="text-sm text-yellow-500 mt-2">{{ number_format($pesananBaru) }} pesanan baru bulan ini</p>
         </div>
 
-        <!-- Transaksi Card -->
+        <!-- Transaksi -->
         <div class="bg-white rounded-xl shadow-sm p-6 card-hover animate-fade-in" style="animation-delay: 0.3s">
             <div class="flex items-center justify-between mb-4">
                 <div class="p-3 rounded-lg bg-purple-100">
@@ -51,12 +50,41 @@
                 <span class="text-sm font-medium text-gray-400">Total Transaksi</span>
             </div>
             <h3 class="text-2xl font-bold text-gray-800">Rp {{ number_format($totalTransaksi, 0, ',', '.') }}</h3>
+        </div>
 
+        <!-- Barang Masuk -->
+        <div class="bg-white rounded-xl shadow-sm p-6 card-hover animate-fade-in" style="animation-delay: 0.4s">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 rounded-lg bg-blue-100">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h18M9 3v18m6-18v18M5 9h14" />
+                    </svg>
+                </div>
+                <span class="text-sm font-medium text-gray-400">Barang Masuk</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800">{{ number_format($totalBarangMasuk) }}</h3>
+            <p class="text-sm text-blue-500 mt-2">Bulan ini</p>
+        </div>
+
+        <!-- Barang Keluar -->
+        <div class="bg-white rounded-xl shadow-sm p-6 card-hover animate-fade-in" style="animation-delay: 0.5s">
+            <div class="flex items-center justify-between mb-4">
+                <div class="p-3 rounded-lg bg-red-100">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                </div>
+                <span class="text-sm font-medium text-gray-400">Barang Keluar</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800">{{ number_format($totalBarangKeluar) }}</h3>
+            <p class="text-sm text-red-500 mt-2">Bulan ini</p>
         </div>
     </div>
 
     <!-- Business Info -->
-    <div class="mt-8 bg-white rounded-xl shadow-sm p-6 animate-fade-in" style="animation-delay: 0.4s">
+    <div class="mt-8 bg-white rounded-xl shadow-sm p-6 animate-fade-in" style="animation-delay: 0.6s">
         <div class="flex items-center space-x-4">
             <div class="p-3 rounded-lg bg-green-100">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

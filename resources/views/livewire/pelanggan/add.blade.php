@@ -35,9 +35,15 @@
                 </div>
 
                 <div class="mb-4">
+                    {{-- Badge tanpa kondisi --}}
+                    <span
+                        class="inline-block mb-2 text-xs font-bold bg-yellow-400 text-white rounded-full px-3 py-1 animate-pulse shadow-md">
+                        Harga Member Rp 10.000
+                    </span>
+
                     <x-label for="keterangan" value="Keterangan" />
                     <select id="keterangan" wire:model="keterangan"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-2">
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-2">
                         <option value="">Pilih Keterangan</option>
                         <option value="Member">Member</option>
                         <option value="Non-Member">Non Member</option>

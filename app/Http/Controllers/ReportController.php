@@ -63,4 +63,29 @@ class ReportController extends Controller
             ]
         );
     }
+
+
+    public function generatePelanggan(Request $request)
+{
+    $query = \App\Models\Pelanggan::query()
+        ->where('keterangan', 'Member');
+
+    if ($request->filterStartDate && $request->filterEndDate) {
+        $query->whereBetween('created_at', [
+            Carbon::parse($request->filterStartDate)->startOfDay(),
+            Carbon::parse($request->filterEndDate)->endOfDay(),
+        ]);
+    }
+
+    $data = $query->get();
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.pelanggan-report', compact('data'))
+        ->setPaper('a4', 'portrait');
+
+    return response()->streamDownload(
+        fn () => print($pdf->output()),
+        'Laporan_Pelanggan_' . now()->format('YmdHis') . '.pdf'
+    );
+}
+
 }

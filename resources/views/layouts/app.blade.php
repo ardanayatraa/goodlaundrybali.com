@@ -319,6 +319,13 @@
                                 - Laporan Barang
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('laporan-pelanggan') }}"
+                                class="inline-flex items-center w-full text-sm font-medium px-3 py-2 rounded-lg
+                     {{ request()->routeIs('laporan-pelanggan') ? 'bg-green-100 text-green-600' : 'text-gray-700 hover:text-gray-800 hover:bg-gray-100' }}">
+                                - Laporan Pelanggan
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

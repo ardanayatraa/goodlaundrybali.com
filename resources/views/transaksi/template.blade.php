@@ -125,6 +125,7 @@
         <thead>
             <tr>
                 <th>Jenis Paket</th>
+                <th>Tanggal Ambil</th>
                 <th>Unit</th>
                 <th>Jumlah</th>
                 <th>Harga</th>
@@ -136,6 +137,7 @@
                 <tr>
                     {{-- gunakan relasi detail->paket --}}
                     <td>{{ $detail->paket->jenis_paket }}</td>
+                    <td>{{ $detail->tanggal_ambil }}</td>
                     <td>{{ $detail->paket->unitPaket->nama_unit ?? $detail->paket->unit }}</td>
                     <td>{{ $detail->jumlah }}</td>
                     <td>Rp. {{ number_format($detail->paket->harga, 0, ',', '.') }}</td>

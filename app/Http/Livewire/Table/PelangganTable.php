@@ -33,6 +33,10 @@ class PelangganTable extends LivewireDatatable
             Column::name('no_telp')->label('No Telepon')->sortable(),
             Column::name('alamat')->label('Alamat'),
             Column::name('point')->label('Poin'),
+           Column::callback(['created_at'], function ($created_at) {
+                    return \Carbon\Carbon::parse($created_at)->format('d-m-Y');
+                })->label('Tanggal Daftar'),
+
             Column::name('keterangan')->label('Keterangan'),
 
             Column::callback(['id_pelanggan'], function ($id) {

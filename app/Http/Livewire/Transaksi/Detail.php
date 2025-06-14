@@ -34,6 +34,7 @@ class Detail extends Component
                 'detailTransaksi.paket'
             ])
             ->findOrFail($this->transaksiId);
+
     }
 
     public function render()

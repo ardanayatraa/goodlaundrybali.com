@@ -63,6 +63,7 @@
         <thead class="bg-gray-100">
             <tr>
                 <th class="border px-2 py-1 text-center">Jenis Paket</th>
+                <th class="border px-2 py-1 text-center">Tanggal Ambil</th>
                 <th class="border px-2 py-1 text-center">Unit</th>
                 <th class="border px-2 py-1 text-center">Jumlah</th>
                 <th class="border px-2 py-1 text-center">Harga</th>
@@ -73,6 +74,7 @@
             @foreach ($transaksi->detailTransaksi as $idx => $detail)
                 <tr class="{{ $idx % 2 ? '' : 'bg-gray-50' }}">
                     <td class="border px-2 py-1 text-center">{{ $detail->paket->jenis_paket }}</td>
+                    <td class="border px-2 py-1 text-center">{{ $detail->tanggal_ambil }}</td>
                     <td class="border px-2 py-1 text-center">
                         {{ $detail->paket->unitPaket->nama_unit ?? $detail->paket->unit }}</td>
                     <td class="border px-2 py-1 text-center">{{ $detail->jumlah }}</td>

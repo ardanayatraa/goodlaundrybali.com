@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pelanggan;
 use App\Models\Transaksi;
+use App\Models\TrxBarangMasuk;
+use App\Models\TrxBarangKeluar;
 
 class DashboardController extends Controller
 {
@@ -24,6 +26,19 @@ class DashboardController extends Controller
         $transaksiMingguLalu = Transaksi::whereBetween('tanggal_transaksi', [now()->subWeek(), now()])->sum('total_harga');
         $growthTransaksi = $transaksiMingguLalu > 0 ? (($totalTransaksi - $transaksiMingguLalu) / $transaksiMingguLalu) * 100 : 0;
 
-        return view('dashboard', compact('totalPelanggan', 'growthPelanggan', 'pesananDalamProses', 'pesananBaru', 'totalTransaksi', 'growthTransaksi'));
+        // Barang Masuk & Keluar Bulan Ini
+        $totalBarangMasuk = TrxBarangMasuk::whereMonth('tanggal_masuk', now()->month)->sum('jumlah_brgmasuk');
+        $totalBarangKeluar = TrxBarangKeluar::whereMonth('tanggal_keluar', now()->month)->sum('jumlah_brgkeluar');
+
+        return view('dashboard', compact(
+            'totalPelanggan',
+            'growthPelanggan',
+            'pesananDalamProses',
+            'pesananBaru',
+            'totalTransaksi',
+            'growthTransaksi',
+            'totalBarangMasuk',
+            'totalBarangKeluar'
+        ));
     }
 }

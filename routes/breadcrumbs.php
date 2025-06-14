@@ -55,6 +55,14 @@ foreach ($models as $model) {
         $trail->push('Laporan Barang', route('laporan-stok-barang'));
     });
 
+    // routes/breadcrumbs.php
+
+Breadcrumbs::for('report.pelanggan', function ($trail) {
+    $trail->parent('home'); // ganti sesuai struktur kamu
+    $trail->push('Laporan Pelanggan Member', route('laporan-pelanggan'));
+});
+
+
     // Home > Transaksi > Detail
 Breadcrumbs::for('transaksi.detail', function (BreadcrumbTrail $trail, $id) {
     $trail->parent('transaksi');
@@ -77,3 +85,4 @@ Breadcrumbs::for('trx-barang-masuk.detail', function (BreadcrumbTrail $trail, $i
         $trail->parent('home');
         $trail->push('Laporan Transaksi', route('laporan-transaksi'));
     });
+

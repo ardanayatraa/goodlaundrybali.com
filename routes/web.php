@@ -164,6 +164,9 @@ Route::middleware('admin')->group(function () {
     Route::get('report-transaksi', function () {
         return view('page.report.index');
     })->name('laporan-transaksi');
+    Route::get('report-pelanggan', function () {
+        return view('page.report.pelanggan');
+    })->name('laporan-pelanggan');
 
     // Cetak Member
     Route::get('/pelanggan/cetak/{id}', [ActionController::class, 'printMember'])
@@ -186,6 +189,9 @@ Route::get('/trx-barang-masuk/cetak/{id}', [ActionController::class, 'cetakBaran
         ->name('report.generate');
     Route::get('/report-barang/generate', [ReportBarangController::class, 'generate'])
         ->name('report-barang.generate');
+
+        Route::get('/report/pelanggan/generate', [ReportController::class, 'generatePelanggan'])->name('report-pelanggan.generate');
+
 });
 
 
