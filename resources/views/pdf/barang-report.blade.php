@@ -52,71 +52,47 @@
             Filter: {{ $filterDescription ?? 'Tidak ada filter yang dipilih' }}
         </p>
 
-        <!-- Section: Data Barang -->
         <h2 style="text-align: left; margin-top: 20px;">Data Barang</h2>
         <table>
             <thead>
                 <tr>
-                    <th>ID Barang</th>
                     <th>Nama Barang</th>
                     <th>Harga</th>
-                    <th>Unit</th>
-                    <th>Tanggal Dibuat</th>
-                    <th>Stok</th>
-                    <th>Jumlah Barang Masuk</th>
-                    <th>Jumlah Barang Keluar</th>
+                    <th>Jumlah Masuk</th>
+                    <th>Jumlah Keluar</th>
+                    <th>Stok Awal</th>
+                    <th>Stok Akhir</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($data as $index => $barang)
+                @foreach ($report as $index => $row)
                     <tr>
-                        <td>{{ $barang->id_barang }}</td>
-                        <td>{{ $barang->nama_barang }}</td>
-                        <td>Rp {{ number_format($barang->harga, 0, ',', '.') }}</td>
-                        <td>{{ $barang->unit->nama_unit ?? '-' }}</td>
-                        <td>{{ $barang->created_at->format('Y-m-d') }}</td>
-                        <td>{{ $barang->stok }}</td>
-                        <td>{{ $barang->trxBarangMasuk->pluck('jumlah_brgmasuk')->implode(', ') ?? '-' }}</td>
-                        <td>{{ $barang->trxBarangKeluar->pluck('jumlah_brgkeluar')->implode(', ') ?? '-' }}</td>
+                        <td>{{ $row['nama'] }}</td>
+                        <td>Rp {{ number_format($row['harga'], 0, ',', '.') }}</td>
+                        <td>{{ $row['jumlah_masuk'] }}</td>
+                        <td>{{ $row['jumlah_keluar'] }}</td>
+                        <td>{{ $row['stok_awal'] }}</td>
+                        <td>{{ $row['stok_akhir'] }}</td>
                     </tr>
+
                     @if (($index + 1) % 20 == 0)
             </tbody>
         </table>
-        <div class="page-break"></div> <!-- Page break after every 20 rows -->
+        <div class="page-break"></div>
         <table>
             <thead>
                 <tr>
-                    <th>ID Barang</th>
                     <th>Nama Barang</th>
                     <th>Harga</th>
-                    <th>Unit</th>
-                    <th>Tanggal Dibuat</th>
-                    <th>Stok</th>
-                    <th>Jumlah Barang Masuk</th>
-                    <th>Jumlah Barang Keluar</th>
+                    <th>Jumlah Masuk</th>
+                    <th>Jumlah Keluar</th>
+                    <th>Stok Awal</th>
+                    <th>Stok Akhir</th>
                 </tr>
             </thead>
             <tbody>
                 @endif
                 @endforeach
-                <tr style="font-weight: bold; background-color: #f9f9f9;">
-                    <td colspan="4" style="text-align: left;">Total Barang (Stok):</td>
-                    <td></td>
-                    <td>{{ $data->sum('stok') }}</td>
-                    <td>{{ $data->sum(fn($item) => $item->trxBarangMasuk->sum('jumlah_brgmasuk')) }}</td>
-                    <td>{{ $data->sum(fn($item) => $item->trxBarangKeluar->sum('jumlah_brgkeluar')) }}</td>
-                </tr>
-                <tr style="font-weight: bold; background-color: #f9f9f9;">
-                    <td colspan="4" style="text-align: left;">Total Nilai:</td>
-                    <td></td>
-                    <td>Rp {{ number_format($data->sum(fn($item) => $item->harga * $item->stok), 0, ',', '.') }}</td>
-                    <td>Rp
-                        {{ number_format($data->sum(fn($item) => $item->harga * $item->trxBarangMasuk->sum('jumlah_brgmasuk')), 0, ',', '.') }}
-                    </td>
-                    <td>Rp
-                        {{ number_format($data->sum(fn($item) => $item->harga * $item->trxBarangKeluar->sum('jumlah_brgkeluar')), 0, ',', '.') }}
-                    </td>
-                </tr>
             </tbody>
         </table>
     </div>

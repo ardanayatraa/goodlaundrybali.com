@@ -38,7 +38,7 @@ class LaporanBarangTable extends LivewireDatatable
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function builder()
+    public function builder()   
     {
         $query = Barang::query();
 
