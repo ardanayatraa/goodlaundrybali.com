@@ -52,7 +52,6 @@
             Filter: {{ $filterDescription ?? 'Tidak ada filter yang dipilih' }}
         </p>
 
-        <!-- Section: Data Barang -->
         <h2 style="text-align: left; margin-top: 20px;">Data Barang</h2>
         <table>
             <thead>
@@ -70,14 +69,16 @@
                     <tr>
                         <td>{{ $row['nama'] }}</td>
                         <td>Rp {{ number_format($row['harga'], 0, ',', '.') }}</td>
-                        <td>{{ $row['jumlah_masuk'] }}</n` <td>{{ $row['jumlah_keluar'] }}</n` <td>
-                            {{ $row['stok_awal'] }}</n` <td>{{ $row['stok_akhir'] }}</td>
+                        <td>{{ $row['jumlah_masuk'] }}</td>
+                        <td>{{ $row['jumlah_keluar'] }}</td>
+                        <td>{{ $row['stok_awal'] }}</td>
+                        <td>{{ $row['stok_akhir'] }}</td>
                     </tr>
 
                     @if (($index + 1) % 20 == 0)
             </tbody>
         </table>
-        <div class="page-break"></div> <!-- Page break after every 20 rows -->
+        <div class="page-break"></div>
         <table>
             <thead>
                 <tr>
@@ -92,16 +93,6 @@
             <tbody>
                 @endif
                 @endforeach
-
-                <!-- Footer: Summary -->
-                <tr style="font-weight: bold; background-color: #f9f9f9;">
-                    <td colspan="2" style="text-align: left;">Total Keseluruhan:</td>
-                    <td>{{ collect($report)->sum('jumlah_masuk') }}</td>
-                    <td>{{ collect($report)->sum('jumlah_keluar') }}</td>
-                    <td>{{ collect($report)->sum('stok_awal') }}</td>
-                    <td>{{ collect($report)->sum('stok_akhir') }}</td>
-                </tr>
-
             </tbody>
         </table>
     </div>
