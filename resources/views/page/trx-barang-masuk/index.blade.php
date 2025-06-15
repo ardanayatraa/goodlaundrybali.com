@@ -21,5 +21,7 @@
 
         @livewire('trx-barang-masuk.delete')
         @livewire('table.trx-barang-masuk-table')
+        <livewire:table.group-trx-barang-masuk-table />
+
     </div>
 </x-app-layout>
