@@ -2,7 +2,7 @@
 
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
-
+use Illuminate\Support\Carbon;
 // Home
 Breadcrumbs::for('home', function (BreadcrumbTrail $trail) {
     $trail->push('Dashboard', route('dashboard'));
@@ -81,6 +81,13 @@ Breadcrumbs::for('trx-barang-masuk.detail', function (BreadcrumbTrail $trail, $i
     $trail->push("Detail #{$id}", route('trx-barang-masuk.detail', $id));
 });
 
+Breadcrumbs::for('trx-barang-masuk.by-date', function (\Diglactic\Breadcrumbs\Generator $trail, $tanggal) {
+    $trail->parent('trx-barang-masuk');
+    $trail->push(
+        'Detail ' . Carbon::parse($tanggal)->isoFormat('D MMMM YYYY'),
+        route('trx-barang-masuk.by-date', $tanggal)
+    );
+});
     Breadcrumbs::for('report.transaksi', function (BreadcrumbTrail $trail) {
         $trail->parent('home');
         $trail->push('Laporan Transaksi', route('laporan-transaksi'));

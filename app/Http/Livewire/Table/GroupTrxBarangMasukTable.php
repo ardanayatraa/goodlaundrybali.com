@@ -2,49 +2,58 @@
 
 namespace App\Http\Livewire\Table;
 
-use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
-use Mediconesystems\LivewireDatatables\Column;
-use Illuminate\Support\Facades\DB;
+use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\TrxBarangMasuk;
 
-class GroupTrxBarangMasukTable extends LivewireDatatable
+class GroupTrxBarangMasukTable extends Component
 {
-    public $model = TrxBarangMasuk::class;
+    use WithPagination;
 
-    public function builder()
+    public $search    = '';
+    public $perPage   = 10;
+    public $sortField = 'tanggal';
+    public $sortAsc   = true;
+
+    protected $paginationTheme = 'tailwind';
+
+    public function updatingSearch()
     {
-        return TrxBarangMasuk::query()
-            ->select([
-                DB::raw('DATE(tanggal_masuk) as tanggal_masuk'),
-                DB::raw('COUNT(*) as total_transaksi'),
-                DB::raw('SUM(jumlah_brgmasuk) as total_jumlah'),
-                DB::raw('SUM(total_harga) as total_harga'),
-            ])
-            ->groupBy(DB::raw('DATE(tanggal_masuk)'))
-            ->orderBy('tanggal_masuk', 'desc');
+        $this->resetPage();
     }
 
-    public function columns()
+    public function sortBy($field)
     {
-        return [
-            Column::name('tanggal_masuk')
-                  ->label('Tanggal Masuk')
-                  ->filterable()
-                  ->sortable(),
+        if ($this->sortField === $field) {
+            $this->sortAsc = ! $this->sortAsc;
+        } else {
+            $this->sortField = $field;
+            $this->sortAsc   = true;
+        }
+        $this->resetPage();
+    }
 
-            Column::name('total_transaksi')
-                  ->label('Jumlah Transaksi')
-                  ->sortable(),
+    public function viewByDate($date)
+    {
+        return redirect()->route('trx-barang-masuk.by-date', ['tanggal' => $date]);
+    }
 
-            Column::name('total_jumlah')
-                  ->label('Total Jumlah Masuk')
-                  ->sortable(),
+    public function render()
+    {
+        $data = TrxBarangMasuk::query()
+            ->join('barangs', 'trx_barang_masuks.id_barang', '=', 'barangs.id_barang')
+            ->selectRaw("
+                DATE(trx_barang_masuks.tanggal_masuk) as tanggal,
+                SUM(trx_barang_masuks.total_harga) as total_harga,
+                GROUP_CONCAT(DISTINCT barangs.nama_barang SEPARATOR ',') as barang_list
+            ")
+            ->when($this->search, fn($q) =>
+                $q->whereRaw("DATE(trx_barang_masuks.tanggal_masuk) LIKE ?", ["%{$this->search}%"])
+            )
+            ->groupBy('tanggal')
+            ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
+            ->paginate($this->perPage);
 
-            Column::callback(['total_harga'], function($harga) {
-                return 'Rp '.number_format($harga, 0, ',', '.');
-            })
-            ->label('Total Harga')
-            ->sortable(),
-        ];
+        return view('livewire.group-trx-barang-masuk', compact('data'));
     }
 }

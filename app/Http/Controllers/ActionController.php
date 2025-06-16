@@ -220,4 +220,23 @@ class ActionController extends Controller
 
         return $pdf->stream("barang_masuk_{$id}.pdf");
     }
+
+     /**
+     * Cetak PDF detail transaksi barang masuk per tanggal.
+     *
+     * @param  string  $tanggal  format YYYY-MM-DD
+     * @return \Illuminate\Http\Response
+     */
+    public function cetakBarangMasukByDate($tanggal)
+    {
+        $records = TrxBarangMasuk::with(['barang.unit', 'admin'])
+            ->whereDate('tanggal_masuk', $tanggal)
+            ->orderBy('id_trx_brgmasuk')
+            ->get();
+
+        $pdf = Pdf::loadView('pdf.trx-barang-masuk-cetak-by-date', compact('records', 'tanggal'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream("barang_masuk_{$tanggal}.pdf");
+    }
 }

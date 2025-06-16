@@ -20,8 +20,59 @@
         </a>
 
         @livewire('trx-barang-masuk.delete')
-        @livewire('table.trx-barang-masuk-table')
-        <livewire:table.group-trx-barang-masuk-table />
 
+        {{-- Tabs --}}
+        <div class="space-y-4">
+            <div class="flex border-b border-gray-200">
+                <button data-tab="perBarang"
+                    class="tab-btn border-b-2 px-4 mr-4 font-medium cursor-pointer border-green-600 text-green-600">
+                    Data per Barang
+                </button>
+                <button data-tab="perTanggal"
+                    class="tab-btn border-b-2 px-4 font-medium cursor-pointer border-transparent text-gray-600">
+                    Data per Tanggal
+                </button>
+            </div>
+
+            <div>
+                <div data-content="perBarang">
+                    @livewire('table.trx-barang-masuk-table')
+                </div>
+                <div data-content="perTanggal" class="hidden">
+                    <livewire:table.group-trx-barang-masuk-table />
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('[data-content]');
+
+            tabs.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.getAttribute('data-tab');
+
+                    // Toggle active tab styles
+                    tabs.forEach(b => {
+                        if (b === btn) {
+                            b.classList.add('border-green-600', 'text-green-600');
+                            b.classList.remove('border-transparent', 'text-gray-600');
+                        } else {
+                            b.classList.remove('border-green-600', 'text-green-600');
+                            b.classList.add('border-transparent', 'text-gray-600');
+                        }
+                    });
+
+                    // Show/hide panels
+                    contents.forEach(panel => {
+                        panel.getAttribute('data-content') === target ?
+                            panel.classList.remove('hidden') :
+                            panel.classList.add('hidden');
+                    });
+                });
+            });
+        });
+    </script>
 </x-app-layout>

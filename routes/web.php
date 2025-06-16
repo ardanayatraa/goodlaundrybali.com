@@ -132,6 +132,10 @@ Route::middleware('admin')->group(function () {
         return view('page.trx-barang-masuk.detail', compact('id'));
     })->name('trx-barang-masuk.detail');
 
+    Route::get('/trx-barang-masuk/date/{tanggal}', function ($tanggal) {
+    return view('page.trx-barang-masuk.detail-by-date', compact('tanggal'));
+})->name('trx-barang-masuk.by-date');
+
 
 
 
@@ -179,6 +183,9 @@ Route::middleware('admin')->group(function () {
 // Cetak Barang Keluar
 Route::get('/trx-barang-keluar/cetak/{id}', [ActionController::class, 'cetakBarangKeluar'])
 ->name('trx-barang-keluar.cetak');
+
+Route::get('/trx-barang-masuk/cetak/date/{tanggal}', [ActionController::class, 'cetakBarangMasukByDate'])
+     ->name('trx-barang-masuk.print-by-date');
 
 // Cetak Barang Masuk
 Route::get('/trx-barang-masuk/cetak/{id}', [ActionController::class, 'cetakBarangMasuk'])
