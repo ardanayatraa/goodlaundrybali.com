@@ -180,7 +180,7 @@ class ActionController extends Controller
         // Ambil transaksi dengan relasi pelanggan, point, dan detailTransaksi beserta paket+unit
         $transaksi = Transaksi::with([
             'pelanggan',
-            'point',
+
             'detailTransaksi.paket.unitPaket'
         ])->findOrFail($id);
 

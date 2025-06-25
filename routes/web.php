@@ -215,7 +215,7 @@ Route::get('/trx-barang-masuk/cetak/{id}', [ActionController::class, 'cetakBaran
 Route::get('/transaksi/{id}/image', function ($id) {
     $transaksi = Transaksi::with([
         'pelanggan',
-        'point',
+
         'detailTransaksi.paket.unitPaket'  // load paket & unit
     ])->findOrFail($id);
 

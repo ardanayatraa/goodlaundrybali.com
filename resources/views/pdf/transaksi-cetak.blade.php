@@ -118,6 +118,10 @@
             <td>: {{ $transaksi->pelanggan->no_telp ?? '-' }}</td>
         </tr>
         <tr>
+            <td>Status Pembayaran</td>
+            <td>: {{ $transaksi->status_pembayaran }}</td>
+        </tr>
+        <tr>
             <td>Metode Bayar</td>
             <td>: {{ $transaksi->metode_pembayaran }}</td>
         </tr>

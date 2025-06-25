@@ -40,7 +40,7 @@ class LaporanTable extends LivewireDatatable
      */
     public function builder()
     {
-        $query = Transaksi::query();
+        $query = Transaksi::with('detailTransaksi.paket');
 
         if ($this->filterType === 'daily' && $this->filterDate) {
             $query->whereDate('tanggal_transaksi', $this->filterDate);
@@ -76,8 +76,12 @@ class LaporanTable extends LivewireDatatable
     {
         return [
             Column::name('id_transaksi')->label('ID Transaksi')->sortable(),
+            Column::name('pelanggan.nama_pelanggan')->label('Nama Pelanggan')->sortable()->searchable(),
             Column::name('tanggal_transaksi')->label('Tanggal Transaksi')->sortable()->searchable(),
             Column::name('status_pembayaran')->label('Status Pembayaran')->sortable(),
+            Column::name('metode_pembayaran')->label('Metode Pembayaran')->sortable(),
+            Column::name('detailTransaksi.total_diskon')->label('Total Diskon')->sortable(),
+            Column::name('detailTransaksi.sub_total')->label('Sub Total')->sortable(),
             Column::name('status_transaksi')->label('Status Transaksi')->sortable(),
             Column::name('total_harga')->label('Total Harga (Rp)')->sortable()->searchable(),
         ];

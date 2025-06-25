@@ -9,60 +9,61 @@ class Transaksi extends Model
 {
     use HasFactory;
 
+    protected $table = 'transaksis';
     protected $primaryKey = 'id_transaksi';
+    public $timestamps = false; // set true jika pakai created_at/updated_at
+
     protected $fillable = [
         'id_pelanggan',
-        'id_point',
         'tanggal_transaksi',
         'total_harga',
         'metode_pembayaran',
         'status_pembayaran',
         'status_transaksi',
         'jumlah_point',
-        'keterangan'
+        'keterangan',
     ];
 
-    /**
-     * Relasi ke tabel pelanggans.
-     * Mengembalikan pelanggan yang terkait dengan transaksi ini.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+    // agar accessor ikut di-serialize saat datatable
+    protected $appends = [
+        'paket_jumlah',
+        'harga_paket',
+        'total_diskon',
+        'subtotal_setelah_diskon',
+    ];
+
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
     }
 
-    /**
-     * Relasi ke tabel pakets.
-     * Mengembalikan paket yang terkait dengan transaksi ini.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function paket()
-    {
-        return $this->belongsTo(Paket::class, 'id_paket');
-    }
-
-    /**
-     * Relasi ke tabel points.
-     * Mengembalikan point yang terkait dengan transaksi ini.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function point()
-    {
-        return $this->belongsTo(Point::class, 'id_point');
-    }
-
-    /**
-     * Relasi ke tabel detail_transaksis.
-     * Mengembalikan semua detail transaksi yang terkait dengan transaksi ini.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function detailTransaksi()
     {
         return $this->hasMany(DetailTransaksi::class, 'id_transaksi');
+    }
+
+    public function getPaketJumlahAttribute()
+    {
+        return $this->detailTransaksi
+                    ->map(fn($d) => "{$d->paket->jenis_paket} x{$d->jumlah}")
+                    ->implode(', ');
+    }
+
+    public function getHargaPaketAttribute()
+    {
+        return $this->detailTransaksi
+                    ->map(fn($d) => number_format($d->paket->harga, 0, ',', '.'))
+                    ->implode(', ');
+    }
+
+    public function getTotalDiskonAttribute()
+    {
+        return $this->detailTransaksi->sum('total_diskon');
+    }
+
+    public function getSubtotalSetelahDiskonAttribute()
+    {
+        return $this->detailTransaksi
+                    ->sum(fn($d) => $d->sub_total - $d->total_diskon);
     }
 }
