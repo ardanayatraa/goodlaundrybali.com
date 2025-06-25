@@ -137,7 +137,10 @@ Route::middleware('admin')->group(function () {
 })->name('trx-barang-masuk.by-date');
 
 
-
+// Detail per-Tanggal Barang Keluar
+Route::get('/trx-barang-keluar/date/{tanggal}', function ($tanggal) {
+    return view('page.trx-barang-keluar.detail-by-date', compact('tanggal'));
+})->name('trx-barang-keluar.by-date');
 
     // Unit
     Route::get('/unit', function () {
@@ -186,6 +189,10 @@ Route::get('/trx-barang-keluar/cetak/{id}', [ActionController::class, 'cetakBara
 
 Route::get('/trx-barang-masuk/cetak/date/{tanggal}', [ActionController::class, 'cetakBarangMasukByDate'])
      ->name('trx-barang-masuk.print-by-date');
+
+
+Route::get('/trx-barang-keluar/cetak/date/{tanggal}', [ActionController::class, 'cetakBarangKeluarByDate'])
+     ->name('trx-barang-keluar.print-by-date');
 
 // Cetak Barang Masuk
 Route::get('/trx-barang-masuk/cetak/{id}', [ActionController::class, 'cetakBarangMasuk'])

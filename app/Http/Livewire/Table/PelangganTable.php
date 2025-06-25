@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Table;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
 use App\Models\Pelanggan;
+use Carbon\Carbon;
 
 class PelangganTable extends LivewireDatatable
 {
@@ -28,21 +29,47 @@ class PelangganTable extends LivewireDatatable
     public function columns()
     {
         return [
-            Column::name('id_pelanggan')->label('ID Pelanggan')->sortable(),
-            Column::name('nama_pelanggan')->label('Nama Pelanggan')->sortable()->searchable(),
-            Column::name('no_telp')->label('No Telepon')->sortable(),
-            Column::name('alamat')->label('Alamat'),
-            Column::name('point')->label('Poin'),
-           Column::callback(['created_at'], function ($created_at) {
-                    return \Carbon\Carbon::parse($created_at)->format('d-m-Y');
-                })->label('Tanggal Daftar'),
+            Column::name('id_pelanggan')
+                ->label('ID Pelanggan')
+                ->sortable(),
 
-            Column::name('keterangan')->label('Keterangan'),
+            Column::name('nama_pelanggan')
+                ->label('Nama Pelanggan')
+                ->sortable()
+                ->searchable(),
 
+            Column::name('no_telp')
+                ->label('No Telepon')
+                ->sortable(),
+
+            Column::name('alamat')
+                ->label('Alamat'),
+
+            Column::name('point')
+                ->label('Poin'),
+
+
+            // 2. Keterangan Member / Non Member
+            Column::name('keterangan')
+                ->label('Keterangan'),
+
+            // 3. Tanggal Mulai Jadi Member (member_start_at)
+            Column::callback(['member_start_at', 'keterangan'], function ($start, $ket) {
+                if ($ket === 'Member' && $start) {
+                    return Carbon::parse($start)->format('d-m-Y');
+                }
+                return '-';
+            })
+                ->label('Member Sejak')
+                ->sortable(),
+
+            // 4. Actions
             Column::callback(['id_pelanggan'], function ($id) {
-                $pl=Pelanggan::where('id_pelanggan',$id)->first();
-
-                return view('action.pelanggan', ['pl' => $pl,'route'=>'pelanggan.edit' ]);
+                $pl = Pelanggan::find($id);
+                return view('action.pelanggan', [
+                    'pl'    => $pl,
+                    'route' => 'pelanggan.edit',
+                ]);
             })
                 ->label('Actions')
                 ->excludeFromExport(),

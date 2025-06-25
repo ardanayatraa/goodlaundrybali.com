@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Pelanggan;
 
 use Livewire\Component;
 use App\Models\Pelanggan;
+use Illuminate\Support\Carbon;
 
 class Edit extends Component
 {
@@ -11,56 +12,55 @@ class Edit extends Component
 
     protected $rules = [
         'nama_pelanggan' => 'required|string|max:255',
-        'no_telp' => 'required|string|max:15',
-        'alamat' => 'required|string|max:255',
-        'keterangan' => 'nullable|string|max:255',
+        'no_telp'        => 'required|string|max:15',
+        'alamat'         => 'required|string|max:255',
+        'keterangan'     => 'nullable|string|max:255',
     ];
 
-    /**
-     * Inisialisasi data pelanggan berdasarkan ID pelanggan.
-     *
-     * @param int $id_pelanggan
-     * @return void
-     */
     public function mount($id_pelanggan)
     {
-        $pelanggan = Pelanggan::findOrFail($id_pelanggan);
-        $this->id_pelanggan = $pelanggan->id_pelanggan;
-        $this->nama_pelanggan = $pelanggan->nama_pelanggan;
-        $this->no_telp = $pelanggan->no_telp;
-        $this->alamat = $pelanggan->alamat;
-        $this->keterangan = $pelanggan->keterangan;
+        $pel = Pelanggan::findOrFail($id_pelanggan);
+        $this->id_pelanggan  = $pel->id_pelanggan;
+        $this->nama_pelanggan = $pel->nama_pelanggan;
+        $this->no_telp        = $pel->no_telp;
+        $this->alamat         = $pel->alamat;
+        $this->keterangan     = $pel->keterangan;
     }
 
-    /**
-     * Perbarui data pelanggan di database.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function update()
     {
         $this->validate();
 
-        // Ensure no_telp starts with 62
+        // Format nomor telepon
         if (substr($this->no_telp, 0, 1) === '0') {
-            $this->no_telp = '62' . substr($this->no_telp, 1);
+            $this->no_telp = '62'.substr($this->no_telp, 1);
         }
 
-        Pelanggan::where('id_pelanggan', $this->id_pelanggan)->update([
-            'nama_pelanggan' => $this->nama_pelanggan,
-            'no_telp' => $this->no_telp,
-            'alamat' => $this->alamat,
-            'keterangan' => $this->keterangan,
-        ]);
+        // Ambil record lama untuk cek perubahan keterangan
+        $pel = Pelanggan::findOrFail($this->id_pelanggan);
 
-        return redirect('/pelanggan');
+        // Siapkan data update
+        $data = [
+            'nama_pelanggan' => $this->nama_pelanggan,
+            'no_telp'        => $this->no_telp,
+            'alamat'         => $this->alamat,
+            'keterangan'     => $this->keterangan,
+        ];
+
+        // Jika berubah dari non‐Member → Member, isi member_start_at
+        if (
+            strtolower($pel->keterangan) !== 'member' &&
+            strtolower($this->keterangan) === 'member'
+        ) {
+            $data['member_start_at'] = Carbon::now();
+        }
+
+        Pelanggan::where('id_pelanggan', $this->id_pelanggan)
+                 ->update($data);
+
+        return redirect()->route('pelanggan');
     }
 
-    /**
-     * Render tampilan komponen Livewire.
-     *
-     * @return \Illuminate\View\View
-     */
     public function render()
     {
         return view('livewire.pelanggan.edit');

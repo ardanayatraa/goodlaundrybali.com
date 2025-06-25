@@ -75,6 +75,15 @@ Breadcrumbs::for('trx-barang-keluar.detail', function (BreadcrumbTrail $trail, $
     $trail->push("Detail #{$id}", route('trx-barang-keluar.detail', $id));
 });
 
+
+// Home > Trx Barang Keluar > Detail By Date
+Breadcrumbs::for('trx-barang-keluar.by-date', function (BreadcrumbTrail $trail, $tanggal) {
+    $trail->parent('trx-barang-keluar');
+    $trail->push(
+        'Detail ' . Carbon::parse($tanggal)->isoFormat('D MMMM YYYY'),
+        route('trx-barang-keluar.by-date', $tanggal)
+    );
+});
 // Home > Trx Barang Masuk > Detail
 Breadcrumbs::for('trx-barang-masuk.detail', function (BreadcrumbTrail $trail, $id) {
     $trail->parent('trx-barang-masuk');

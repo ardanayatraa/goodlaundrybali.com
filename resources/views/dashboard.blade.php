@@ -9,8 +9,8 @@
     <div class="container mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
 
         {{-- 1. Pelanggan (Hijau Muda) --}}
-        <div
-            class="rounded-xl shadow-sm p-6 transform hover:-translate-y-1 hover:shadow-lg transition duration-200 bg-green-50">
+        <a href="{{ route('pelanggan') }}"
+            class="block rounded-xl shadow-sm p-6 transform hover:-translate-y-1 hover:shadow-lg transition duration-200 bg-green-50">
             <div class="flex items-center justify-between mb-4">
                 <div class="p-3 rounded-lg bg-green-100">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,11 +24,11 @@
             <p class="mt-2 text-sm {{ $growthPelanggan >= 0 ? 'text-green-600' : 'text-red-600' }}">
                 {{ $growthPelanggan >= 0 ? '+' : '' }}{{ number_format($growthPelanggan, 2) }}%
             </p>
-        </div>
+        </a>
 
         {{-- 2. Pesanan Diproses (Kuning Muda) --}}
-        <div
-            class="rounded-xl shadow-sm p-6 transform hover:-translate-y-1 hover:shadow-lg transition duration-200 bg-yellow-50">
+        <a href="{{ route('transaksi') }}"
+            class="block rounded-xl shadow-sm p-6 transform hover:-translate-y-1 hover:shadow-lg transition duration-200 bg-yellow-50">
             <div class="flex items-center justify-between mb-4">
                 <div class="p-3 rounded-lg bg-yellow-100">
                     <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,11 +40,11 @@
             </div>
             <h3 class="text-2xl font-bold text-yellow-800">{{ number_format($pesananDalamProses) }}</h3>
             <p class="mt-2 text-sm text-yellow-600">{{ number_format($pesananBaru) }} baru</p>
-        </div>
+        </a>
 
         {{-- 3. Total Transaksi (Ungu Muda) --}}
-        <div
-            class="rounded-xl shadow-sm p-6 transform hover:-translate-y-1 hover:shadow-lg transition duration-200 bg-purple-50">
+        <a href="{{ route('transaksi') }}"
+            class="block rounded-xl shadow-sm p-6 transform hover:-translate-y-1 hover:shadow-lg transition duration-200 bg-purple-50">
             <div class="flex items-center justify-between mb-4">
                 <div class="p-3 rounded-lg bg-purple-100">
                     <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,11 +60,11 @@
             <p class="mt-2 text-sm {{ $growthTransaksi >= 0 ? 'text-green-600' : 'text-red-600' }}">
                 {{ $growthTransaksi >= 0 ? '+' : '' }}{{ number_format($growthTransaksi, 2) }}%
             </p>
-        </div>
+        </a>
 
         {{-- 4. Barang Masuk (Biru Muda) --}}
-        <div
-            class="rounded-xl shadow-sm p-6 transform hover:-translate-y-1 hover:shadow-lg transition duration-200 bg-blue-50">
+        <a href="{{ route('trx-barang-masuk') }}"
+            class="block rounded-xl shadow-sm p-6 transform hover:-translate-y-1 hover:shadow-lg transition duration-200 bg-blue-50">
             <div class="flex items-center justify-between mb-4">
                 <div class="p-3 rounded-lg bg-blue-100">
                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,11 +79,11 @@
             <p class="mt-1 text-sm font-medium text-blue-700">
                 Rp {{ number_format($nominalMasuk, 0, ',', '.') }}
             </p>
-        </div>
+        </a>
 
         {{-- 5. Barang Keluar (Merah Muda) --}}
-        <div
-            class="rounded-xl shadow-sm p-6 transform hover:-translate-y-1 hover:shadow-lg transition duration-200 bg-red-50">
+        <a href="{{ route('trx-barang-keluar') }}"
+            class="block rounded-xl shadow-sm p-6 transform hover:-translate-y-1 hover:shadow-lg transition duration-200 bg-red-50">
             <div class="flex items-center justify-between mb-4">
                 <div class="p-3 rounded-lg bg-red-100">
                     <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,7 +98,8 @@
             <p class="mt-1 text-sm font-medium text-red-700">
                 Rp {{ number_format($nominalKeluar, 0, ',', '.') }}
             </p>
-        </div>
+        </a>
+
     </div>
 
     {{-- Footer / Business Info --}}

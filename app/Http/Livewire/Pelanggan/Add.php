@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Pelanggan;
 
 use Livewire\Component;
 use App\Models\Pelanggan;
+use Illuminate\Support\Carbon;
 
 class Add extends Component
 {
@@ -11,42 +12,38 @@ class Add extends Component
 
     protected $rules = [
         'nama_pelanggan' => 'required|string|max:100',
-        'no_telp' => 'required|string|max:15',
-        'alamat' => 'required|string|max:255',
-        'keterangan' => 'nullable|string|max:255',
+        'no_telp'        => 'required|string|max:15',
+        'alamat'         => 'required|string|max:255',
+        'keterangan'     => 'nullable|string|max:255',
     ];
 
-    /**
-     * Simpan data pelanggan baru ke database.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function save()
     {
         $this->validate();
 
-        // Format no_telp to start with 62 if it begins with 0
+        // Format nomor telepon
         if (substr($this->no_telp, 0, 1) === '0') {
-            $this->no_telp = '62' . substr($this->no_telp, 1);
+            $this->no_telp = '62'.substr($this->no_telp, 1);
         }
 
-        Pelanggan::create([
-            'nama_pelanggan' => $this->nama_pelanggan,
-            'no_telp' => $this->no_telp,
-            'alamat' => $this->alamat,
-            'keterangan' => $this->keterangan,
-        ]);
+        // Siapkan data dasar
+        $data = [
+            'nama_pelanggan'  => $this->nama_pelanggan,
+            'no_telp'         => $this->no_telp,
+            'alamat'          => $this->alamat,
+            'keterangan'      => $this->keterangan,
+        ];
+        // Jika memilih “Member”, tambahkan member_start_at
+        if (strtolower($this->keterangan) === 'member') {
+            $data['member_start_at'] = Carbon::now();
+        }
 
-        // Reset form setelah simpan
+        Pelanggan::create($data);
+
         $this->reset();
-        return redirect('/pelanggan');
+        return redirect()->route('pelanggan');
     }
 
-    /**
-     * Render tampilan komponen Livewire.
-     *
-     * @return \Illuminate\View\View
-     */
     public function render()
     {
         return view('livewire.pelanggan.add');

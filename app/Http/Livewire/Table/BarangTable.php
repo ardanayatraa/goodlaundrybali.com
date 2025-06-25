@@ -32,6 +32,7 @@ class BarangTable extends LivewireDatatable
             Column::name('nama_barang')->label('Nama Barang')->sortable()->searchable(),
             Column::name('stok')->label('Stok')->sortable()->searchable(),
             Column::name('harga')->label('Harga')->sortable(),
+            Column::name('unit.nama_unit')->label('Unit')->sortable(),
 
             Column::callback(['id_barang'], function ($id) {
 
