@@ -50,13 +50,7 @@ class TrxBarangMasukTable extends LivewireDatatable
             ->sortable()
             ->searchable(),
 
-            Column::name('admin.nama_admin')
-                  ->label('Nama Admin')
-                  ->searchable(),
 
-            Column::name('total_harga')
-                  ->label('Total Harga')
-                  ->sortable(),
 
             Column::callback(['id_trx_brgmasuk'], fn($id) => view('components.table-action', [
                     'id'    => $id,

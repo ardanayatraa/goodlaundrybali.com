@@ -47,9 +47,6 @@ class TrxBarangKeluarTable extends LivewireDatatable
             ->sortable()
             ->searchable(),
 
-            Column::name('admin.nama_admin')
-                  ->label('Nama Admin')
-                  ->searchable(),
 
             Column::callback(
                 ['id_trx_brgkeluar'],
