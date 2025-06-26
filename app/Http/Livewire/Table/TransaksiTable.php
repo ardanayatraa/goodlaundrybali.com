@@ -47,6 +47,7 @@ class TransaksiTable extends LivewireDatatable
         return [
             Column::name('id_transaksi')->label('ID Transaksi')->sortable(),
             Column::name('pelanggan.nama_pelanggan')->label('Nama Pelanggan')->sortable()->searchable(),
+            Column::name('detailTransaksi.jam_ambil')->label('Jam ambil')->sortable()->searchable(),
             Column::callback(
                 ['tanggal_transaksi', 'id_transaksi'],
                 function ($tanggal, $id) {
