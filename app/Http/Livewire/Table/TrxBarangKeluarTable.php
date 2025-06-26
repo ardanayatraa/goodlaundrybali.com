@@ -28,13 +28,7 @@ class TrxBarangKeluarTable extends LivewireDatatable
                   ->label('Nama Barang')
                   ->sortable()
                   ->searchable(),
-            Column::name('jumlah_brgkeluar')
-                  ->label('Jumlah')
-                  ->sortable(),
-            Column::name('barang.unit.nama_unit')
-                  ->label('Unit')
-                  ->sortable()
-                  ->searchable(),
+
 
             Column::callback(
                 ['tanggal_keluar', 'id_trx_brgkeluar'],

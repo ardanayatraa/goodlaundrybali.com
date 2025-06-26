@@ -28,16 +28,7 @@ class TrxBarangMasukTable extends LivewireDatatable
                   ->label('Nama Barang')
                   ->sortable()
                   ->searchable(),
-            Column::name('jumlah_brgmasuk')
-                  ->label('Jumlah Barang')
-                  ->sortable()
-                  ->searchable(),
 
-            // gunakan relasi barang.unit.nama_unit
-            Column::name('barang.unit.nama_unit')
-                  ->label('Unit Barang')
-                  ->sortable()
-                  ->searchable(),
 
             Column::callback(
                 ['tanggal_masuk', 'id_trx_brgmasuk'],
