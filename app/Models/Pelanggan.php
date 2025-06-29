@@ -55,4 +55,9 @@ class Pelanggan extends Model
     {
         return $this->hasMany(Transaksi::class, 'id_pelanggan');
     }
+
+    public function getHargaPendaftaranAttribute()
+{
+    return 10000;
+}
 }
