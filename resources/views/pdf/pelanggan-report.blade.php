@@ -41,6 +41,15 @@
         .page-break {
             page-break-after: always;
         }
+
+        .total-row td {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+
+        .text-right {
+            text-align: right;
+        }
     </style>
 </head>
 
@@ -54,9 +63,10 @@
         @php
             $perPage = 25;
             $chunkedData = $data->chunk($perPage);
+            $globalRowNumber = 1;
         @endphp
 
-        @foreach ($chunkedData as $chunk)
+        @foreach ($chunkedData as $chunkIndex => $chunk)
             <table>
                 <thead>
                     <tr>
@@ -69,12 +79,20 @@
                 <tbody>
                     @foreach ($chunk as $index => $pelanggan)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $globalRowNumber++ }}</td>
                             <td>{{ $pelanggan->nama_pelanggan }}</td>
                             <td>{{ \Carbon\Carbon::parse($pelanggan->created_at)->format('d-m-Y') }}</td>
                             <td>Rp 10.000</td>
                         </tr>
                     @endforeach
+
+                    {{-- Baris total di halaman terakhir --}}
+                    @if ($chunkIndex === $chunkedData->count() - 1)
+                        <tr class="total-row">
+                            <td colspan="3" class="text-right">Total Harga Pendaftaran</td>
+                            <td>Rp {{ number_format($data->count() * 10000, 0, ',', '.') }}</td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
 

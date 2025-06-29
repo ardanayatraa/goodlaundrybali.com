@@ -18,6 +18,7 @@ class Pelanggan extends Model
         'keterangan',       // “Member” / “Non Member”
         'point',
         'member_start_at',  // kolom timestamp baru
+        'harga_member',     // kolom harga member
     ];
 
     // biar Carbon otomatis cast ke objek DateTime

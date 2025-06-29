@@ -6,6 +6,7 @@ use App\Models\Pelanggan;
 use Carbon\Carbon;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\Column;
+use Mediconesystems\LivewireDatatables\NumberColumn;
 
 class LaporanPelangganTable extends LivewireDatatable
 {
@@ -42,12 +43,9 @@ class LaporanPelangganTable extends LivewireDatatable
             Column::callback('created_at', function ($date) {
                 return Carbon::parse($date)->format('d-m-Y');
             })->label('Tanggal Pendaftaran')->sortable(),
-            Column::callback(['id_pelanggan'], function () {
-                return 'Rp 10.000';
-            })
-            ->label('Harga Pendaftaran')
-            ->enableSummary()
-            ,
+            NumberColumn::name('harga_member')
+                ->label('Harga Pendaftaran')->enableSummary()
+
 
         ];
 
