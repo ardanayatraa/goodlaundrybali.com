@@ -83,7 +83,7 @@ class LaporanTable extends LivewireDatatable
             Column::name('detailTransaksi.total_diskon')->label('Total Diskon')->sortable(),
             Column::name('detailTransaksi.sub_total')->label('Sub Total')->sortable(),
             Column::name('status_transaksi')->label('Status Transaksi')->sortable(),
-            Column::name('total_harga')->label('Total Harga (Rp)')->sortable()->searchable(),
+            Column::name('total_harga')->label('Total Harga (Rp)')->sortable()->searchable()->enableSummary(),
         ];
     }
 }

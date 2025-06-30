@@ -46,7 +46,6 @@ class LaporanPelangganTable extends LivewireDatatable
             NumberColumn::name('harga_member')
                 ->label('Harga Pendaftaran')->enableSummary()
 
-
         ];
 
     }
