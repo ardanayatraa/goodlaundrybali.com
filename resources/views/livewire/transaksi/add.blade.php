@@ -25,7 +25,8 @@
                                 @forelse($pelanggans as $p)
                                     <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                                         wire:click="$set('id_pelanggan','{{ $p->id_pelanggan }}')">
-                                        {{ $p->nama_pelanggan }}
+                                        {{ $p->id_pelanggan }} - {{ $p->nama_pelanggan }} - {{ $p->no_telepon }} -
+                                        {{ $p->alamat }}
                                     </li>
                                 @empty
                                     <li class="px-4 py-2 text-gray-500">Tidak ada hasil</li>
