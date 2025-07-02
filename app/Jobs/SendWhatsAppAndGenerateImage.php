@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
@@ -27,50 +26,77 @@ class SendWhatsAppAndGenerateImage implements ShouldQueue
     public function handle()
     {
         $transaksi = $this->transaksi;
+        $apiBase   = rtrim(env('HTML_TO_IMAGE_API'), '/');      // e.g. http://localhost:3020
+        $email     = env('HTML_TO_IMAGE_API_EMAIL');            // service account email
+        $password  = env('HTML_TO_IMAGE_API_PASSWORD');         // service account password
 
-        // Generate image
-        $apiUrl = env('HTML_TO_IMAGE_API');
-        $url = route('transaksi.image', ['id' => $transaksi->id_transaksi], true);
-        $filename = 'transaksi_' . $transaksi->id_transaksi . '.png';
-
+        // 1. Login untuk dapat JWT
         try {
-            $client = new Client(['timeout' => 60]);
-            $response = $client->post($apiUrl, [
-                'headers' => ['Content-Type' => 'application/json'],
-                'json' => [
-                    'url' => $url,
-                    'width' => 720,
-                    'height' => 1280,
-                    'format' => 'png'
-                ]
+            $login = Http::post("{$apiBase}/api/login", [
+                'email'    => $email,
+                'password' => $password,
             ]);
-
-            if ($response->getStatusCode() === 200) {
-                Storage::disk('public')->put($filename, $response->getBody()->getContents());
-                Log::info("Gambar berhasil disimpan: storage/app/public/{$filename}");
-            } else {
-                Log::error("Gagal generate gambar: " . $response->getBody()->getContents());
+            if (! $login->successful()) {
+                Log::error('Screenshot API login failed', ['body'=>$login->body()]);
                 return;
             }
+            $token = $login->json('token');
         } catch (\Exception $e) {
-            Log::error('Error API HTML to Image: ' . $e->getMessage());
+            Log::error('Screenshot API login exception: '.$e->getMessage());
             return;
         }
 
-        // Send WhatsApp message
-        $number = $transaksi->pelanggan->no_telp;
+        // 2. Request screenshot
+        $url      = route('transaksi.image', ['id' => $transaksi->id_transaksi], true);
+        $filename = 'transaksi_' . $transaksi->id_transaksi . '.png';
+
+        try {
+            $resp = Http::withToken($token)
+                ->timeout(60)
+                ->post("{$apiBase}/api/screenshot", [
+                    'url'      => $url,
+                    'width'    => 720,
+                    'height'   => 1280,
+                    'format'   => 'png',
+                    'fullPage' => true,
+                ]);
+
+            if (! $resp->successful()) {
+                Log::error('Screenshot API error', ['status'=>$resp->status(), 'body'=>$resp->body()]);
+                return;
+            }
+
+            // Simpan binary image
+            Storage::disk('public')->put($filename, $resp->body());
+            Log::info("Gambar berhasil disimpan: storage/app/public/{$filename}");
+        } catch (\Exception $e) {
+            Log::error('Screenshot request exception: '.$e->getMessage());
+            return;
+        }
+
+        // 3. Kirim WA dengan attachment
+        $number  = $transaksi->pelanggan->no_telp;
         $message = "Halo *{$transaksi->pelanggan->nama_pelanggan}*, laundry Anda sudah siap diambil! 🚀";
 
         try {
-            $response = Http::post(env('WA_API_URL') . '/send-message', [
-                'number' => $number,
-                'message' => $message,
-                'mediaUrl' => env('APP_URL') . '/storage/' . $filename
-            ]);
+            $waSession = env('WA_SESSION_ID', 'user123');
+            $waApi     = rtrim(env('WA_API_URL'), '/');
+            $filePath  = Storage::disk('public')->path($filename);
 
-            Log::info('WA Response:', $response->json());
+            $waResp = Http::acceptJson()
+                ->attach('file', fopen($filePath, 'r'), $filename)
+                ->post("{$waApi}/api/sessions/{$waSession}/messages/media", [
+                    'number'  => $number,
+                    'message' => $message,
+                ]);
+
+            if ($waResp->successful()) {
+                Log::info('WA sent:', $waResp->json());
+            } else {
+                Log::error('WA send failed', ['status'=>$waResp->status(), 'body'=>$waResp->body()]);
+            }
         } catch (\Exception $e) {
-            Log::error('WA Error: ' . $e->getMessage());
+            Log::error('WA send exception: '.$e->getMessage());
         }
     }
 }
