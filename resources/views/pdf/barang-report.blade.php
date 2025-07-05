@@ -1,101 +1,79 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Barang</title>
+    <meta charset="utf-8">
+    <title>Laporan Stok</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            font-size: 10px;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 100%;
-            margin: 0 auto;
-            padding: 10px;
+            font-family: sans-serif;
+            font-size: 12px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed;
-            word-wrap: break-word;
+            margin-top: 1rem;
         }
 
         th,
         td {
-            padding: 8px;
-            text-align: left;
-            border: 1px solid #ddd;
-            font-size: 10px;
+            border: 1px solid #333;
+            padding: 4px;
         }
 
         th {
-            background-color: #f2f2f2;
-            font-weight: bold;
+            background: #eee;
         }
 
-        .page-break {
-            page-break-after: always;
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1 style="text-align: center;">Laporan Barang</h1>
-        <p style="text-align: center; font-size: 12px;">
-            Filter: {{ $filterDescription ?? 'Tidak ada filter yang dipilih' }}
-        </p>
+    <h2 style="text-align:center">Laporan Stok Barang</h2>
 
-        <h2 style="text-align: left; margin-top: 20px;">Data Barang</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nama Barang</th>
-                    <th>Harga</th>
-                    <th>Jumlah Masuk</th>
-                    <th>Jumlah Keluar</th>
-                    <th>Stok Awal</th>
-                    <th>Stok Akhir</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($report as $index => $row)
-                    <tr>
-                        <td>{{ $row['nama'] }}</td>
-                        <td>Rp {{ number_format($row['harga'], 0, ',', '.') }}</td>
-                        <td>{{ $row['jumlah_masuk'] }}</td>
-                        <td>{{ $row['jumlah_keluar'] }}</td>
-                        <td>{{ $row['stok_awal'] }}</td>
-                        <td>{{ $row['stok_akhir'] }}</td>
-                    </tr>
+    <p>Filter: {{ $filterDesc }}</p>
 
-                    @if (($index + 1) % 20 == 0)
-            </tbody>
-        </table>
-        <div class="page-break"></div>
-        <table>
-            <thead>
+    <table>
+        <thead>
+            <tr>
+                <th class="text-center">#</th>
+                <th>Nama Barang</th>
+                <th class="text-right">Stok Awal</th>
+                <th class="text-right">Masuk</th>
+                <th class="text-right">Keluar</th>
+                <th class="text-right">Stok Akhir</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($stockSummary as $i => $item)
                 <tr>
-                    <th>Nama Barang</th>
-                    <th>Harga</th>
-                    <th>Jumlah Masuk</th>
-                    <th>Jumlah Keluar</th>
-                    <th>Stok Awal</th>
-                    <th>Stok Akhir</th>
+                    <td class="text-center">{{ $i + 1 }}</td>
+                    <td>{{ $item->nama }}</td>
+                    <td class="text-right">{{ $item->stok_awal }}</td>
+                    <td class="text-right">{{ $item->masuk }}</td>
+                    <td class="text-right">{{ $item->keluar }}</td>
+                    <td class="text-right">{{ $item->stok_akhir }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @endif
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+            @endforeach
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="2" class="text-right">TOTAL</th>
+                <th class="text-right">{{ $totalAwal }}</th>
+                <th class="text-right">{{ $totalMasuk }}</th>
+                <th class="text-right">{{ $totalKeluar }}</th>
+                <th class="text-right">{{ $totalAkhir }}</th>
+            </tr>
+        </tfoot>
+    </table>
 </body>
 
 </html>

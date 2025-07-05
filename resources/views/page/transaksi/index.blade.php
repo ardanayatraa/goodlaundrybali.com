@@ -22,5 +22,6 @@
         @livewire('transaksi.delete')
         @livewire('transaksi.update-status')
         @livewire('transaksi.filter-data')
+        @livewire('transaksi.pembayaran-trx')
     </div>
 </x-app-layout>

@@ -34,9 +34,9 @@ class Add extends Component
     public $total_diskon   = 0;
 
     // — Total & Pembayaran —
-    public $total_harga = 0;
-    public $jumlah_bayar = 0;
-    public $kembalian    = 0;
+    public $total_harga   = 0;
+    public $jumlah_bayar  = 0;
+    public $kembalian     = 0;
 
     // — Items Paket —
     public $items = [];
@@ -44,15 +44,15 @@ class Add extends Component
     protected function rules()
     {
         $rules = [
-            'id_pelanggan'         => 'required|exists:pelanggans,id_pelanggan',
-            'tanggal_transaksi'    => 'required|date',
-            'items'                => 'required|array|min:1',
-            'items.*.id_paket'     => 'required|exists:pakets,id_paket',
-            'items.*.jumlah'       => 'required|integer|min:1',
-            'metode_pembayaran'    => 'required|string',
-            'status_pembayaran'    => 'required|string',
-            'status_transaksi'     => 'required|string',
-            'jumlah_bayar'         => 'required|numeric|min:0',
+            'id_pelanggan'       => 'required|exists:pelanggans,id_pelanggan',
+            'tanggal_transaksi'  => 'required|date',
+            'items'              => 'required|array|min:1',
+            'items.*.id_paket'   => 'required|exists:pakets,id_paket',
+            'items.*.jumlah'     => 'required|integer|min:1',
+            'metode_pembayaran'  => 'required|string',
+            'status_pembayaran'  => 'required|string',
+            'status_transaksi'   => 'required|string',
+            'jumlah_bayar'       => 'required|numeric|min:0',
         ];
 
         if ($this->samePickup) {
@@ -68,9 +68,13 @@ class Add extends Component
 
     public function mount()
     {
+        // Inisialisasi default
+        $this->tanggal_transaksi = now()->format('Y-m-d');
         $this->globalTanggalAmbil = now()->format('Y-m-d');
         $this->globalJamAmbil     = now()->format('H:i');
-        $this->tanggal_transaksi  = now()->format('Y-m-d');
+        $this->jumlah_bayar       = 0;
+        $this->kembalian          = 0;
+
         $this->addItem();
         $this->calculateTotalHarga();
     }
@@ -78,7 +82,7 @@ class Add extends Component
     public function updatedIdPelanggan()
     {
         $pel = Pelanggan::find($this->id_pelanggan);
-        $this->jumlah_point   = $pel?->point ?? 0;
+        $this->jumlah_point = $pel?->point ?? 0;
         $this->pointsToRedeem = $this->total_diskon = 0;
         $this->calculateTotalHarga();
     }
@@ -90,14 +94,14 @@ class Add extends Component
 
     public function updated($name, $value)
     {
-        // react to items.*.id_paket / jumlah
+        // Kalkulasi harga item jika paket atau jumlah berubah
         if (preg_match('/^items\.(\d+)\.(id_paket|jumlah)$/', $name, $m)) {
             [$all, $i, $field] = $m;
             $paket = Paket::find($this->items[$i]['id_paket']);
             $harga = $paket?->harga ?? 0;
             $jumlah = $this->items[$i]['jumlah'] ?? 1;
             $this->items[$i]['harga']    = $harga;
-            $this->items[$i]['subtotal'] = $jumlah * $harga;
+            $this->items[$i]['subtotal'] = $harga * $jumlah;
         }
 
         $this->calculateTotalHarga();
@@ -114,7 +118,7 @@ class Add extends Component
     {
         if ($this->jumlah_point >= 10) {
             $this->pointsToRedeem = floor($this->jumlah_point / 10) * 10;
-            $this->total_diskon   = ($this->pointsToRedeem / 10) * 100000; // misal 10 poin = Rp100.000
+            $this->total_diskon   = ($this->pointsToRedeem / 10) * 100000; // contoh: 10 poin = 100k
             $this->calculateTotalHarga();
             session()->flash('success', "Pakai {$this->pointsToRedeem} poin → diskon Rp " . number_format($this->total_diskon,0,',','.'));
         } else {
@@ -158,6 +162,8 @@ class Add extends Component
                 'jumlah_point'      => $this->jumlah_point,
                 'jumlah_bayar'      => $this->jumlah_bayar,
                 'kembalian'         => $this->kembalian,
+                'created_at'        => Carbon::now(),
+                'updated_at'        => Carbon::now(),
             ]);
 
             foreach ($this->items as $row) {
@@ -170,10 +176,12 @@ class Add extends Component
                     'sub_total'     => $row['subtotal'],
                     'total_diskon'  => 0,
                     'keterangan'    => $this->keterangan,
+                    'created_at'    => Carbon::now(),
+                    'updated_at'    => Carbon::now(),
                 ]);
             }
 
-            // kurangi poin pelanggan
+            // Kurangi poin
             if ($this->pointsToRedeem > 0) {
                 $pel = Pelanggan::find($this->id_pelanggan);
                 $pel->update(['point' => max(0, $pel->point - $this->pointsToRedeem)]);
@@ -181,6 +189,7 @@ class Add extends Component
 
             \DB::commit();
             return redirect()->route('transaksi.detail', $trx->id_transaksi);
+
         } catch (\Throwable $e) {
             \DB::rollBack();
             session()->flash('error', 'Gagal simpan: ' . $e->getMessage());
@@ -190,7 +199,8 @@ class Add extends Component
     public function render()
     {
         return view('livewire.transaksi.add', [
-            'pelanggans' => Pelanggan::where('nama_pelanggan','like',"%{$this->searchPelanggan}%")->limit(5)->get(),
+            'pelanggans' => Pelanggan::where('nama_pelanggan','like',"%{$this->searchPelanggan}%")
+                                      ->limit(5)->get(),
             'pakets'     => Paket::all(),
         ]);
     }

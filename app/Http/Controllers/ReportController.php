@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Barang;
 use App\Models\Transaksi;
+use App\Models\TrxBarangKeluar;
+use App\Models\TrxBarangMasuk;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -10,70 +13,70 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportController extends Controller
 {
-    public function generate(Request $request)
+   public function generate(Request $request): StreamedResponse
     {
-        $query = Transaksi::with([
-            'pelanggan',
-            'detailTransaksi.paket',
-        ]);
+        // Baca langsung dari query-string start_date/end_date/search
+        $start  = $request->query('start_date', Carbon::today()->toDateString());
+        $end    = $request->query('end_date',   Carbon::today()->toDateString());
+        $search = $request->query('search', '');
 
-        // filter berdasarkan tipe
-        switch ($request->filterType) {
-            case 'daily':
-                $query->whereDate('tanggal_transaksi', $request->filterDate);
-                break;
-            case 'weekly':
-                $query->whereBetween('tanggal_transaksi', [
-                    $request->filterStartDate,
-                    $request->filterEndDate
-                ]);
-                break;
-            case 'monthly':
-                $m = Carbon::parse($request->filterMonth);
-                $query->whereMonth('tanggal_transaksi', $m->month)
-                      ->whereYear('tanggal_transaksi', $m->year);
-                break;
-            case 'yearly':
-                $query->whereYear('tanggal_transaksi', $request->filterYear);
-                break;
-            case 'range':
-                if ($request->filterStartDate && $request->filterEndDate) {
-                    $query->whereBetween('tanggal_transaksi', [
-                        $request->filterStartDate,
-                        $request->filterEndDate
-                    ]);
-                }
-                break;
-        }
+        // Jika ingin juga filter by nama_barang
+        $barangs = Barang::query()
+            ->when($search, fn($q) => $q->where('nama_barang', 'like', "%{$search}%"))
+            ->orderBy('nama_barang')
+            ->get();
 
-        $data = $query->get();
+        // Hitung ringkasan stok per barang
+        $stockSummary = $barangs->map(function($b) use($start, $end) {
+            $masuk = TrxBarangMasuk::where('id_barang', $b->id_barang)
+                ->whereDate('tanggal_masuk','>=',$start)
+                ->whereDate('tanggal_masuk','<=',$end)
+                ->sum('jumlah_brgmasuk');
 
-        $filterDescription = match ($request->filterType) {
-            'daily'   => "Harian: " . ($request->filterDate ?? '-'),
-            'weekly'  => "Mingguan: {$request->filterStartDate} s/d {$request->filterEndDate}",
-            'monthly' => "Bulanan: " . ($request->filterMonth ?? '-'),
-            'yearly'  => "Tahunan: " . ($request->filterYear ?? '-'),
-            'range'   => "Rentang: {$request->filterStartDate} s/d {$request->filterEndDate}",
-            default   => "Tanpa filter",
-        };
+            $keluar = TrxBarangKeluar::where('id_barang', $b->id_barang)
+                ->whereDate('tanggal_keluar','>=',$start)
+                ->whereDate('tanggal_keluar','<=',$end)
+                ->sum('jumlah_brgkeluar');
 
-        $pdf = Pdf::loadView('pdf.transaksi-report', compact('data', 'request', 'filterDescription'))
-            ->setPaper('a4', 'landscape')
-            ->setOption('dpi', 96)
-            ->setOption('isHtml5ParserEnabled', true)
-            ->setOption('isRemoteEnabled', true);
+            $stokAkhir = $b->stok;
+            $stokAwal  = $stokAkhir - $masuk + $keluar;
 
-        $filename = 'Laporan_Transaksi_' . now()->format('YmdHis') . '.pdf';
+            return (object)[
+                'nama'       => $b->nama_barang,
+                'stok_awal'  => $stokAwal,
+                'masuk'      => $masuk,
+                'keluar'     => $keluar,
+                'stok_akhir' => $stokAkhir,
+            ];
+        });
 
-        /** @var StreamedResponse $response */
-        $response = response()->stream(function () use ($pdf) {
+        // Total untuk footer
+        $totalAwal  = $stockSummary->sum('stok_awal');
+        $totalMasuk = $stockSummary->sum('masuk');
+        $totalKeluar= $stockSummary->sum('keluar');
+        $totalAkhir = $stockSummary->sum('stok_akhir');
+
+        // Generate PDF, pass exactly these variabel ke view
+        $pdf = Pdf::loadView('pdf.barang-report', compact(
+            'stockSummary',
+            'start',
+            'end',
+            'search',
+            'totalAwal',
+            'totalMasuk',
+            'totalKeluar',
+            'totalAkhir'
+        ))
+        ->setPaper('a4','landscape');
+
+        $filename = "Laporan_Stok_{$start}_to_{$end}.pdf";
+
+        return response()->stream(function() use($pdf) {
             echo $pdf->output();
         }, 200, [
             'Content-Type'        => 'application/pdf',
             'Content-Disposition' => "inline; filename=\"{$filename}\"",
         ]);
-
-        return $response;
     }
 
     public function generatePelanggan(Request $request)

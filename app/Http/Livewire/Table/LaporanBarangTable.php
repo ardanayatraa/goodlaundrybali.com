@@ -87,26 +87,26 @@ class LaporanBarangTable extends LivewireDatatable
             Column::name('harga')->label('Harga (Rp)')->sortable(),
 
             // kolom Stok Awal
-            Column::callback(['id_barang'], function ($id) {
-                $start = $this->getPeriodStartDate();
-                if (! $start) {
-                    return '-';
-                }
-                $startDt = Carbon::parse($start)->startOfDay();
+            // Column::callback(['id_barang'], function ($id) {
+            //     $start = $this->getPeriodStartDate();
+            //     if (! $start) {
+            //         return '-';
+            //     }
+            //     $startDt = Carbon::parse($start)->startOfDay();
 
-                $masukBefore = TrxBarangMasuk::where('id_barang', $id)
-                    ->where('tanggal_masuk', '<', $startDt)
-                    ->sum('jumlah_brgmasuk');
+            //     $masukBefore = TrxBarangMasuk::where('id_barang', $id)
+            //         ->where('tanggal_masuk', '<', $startDt)
+            //         ->sum('jumlah_brgmasuk');
 
-                $keluarBefore = TrxBarangKeluar::where('id_barang', $id)
-                    ->where('tanggal_keluar', '<', $startDt)
-                    ->sum('jumlah_brgkeluar');
+            //     $keluarBefore = TrxBarangKeluar::where('id_barang', $id)
+            //         ->where('tanggal_keluar', '<', $startDt)
+            //         ->sum('jumlah_brgkeluar');
 
-                return $masukBefore - $keluarBefore;
-            })
-            ->label('Stok Awal')
-            ->unsortable()
-            ->wrap(),
+            //     return $masukBefore - $keluarBefore;
+            // })
+            // ->label('Stok Awal')
+            // ->unsortable()
+            // ->wrap(),
 
             Column::name('trxBarangKeluar.jumlah_brgkeluar:sum')
                   ->label('Transaksi Keluar')

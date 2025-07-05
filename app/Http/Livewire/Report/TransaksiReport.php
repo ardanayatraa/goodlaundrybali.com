@@ -58,6 +58,8 @@ class TransaksiReport extends Component
                 $this->filterDescription = "Tidak ada filter yang dipilih";
         }
 
+        dd($this->filterStartDate, $this->filterEndDate);
+
         $this->emit('filterUpdated', [
             'filterType' => $this->filterType,
             'filterDate' => $this->filterDate,
