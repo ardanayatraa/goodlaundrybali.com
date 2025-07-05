@@ -22,6 +22,8 @@ class Transaksi extends Model
         'status_transaksi',
         'jumlah_point',
         'keterangan',
+        'jumlah_bayar',
+        'kembalian',
     ];
 
     // agar accessor ikut di-serialize saat datatable

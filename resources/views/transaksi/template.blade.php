@@ -135,7 +135,6 @@
         <tbody>
             @foreach ($transaksi->detailTransaksi as $detail)
                 <tr>
-                    {{-- gunakan relasi detail->paket --}}
                     <td>{{ $detail->paket->jenis_paket }}</td>
                     <td>{{ $detail->tanggal_ambil }}</td>
                     <td>{{ $detail->paket->unitPaket->nama_unit ?? $detail->paket->unit }}</td>
@@ -155,6 +154,14 @@
         <tr>
             <td><strong>Subtotal</strong></td>
             <td><strong>: Rp. {{ number_format($transaksi->total_harga, 0, ',', '.') }}</strong></td>
+        </tr>
+        <tr>
+            <td>Jumlah Bayar</td>
+            <td>: Rp. {{ number_format($transaksi->jumlah_bayar, 0, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td>Kembalian</td>
+            <td>: Rp. {{ number_format($transaksi->kembalian, 0, ',', '.') }}</td>
         </tr>
     </table>
 

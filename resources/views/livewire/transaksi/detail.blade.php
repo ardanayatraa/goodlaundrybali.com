@@ -76,11 +76,14 @@
                     <td class="border px-2 py-1 text-center">{{ $detail->paket->jenis_paket }}</td>
                     <td class="border px-2 py-1 text-center">{{ $detail->tanggal_ambil }}</td>
                     <td class="border px-2 py-1 text-center">
-                        {{ $detail->paket->unitPaket->nama_unit ?? $detail->paket->unit }}</td>
-                    <td class="border px-2 py-1 text-center">{{ $detail->jumlah }}</td>
-                    <td class="border px-2 py-1 text-right">Rp {{ number_format($detail->paket->harga, 0, ',', '.') }}
+                        {{ $detail->paket->unitPaket->nama_unit ?? $detail->paket->unit }}
                     </td>
-                    <td class="border px-2 py-1 text-right">Rp {{ number_format($detail->sub_total, 0, ',', '.') }}
+                    <td class="border px-2 py-1 text-center">{{ $detail->jumlah }}</td>
+                    <td class="border px-2 py-1 text-right">
+                        Rp {{ number_format($detail->paket->harga, 0, ',', '.') }}
+                    </td>
+                    <td class="border px-2 py-1 text-right">
+                        Rp {{ number_format($detail->sub_total, 0, ',', '.') }}
                     </td>
                 </tr>
             @endforeach
@@ -92,13 +95,27 @@
         <tbody>
             <tr class="odd:bg-gray-50">
                 <td class="py-1 font-medium">Diskon</td>
-                <td class="py-1">: Rp
-                    {{ number_format($transaksi->detailTransaksi->sum('total_diskon'), 0, ',', '.') }}
+                <td class="py-1">:
+                    Rp {{ number_format($transaksi->detailTransaksi->sum('total_diskon'), 0, ',', '.') }}
                 </td>
             </tr>
             <tr class="odd:bg-gray-50">
                 <td class="py-1 font-medium">Subtotal</td>
-                <td class="py-1">: <strong>Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</strong></td>
+                <td class="py-1">:
+                    <strong>Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</strong>
+                </td>
+            </tr>
+            <tr class="odd:bg-gray-50">
+                <td class="py-1 font-medium">Jumlah Bayar</td>
+                <td class="py-1">:
+                    Rp {{ number_format($transaksi->jumlah_bayar, 0, ',', '.') }}
+                </td>
+            </tr>
+            <tr class="odd:bg-gray-50">
+                <td class="py-1 font-medium">Kembalian</td>
+                <td class="py-1">:
+                    Rp {{ number_format($transaksi->kembalian, 0, ',', '.') }}
+                </td>
             </tr>
         </tbody>
     </table>

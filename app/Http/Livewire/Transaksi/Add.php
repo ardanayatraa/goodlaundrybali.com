@@ -6,77 +6,119 @@ use Livewire\Component;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use App\Models\Pelanggan;
-use App\Models\Point;
 use App\Models\Paket;
 use Carbon\Carbon;
 
 class Add extends Component
 {
-    // pencarian pelanggan
+    // — Pencarian Pelanggan —
     public $searchPelanggan = '';
     public $focusedPelanggan = false;
     public $id_pelanggan;
 
-    // transaksi & pembayaran
+    // — Transaksi Utama —
     public $tanggal_transaksi;
     public $metode_pembayaran;
     public $status_pembayaran;
     public $status_transaksi = 'Diproses';
     public $keterangan;
 
-    // pickup global / per-item
+    // — Pickup —
     public $samePickup = true;
     public $globalTanggalAmbil;
     public $globalJamAmbil;
 
-    // poin & diskon
+    // — Poin & Diskon —
     public $jumlah_point   = 0;
     public $pointsToRedeem = 0;
     public $total_diskon   = 0;
 
-    // total harga
+    // — Total & Pembayaran —
     public $total_harga = 0;
+    public $jumlah_bayar = 0;
+    public $kembalian    = 0;
 
-    // items paket
+    // — Items Paket —
     public $items = [];
 
-    protected $rules = [
-        'id_pelanggan'         => 'required|exists:pelanggans,id_pelanggan',
-        'tanggal_transaksi'    => 'required|date',
-        'metode_pembayaran'    => 'required|string',
-        'status_pembayaran'    => 'required|string',
-        'status_transaksi'     => 'required|string',
-        'items'                => 'required|array|min:1',
-        'items.*.id_paket'     => 'required|exists:pakets,id_paket',
-        'items.*.jumlah'       => 'required|integer|min:1',
-    ];
+    protected function rules()
+    {
+        $rules = [
+            'id_pelanggan'         => 'required|exists:pelanggans,id_pelanggan',
+            'tanggal_transaksi'    => 'required|date',
+            'items'                => 'required|array|min:1',
+            'items.*.id_paket'     => 'required|exists:pakets,id_paket',
+            'items.*.jumlah'       => 'required|integer|min:1',
+            'metode_pembayaran'    => 'required|string',
+            'status_pembayaran'    => 'required|string',
+            'status_transaksi'     => 'required|string',
+            'jumlah_bayar'         => 'required|numeric|min:0',
+        ];
+
+        if ($this->samePickup) {
+            $rules['globalTanggalAmbil'] = 'required|date';
+            $rules['globalJamAmbil']     = 'required|date_format:H:i';
+        } else {
+            $rules['items.*.tanggal_ambil'] = 'required|date';
+            $rules['items.*.jam_ambil']     = 'required|date_format:H:i';
+        }
+
+        return $rules;
+    }
 
     public function mount()
     {
         $this->globalTanggalAmbil = now()->format('Y-m-d');
         $this->globalJamAmbil     = now()->format('H:i');
+        $this->tanggal_transaksi  = now()->format('Y-m-d');
         $this->addItem();
+        $this->calculateTotalHarga();
     }
 
     public function updatedIdPelanggan()
     {
-      $this->jumlah_point = Pelanggan::find($this->id_pelanggan)?->point ?? 0;
+        $pel = Pelanggan::find($this->id_pelanggan);
+        $this->jumlah_point   = $pel?->point ?? 0;
         $this->pointsToRedeem = $this->total_diskon = 0;
         $this->calculateTotalHarga();
     }
 
+    public function updatedJumlahBayar($value)
+    {
+        $this->kembalian = max(0, $value - $this->total_harga);
+    }
+
     public function updated($name, $value)
     {
-        if (preg_match('/^items\.(\d+)\.(\w+)$/', $name, $m)) {
+        // react to items.*.id_paket / jumlah
+        if (preg_match('/^items\.(\d+)\.(id_paket|jumlah)$/', $name, $m)) {
             [$all, $i, $field] = $m;
-            if ($field === 'id_paket') {
-                $paket = Paket::find($value);
-                $this->items[$i]['harga'] = $paket?->harga ?? 0;
-            }
-            $j = $this->items[$i]['jumlah']  ?? 1;
-            $h = $this->items[$i]['harga']   ?? 0;
-            $this->items[$i]['subtotal'] = $j * $h;
+            $paket = Paket::find($this->items[$i]['id_paket']);
+            $harga = $paket?->harga ?? 0;
+            $jumlah = $this->items[$i]['jumlah'] ?? 1;
+            $this->items[$i]['harga']    = $harga;
+            $this->items[$i]['subtotal'] = $jumlah * $harga;
+        }
+
+        $this->calculateTotalHarga();
+    }
+
+    public function calculateTotalHarga()
+    {
+        $sum = array_sum(array_column($this->items, 'subtotal'));
+        $this->total_harga = $sum - $this->total_diskon;
+        $this->kembalian   = max(0, $this->jumlah_bayar - $this->total_harga);
+    }
+
+    public function usePoints()
+    {
+        if ($this->jumlah_point >= 10) {
+            $this->pointsToRedeem = floor($this->jumlah_point / 10) * 10;
+            $this->total_diskon   = ($this->pointsToRedeem / 10) * 100000; // misal 10 poin = Rp100.000
             $this->calculateTotalHarga();
+            session()->flash('success', "Pakai {$this->pointsToRedeem} poin → diskon Rp " . number_format($this->total_diskon,0,',','.'));
+        } else {
+            session()->flash('error', 'Poin minimal 10.');
         }
     }
 
@@ -99,37 +141,9 @@ class Add extends Component
         $this->calculateTotalHarga();
     }
 
-    private function calculateTotalHarga()
-    {
-        $sum = array_sum(array_column($this->items, 'subtotal'));
-        $this->total_harga = $sum - $this->total_diskon;
-    }
-
-    public function usePoints()
-    {
-        if ($this->jumlah_point >= 10) {
-            $this->pointsToRedeem = floor($this->jumlah_point / 10) * 10;
-            $this->total_diskon   = ($this->pointsToRedeem / 10) * 10000;
-            $this->calculateTotalHarga();
-            session()->flash('success', "Pakai {$this->pointsToRedeem} poin → diskon Rp " . number_format($this->total_diskon,0,',','.'));
-        } else {
-            session()->flash('error', 'Poin minimal 10.');
-        }
-    }
-
     public function save()
     {
-        $this->items = array_values(array_filter($this->items, fn($r) => !is_null($r['id_paket'])));
-
-        $rules = $this->rules;
-        if ($this->samePickup) {
-            $rules['globalTanggalAmbil'] = 'required|date';
-            $rules['globalJamAmbil']     = 'required|date_format:H:i';
-        } else {
-            $rules['items.*.tanggal_ambil'] = 'required|date';
-            $rules['items.*.jam_ambil']     = 'required|date_format:H:i';
-        }
-        $this->validate($rules);
+        $this->validate();
 
         \DB::beginTransaction();
         try {
@@ -140,10 +154,10 @@ class Add extends Component
                 'metode_pembayaran' => $this->metode_pembayaran,
                 'status_pembayaran' => $this->status_pembayaran,
                 'status_transaksi'  => $this->status_transaksi,
-                'keterangan'  => $this->keterangan,
+                'keterangan'        => $this->keterangan,
                 'jumlah_point'      => $this->jumlah_point,
-                'created_at'        => Carbon::now(),
-                'updated_at'        => Carbon::now(),
+                'jumlah_bayar'      => $this->jumlah_bayar,
+                'kembalian'         => $this->kembalian,
             ]);
 
             foreach ($this->items as $row) {
@@ -156,23 +170,17 @@ class Add extends Component
                     'sub_total'     => $row['subtotal'],
                     'total_diskon'  => 0,
                     'keterangan'    => $this->keterangan,
-                    'created_at'    => Carbon::now(),
-                    'updated_at'    => Carbon::now(),
                 ]);
             }
 
-           if ($this->pointsToRedeem > 0) {
-
-                $pelanggan = Pelanggan::find($this->id_pelanggan);
-                if ($pelanggan) {
-                    $pelanggan->point = max(0, $pelanggan->point - $this->pointsToRedeem);
-                    $pelanggan->save();
-                }
+            // kurangi poin pelanggan
+            if ($this->pointsToRedeem > 0) {
+                $pel = Pelanggan::find($this->id_pelanggan);
+                $pel->update(['point' => max(0, $pel->point - $this->pointsToRedeem)]);
             }
 
-
             \DB::commit();
-            return redirect()->route('transaksi.detail',['id'=>$trx->id_transaksi]);
+            return redirect()->route('transaksi.detail', $trx->id_transaksi);
         } catch (\Throwable $e) {
             \DB::rollBack();
             session()->flash('error', 'Gagal simpan: ' . $e->getMessage());

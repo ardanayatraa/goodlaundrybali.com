@@ -6,6 +6,7 @@ use App\Models\Transaksi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportController extends Controller
 {
@@ -16,23 +17,31 @@ class ReportController extends Controller
             'detailTransaksi.paket',
         ]);
 
+        // filter berdasarkan tipe
         switch ($request->filterType) {
             case 'daily':
                 $query->whereDate('tanggal_transaksi', $request->filterDate);
                 break;
             case 'weekly':
-                $query->whereBetween('tanggal_transaksi', [$request->filterStartDate, $request->filterEndDate]);
+                $query->whereBetween('tanggal_transaksi', [
+                    $request->filterStartDate,
+                    $request->filterEndDate
+                ]);
                 break;
             case 'monthly':
-                $query->whereMonth('tanggal_transaksi', Carbon::parse($request->filterMonth)->month)
-                      ->whereYear('tanggal_transaksi', Carbon::parse($request->filterMonth)->year);
+                $m = Carbon::parse($request->filterMonth);
+                $query->whereMonth('tanggal_transaksi', $m->month)
+                      ->whereYear('tanggal_transaksi', $m->year);
                 break;
             case 'yearly':
                 $query->whereYear('tanggal_transaksi', $request->filterYear);
                 break;
             case 'range':
                 if ($request->filterStartDate && $request->filterEndDate) {
-                    $query->whereBetween('tanggal_transaksi', [$request->filterStartDate, $request->filterEndDate]);
+                    $query->whereBetween('tanggal_transaksi', [
+                        $request->filterStartDate,
+                        $request->filterEndDate
+                    ]);
                 }
                 break;
         }
@@ -40,12 +49,12 @@ class ReportController extends Controller
         $data = $query->get();
 
         $filterDescription = match ($request->filterType) {
-            'daily' => "Harian: " . ($request->filterDate ?? 'Tidak dipilih'),
-            'monthly' => "Bulanan: " . ($request->filterMonth ?? 'Tidak dipilih'),
-            'yearly' => "Tahunan: " . ($request->filterYear ?? 'Tidak dipilih'),
-            'weekly' => "Mingguan: " . ($request->filterStartDate ?? '-') . " s/d " . ($request->filterEndDate ?? '-'),
-            'range' => "Rentang Tanggal: " . ($request->filterStartDate ?? '-') . " s/d " . ($request->filterEndDate ?? '-'),
-            default => "Tidak ada filter yang dipilih",
+            'daily'   => "Harian: " . ($request->filterDate ?? '-'),
+            'weekly'  => "Mingguan: {$request->filterStartDate} s/d {$request->filterEndDate}",
+            'monthly' => "Bulanan: " . ($request->filterMonth ?? '-'),
+            'yearly'  => "Tahunan: " . ($request->filterYear ?? '-'),
+            'range'   => "Rentang: {$request->filterStartDate} s/d {$request->filterEndDate}",
+            default   => "Tanpa filter",
         };
 
         $pdf = Pdf::loadView('pdf.transaksi-report', compact('data', 'request', 'filterDescription'))
@@ -54,38 +63,43 @@ class ReportController extends Controller
             ->setOption('isHtml5ParserEnabled', true)
             ->setOption('isRemoteEnabled', true);
 
-        return response()->streamDownload(
-            fn () => print($pdf->output()),
-            'Laporan_Transaksi_' . now()->format('YmdHis') . '.pdf',
-            [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="Laporan_Transaksi_' . now()->format('YmdHis') . '.pdf"',
-            ]
-        );
-    }
+        $filename = 'Laporan_Transaksi_' . now()->format('YmdHis') . '.pdf';
 
+        /** @var StreamedResponse $response */
+        $response = response()->stream(function () use ($pdf) {
+            echo $pdf->output();
+        }, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => "inline; filename=\"{$filename}\"",
+        ]);
+
+        return $response;
+    }
 
     public function generatePelanggan(Request $request)
-{
-    $query = \App\Models\Pelanggan::query()
-        ->where('keterangan', 'Member');
+    {
+        $query = \App\Models\Pelanggan::query()
+            ->where('keterangan', 'Member');
 
-    if ($request->filterStartDate && $request->filterEndDate) {
-        $query->whereBetween('created_at', [
-            Carbon::parse($request->filterStartDate)->startOfDay(),
-            Carbon::parse($request->filterEndDate)->endOfDay(),
+        if ($request->filterStartDate && $request->filterEndDate) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($request->filterStartDate)->startOfDay(),
+                Carbon::parse($request->filterEndDate)->endOfDay(),
+            ]);
+        }
+
+        $data = $query->get();
+
+        $pdf = Pdf::loadView('pdf.pelanggan-report', compact('data'))
+            ->setPaper('a4', 'portrait');
+
+        $filename = 'Laporan_Pelanggan_' . now()->format('YmdHis') . '.pdf';
+
+        return response()->stream(function () use ($pdf) {
+            echo $pdf->output();
+        }, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => "inline; filename=\"{$filename}\"",
         ]);
     }
-
-    $data = $query->get();
-
-    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.pelanggan-report', compact('data'))
-        ->setPaper('a4', 'portrait');
-
-    return response()->streamDownload(
-        fn () => print($pdf->output()),
-        'Laporan_Pelanggan_' . now()->format('YmdHis') . '.pdf'
-    );
-}
-
 }

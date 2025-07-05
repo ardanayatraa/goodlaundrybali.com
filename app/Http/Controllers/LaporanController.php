@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LaporanController extends Controller
 {
@@ -17,8 +18,8 @@ class LaporanController extends Controller
     public function generate(Request $request)
     {
         $request->validate([
-            'jenis_laporan' => 'required|in:harian,bulanan,tahunan,rentang',
-            'tanggal_mulai' => 'nullable|date|required_if:jenis_laporan,rentang',
+            'jenis_laporan'   => 'required|in:harian,bulanan,tahunan,rentang',
+            'tanggal_mulai'   => 'nullable|date|required_if:jenis_laporan,rentang',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai|required_if:jenis_laporan,rentang',
         ]);
 
@@ -36,7 +37,10 @@ class LaporanController extends Controller
                 $query->whereYear('tanggal_transaksi', Carbon::now()->year);
                 break;
             case 'rentang':
-                $query->whereBetween('tanggal_transaksi', [$request->tanggal_mulai, $request->tanggal_selesai]);
+                $query->whereBetween('tanggal_transaksi', [
+                    $request->tanggal_mulai,
+                    $request->tanggal_selesai
+                ]);
                 break;
         }
 
@@ -45,8 +49,9 @@ class LaporanController extends Controller
         return view('laporan.hasil', compact('laporan', 'request'));
     }
 
-    public function downloadPDF(Request $request)
+    public function downloadPDF(Request $request): StreamedResponse
     {
+        // Build same query as generate()
         $query = Transaksi::with(['pelanggan', 'paket', 'point', 'detailTransaksi']);
 
         switch ($request->jenis_laporan) {
@@ -61,13 +66,26 @@ class LaporanController extends Controller
                 $query->whereYear('tanggal_transaksi', Carbon::now()->year);
                 break;
             case 'rentang':
-                $query->whereBetween('tanggal_transaksi', [$request->tanggal_mulai, $request->tanggal_selesai]);
+                $query->whereBetween('tanggal_transaksi', [
+                    $request->tanggal_mulai,
+                    $request->tanggal_selesai
+                ]);
                 break;
         }
 
         $laporan = $query->get();
 
-        $pdf = Pdf::loadView('laporan.pdf', compact('laporan', 'request'));
-        return $pdf->download('laporan.pdf');
+        // Generate PDF
+        $pdf = Pdf::loadView('laporan.pdf', compact('laporan', 'request'))
+                  ->setPaper('a4', 'landscape');
+
+        $filename = 'Laporan_Transaksi_' . now()->format('YmdHis') . '.pdf';
+
+        return response()->stream(function() use ($pdf) {
+            echo $pdf->output();
+        }, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => "inline; filename=\"{$filename}\"",
+        ]);
     }
 }
