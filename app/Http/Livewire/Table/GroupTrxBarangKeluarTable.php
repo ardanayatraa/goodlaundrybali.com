@@ -54,6 +54,6 @@ class GroupTrxBarangKeluarTable extends Component
             ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
             ->paginate($this->perPage);
 
-        return view('livewire.group-trx-barang-keluar-table', compact('data'));
+        return view('livewire.group-trx-barang-keluar', compact('data'));
     }
 }
