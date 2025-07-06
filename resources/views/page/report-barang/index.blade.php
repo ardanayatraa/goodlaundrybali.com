@@ -11,6 +11,7 @@
                 {{ Breadcrumbs::render('report.barang') }}
             </div>
         </div>
-        @livewire('report.barang-report')
+
+        <livewire:table.laporan-trx-barang />
     </div>
 </x-app-layout>
