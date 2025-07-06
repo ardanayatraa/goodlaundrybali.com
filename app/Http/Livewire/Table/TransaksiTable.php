@@ -84,6 +84,15 @@ class TransaksiTable extends LivewireDatatable
             )
             ->label('Pembayaran')
             ->excludeFromExport(),
+
+            Column::callback(['id_transaksi', 'status_transaksi'], function ($id, $status) {
+                return view('components.table-transaksi-status', compact('id', 'status'));
+            })
+                ->label('Status Transaksi')
+                ->excludeFromExport(),
+
+
+
         ];
     }
 
