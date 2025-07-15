@@ -11,7 +11,7 @@ class TransaksiFactory extends Factory {
             'id_point' => rand(1, 10),
             'id_paket' => rand(1, 10),
             'tanggal_transaksi' => $this->faker->date(),
-            'total_harga' => $this->faker->randomFloat(2, 10000, 1000000),
+            'total_harga' => $this->faker->randomFloat(2, 10000, 10000),
             'metode_pembayaran' => $this->faker->randomElement(['Cash', 'Qris']),
             'status_pembayaran' => $this->faker->randomElement(['Belum Bayar', 'Lunas']),
             'status_transaksi' => $this->faker->randomElement(['Baru', 'Proses', 'Selesai', 'Diambil']),

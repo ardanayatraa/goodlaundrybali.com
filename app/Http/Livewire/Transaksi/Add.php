@@ -118,7 +118,7 @@ class Add extends Component
     {
         if ($this->jumlah_point >= 10) {
             $this->pointsToRedeem = floor($this->jumlah_point / 10) * 10;
-            $this->total_diskon   = ($this->pointsToRedeem / 10) * 100000; // contoh: 10 poin = 100k
+            $this->total_diskon   = ($this->pointsToRedeem / 10) * 10000; // contoh: 10 poin = 100k
             $this->calculateTotalHarga();
             session()->flash('success', "Pakai {$this->pointsToRedeem} poin → diskon Rp " . number_format($this->total_diskon,0,',','.'));
         } else {
