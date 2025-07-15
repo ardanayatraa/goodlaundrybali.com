@@ -45,7 +45,7 @@ class GroupTrxBarangKeluarTable extends Component
             ->selectRaw("
                 DATE(trx_barang_keluars.tanggal_keluar) as tanggal,
                 SUM(trx_barang_keluars.jumlah_brgkeluar) as total_keluar,
-                SUM(trx_barang_keluars.jumlah_brgkeluar * barangs.harga_barang) as total_harga,
+                SUM(trx_barang_keluars.jumlah_brgkeluar * barangs.harga) as total_harga,
                 GROUP_CONCAT(DISTINCT barangs.nama_barang SEPARATOR ',') as barang_list
             ")
             ->when($this->search, fn($q) =>
