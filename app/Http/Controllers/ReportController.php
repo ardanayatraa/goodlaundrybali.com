@@ -57,6 +57,8 @@ class ReportController extends Controller
         $totalAkhir = $stockSummary->sum('stok_akhir');
 
         // Generate PDF, pass exactly these variabel ke view
+        $filterLabel = "Periode: " . Carbon::parse($start)->format('d M Y') . " s.d. " . Carbon::parse($end)->format('d M Y');
+
         $pdf = Pdf::loadView('pdf.barang-report', compact(
             'stockSummary',
             'start',
@@ -65,9 +67,9 @@ class ReportController extends Controller
             'totalAwal',
             'totalMasuk',
             'totalKeluar',
-            'totalAkhir'
-        ))
-        ->setPaper('a4','landscape');
+            'totalAkhir',
+            'filterLabel'
+        ))->setPaper('a4','landscape');
 
         $filename = "Laporan_Stok_{$start}_to_{$end}.pdf";
 
