@@ -100,7 +100,8 @@
                             {{-- Jumlah --}}
                             <div class="flex-none w-20">
                                 <x-label value="Jumlah" class="text-gray-700" />
-                                <x-input type="number" min="1" wire:model="items.{{ $i }}.jumlah"
+                                <x-input type="number" min="0" wire:model="items.{{ $i }}.jumlah"
+                                    placeholder="0"
                                     class="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
                                 @error("items.$i.jumlah")
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

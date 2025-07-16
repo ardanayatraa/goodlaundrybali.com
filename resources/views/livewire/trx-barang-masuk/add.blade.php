@@ -47,7 +47,6 @@
                     @enderror
                 </div>
 
-
                 {{-- Daftar Barang Masuk --}}
                 <div>
                     <h3 class="font-semibold mb-2">Daftar Barang</h3>
@@ -57,7 +56,7 @@
                     </button>
 
                     @foreach ($items as $i => $item)
-                        <div wire:key="item-{{ $i }}" class="flex items-center space-x-4 mb-4">
+                        <div wire:key="item-{{ $i }}" class="flex items-start space-x-4 mb-4">
                             {{-- Barang (flexible, shrinks) --}}
                             <div class="flex-1 min-w-0">
                                 <x-label value="Barang #{{ $i + 1 }}" class="text-gray-700" />
@@ -66,10 +65,26 @@
                                     <option value="">— pilih —</option>
                                     @foreach ($barangs as $b)
                                         <option value="{{ $b->id_barang }}">
-                                            {{ $b->nama_barang }} – {{ $b->unit?->nama_unit }}
+                                            {{ $b->nama_barang }} – {{ $b->unit?->nama_unit }} (Stok:
+                                            {{ $b->stok }})
                                         </option>
                                     @endforeach
                                 </select>
+
+                                {{-- Tampilkan informasi stok jika barang sudah dipilih --}}
+                                @if (!empty($item['id_barang']))
+                                    @php
+                                        $selectedBarang = $barangs->firstWhere('id_barang', $item['id_barang']);
+                                    @endphp
+                                    @if ($selectedBarang)
+                                        <div
+                                            class="mt-1 text-sm {{ $selectedBarang->stok <= 0 ? 'text-red-600' : ($selectedBarang->stok < 10 ? 'text-orange-600' : 'text-gray-600') }}">
+                                            Stok saat ini: {{ $selectedBarang->stok }}
+                                            {{ $selectedBarang->unit?->nama_unit }}
+                                        </div>
+                                    @endif
+                                @endif
+
                                 @error("items.$i.id_barang")
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -78,8 +93,8 @@
                             {{-- Jumlah --}}
                             <div class="flex-none w-20">
                                 <x-label value="Jumlah" class="text-gray-700" />
-                                <x-input type="number" min="1" wire:model="items.{{ $i }}.jumlah"
-                                    class="w-full mt-1 border-gray-300 rounded-md shadow-sm" />
+                                <x-input type="number" min="0" wire:model="items.{{ $i }}.jumlah"
+                                    placeholder="0" class="w-full mt-1 border-gray-300 rounded-md shadow-sm" />
                                 @error("items.$i.jumlah")
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -108,6 +123,10 @@
                         </div>
                     @endforeach
 
+                    {{-- Error untuk items secara keseluruhan --}}
+                    @error('items')
+                        <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
 
             </div>

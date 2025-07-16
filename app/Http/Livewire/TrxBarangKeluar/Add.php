@@ -78,9 +78,19 @@ class Add extends Component
                 $this->items[$i]['harga'] = $barang?->harga ?? 0;
             }
 
+            // Pastikan jumlah tidak kosong atau null
+            if ($field === 'jumlah' && (empty($value) || $value === '' || $value === null)) {
+                $this->items[$i]['jumlah'] = 0;
+            }
+
             // Ambil nilai jumlah & harga saat ini, lalu recalc subtotal
-            $j = $this->items[$i]['jumlah'] ?? 1;
+            $j = $this->items[$i]['jumlah'] ?? 0;
             $h = $this->items[$i]['harga']  ?? 0;
+
+            // Konversi ke numeric untuk memastikan kalkulasi yang benar
+            $j = is_numeric($j) ? (int)$j : 0;
+            $h = is_numeric($h) ? (float)$h : 0;
+
             $this->items[$i]['subtotal'] = $j * $h;
         }
     }
@@ -90,7 +100,7 @@ class Add extends Component
     {
         $this->items[] = [
             'id_barang' => null,
-            'jumlah'    => 1,
+            'jumlah'    => 0,
             'harga'     => 0,
             'subtotal'  => 0,
         ];
@@ -112,10 +122,17 @@ class Add extends Component
         $errors = [];
 
         foreach ($this->items as $index => $item) {
-            if (!empty($item['id_barang']) && !empty($item['jumlah'])) {
+            if (!empty($item['id_barang'])) {
+                $jumlah = is_numeric($item['jumlah']) ? (int)$item['jumlah'] : 0;
+
+                // Skip validasi jika jumlah 0 atau kosong
+                if ($jumlah <= 0) {
+                    continue;
+                }
+
                 $barang = Barang::find($item['id_barang']);
 
-                if ($barang && $barang->stok < $item['jumlah']) {
+                if ($barang && $barang->stok < $jumlah) {
                     $errors["items.{$index}.jumlah"] = "Stok {$barang->nama_barang} tidak mencukupi. Stok tersedia: {$barang->stok}";
                 }
             }
@@ -147,16 +164,22 @@ class Add extends Component
 
         try {
             foreach ($this->items as $row) {
+                // Skip item jika jumlah 0 atau kosong
+                $jumlah = is_numeric($row['jumlah']) ? (int)$row['jumlah'] : 0;
+                if ($jumlah <= 0) {
+                    continue;
+                }
+
                 // Double check stok sekali lagi (untuk menghindari race condition)
                 $barang = Barang::find($row['id_barang']);
-                if ($barang->stok < $row['jumlah']) {
+                if ($barang->stok < $jumlah) {
                     throw new \Exception("Stok {$barang->nama_barang} tidak mencukupi saat pemrosesan.");
                 }
 
                 // Buat record TrxBarangKeluar
                 TrxBarangKeluar::create([
                     'id_barang'        => $row['id_barang'],
-                    'jumlah_brgkeluar' => $row['jumlah'],
+                    'jumlah_brgkeluar' => $jumlah,
                     'tanggal_keluar'   => $this->tanggal_keluar,
                     'harga'            => $row['harga'],
                     'total_harga'      => $row['subtotal'],
@@ -164,7 +187,7 @@ class Add extends Component
                 ]);
 
                 // Kurangi stok barang
-                $barang->decrement('stok', $row['jumlah']);
+                $barang->decrement('stok', $jumlah);
             }
 
             \DB::commit();
