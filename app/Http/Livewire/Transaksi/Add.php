@@ -98,8 +98,14 @@ class Add extends Component
         if (preg_match('/^items\.(\d+)\.(id_paket|jumlah)$/', $name, $m)) {
             [$all, $i, $field] = $m;
             $paket = Paket::find($this->items[$i]['id_paket']);
-            $harga = $paket?->harga ?? 0;
-            $jumlah = $this->items[$i]['jumlah'] ?? 1;
+            $harga = (float) ($paket?->harga ?? 0);
+            $jumlah = (int) ($this->items[$i]['jumlah'] ?? 1);
+
+            // Pastikan jumlah minimal 1 jika kosong
+            if ($jumlah < 1) {
+                $jumlah = 1;
+            }
+
             $this->items[$i]['harga']    = $harga;
             $this->items[$i]['subtotal'] = $harga * $jumlah;
         }
@@ -111,7 +117,8 @@ class Add extends Component
     {
         $sum = 0;
         foreach ($this->items as $item) {
-            $sum += $item['subtotal'] ?? 0;
+            $subtotal = (float) ($item['subtotal'] ?? 0);
+            $sum += $subtotal;
         }
         $this->total_harga = max(0, $sum - $this->total_diskon);
         $this->kembalian   = max(0, $this->jumlah_bayar - $this->total_harga);
