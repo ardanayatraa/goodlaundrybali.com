@@ -34,6 +34,19 @@ class Add extends Component
         ];
     }
 
+    // Custom validation messages
+    protected function messages()
+    {
+        return [
+            'id_admin.required' => 'Admin harus dipilih.',
+            'tanggal_keluar.required' => 'Tanggal keluar harus diisi.',
+            'items.required' => 'Minimal harus ada satu item barang.',
+            'items.*.id_barang.required' => 'Barang harus dipilih.',
+            'items.*.jumlah.required' => 'Jumlah harus diisi.',
+            'items.*.jumlah.min' => 'Jumlah minimal adalah 1.',
+        ];
+    }
+
     public function mount()
     {
         // Set default tanggal ke hari ini
@@ -90,28 +103,78 @@ class Add extends Component
         $this->items = array_values($this->items);
     }
 
+    /**
+     * Validasi stok sebelum menyimpan
+     * Mengecek apakah stok mencukupi untuk semua item
+     */
+    private function validateStok()
+    {
+        $errors = [];
+
+        foreach ($this->items as $index => $item) {
+            if (!empty($item['id_barang']) && !empty($item['jumlah'])) {
+                $barang = Barang::find($item['id_barang']);
+
+                if ($barang && $barang->stok < $item['jumlah']) {
+                    $errors["items.{$index}.jumlah"] = "Stok {$barang->nama_barang} tidak mencukupi. Stok tersedia: {$barang->stok}";
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            foreach ($errors as $key => $message) {
+                $this->addError($key, $message);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
     /** Simpan seluruh items ke tabel trx_barang_keluar dan kurangi stok */
     public function save()
     {
+        // Validasi input dasar
         $this->validate();
 
-        foreach ($this->items as $row) {
-            // Buat record TrxBarangKeluar
-            TrxBarangKeluar::create([
-                'id_barang'        => $row['id_barang'],
-                'jumlah_brgkeluar' => $row['jumlah'],
-                'tanggal_keluar'   => $this->tanggal_keluar,
-                'harga'            => $row['harga'],
-                'total_harga'      => $row['subtotal'],
-                'id_admin'         => $this->id_admin,
-            ]);
-
-            // Kurangi stok barang
-            Barang::find($row['id_barang'])?->decrement('stok', $row['jumlah']);
+        // Validasi stok
+        if (!$this->validateStok()) {
+            return; // Berhenti jika stok tidak mencukupi
         }
 
-        session()->flash('success', 'Beberapa barang keluar berhasil disimpan.');
-        return redirect()->route('trx-barang-keluar');
+        // Mulai database transaction untuk memastikan konsistensi data
+        \DB::beginTransaction();
+
+        try {
+            foreach ($this->items as $row) {
+                // Double check stok sekali lagi (untuk menghindari race condition)
+                $barang = Barang::find($row['id_barang']);
+                if ($barang->stok < $row['jumlah']) {
+                    throw new \Exception("Stok {$barang->nama_barang} tidak mencukupi saat pemrosesan.");
+                }
+
+                // Buat record TrxBarangKeluar
+                TrxBarangKeluar::create([
+                    'id_barang'        => $row['id_barang'],
+                    'jumlah_brgkeluar' => $row['jumlah'],
+                    'tanggal_keluar'   => $this->tanggal_keluar,
+                    'harga'            => $row['harga'],
+                    'total_harga'      => $row['subtotal'],
+                    'id_admin'         => $this->id_admin,
+                ]);
+
+                // Kurangi stok barang
+                $barang->decrement('stok', $row['jumlah']);
+            }
+
+            \DB::commit();
+            session()->flash('success', 'Beberapa barang keluar berhasil disimpan.');
+            return redirect()->route('trx-barang-keluar');
+
+        } catch (\Exception $e) {
+            \DB::rollback();
+            session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function render()

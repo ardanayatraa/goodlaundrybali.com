@@ -54,7 +54,6 @@
                     @enderror
                 </div>
 
-
                 {{-- ======= Daftar Barang Keluar (multi‐item) ======= --}}
                 <div>
                     <h3 class="font-semibold mb-2">Daftar Barang</h3>
@@ -73,10 +72,26 @@
                                     <option value="">— pilih —</option>
                                     @foreach ($barangs as $b)
                                         <option value="{{ $b->id_barang }}">
-                                            {{ $b->nama_barang }} – {{ $b->unit?->nama_unit }}
+                                            {{ $b->nama_barang }} – {{ $b->unit?->nama_unit }} (Stok:
+                                            {{ $b->stok }})
                                         </option>
                                     @endforeach
                                 </select>
+
+                                {{-- Tampilkan informasi stok jika barang sudah dipilih --}}
+                                @if (!empty($item['id_barang']))
+                                    @php
+                                        $selectedBarang = $barangs->firstWhere('id_barang', $item['id_barang']);
+                                    @endphp
+                                    @if ($selectedBarang)
+                                        <div
+                                            class="mt-1 text-sm {{ $selectedBarang->stok <= 0 ? 'text-red-600' : ($selectedBarang->stok < 10 ? 'text-orange-600' : 'text-gray-600') }}">
+                                            Stok tersedia: {{ $selectedBarang->stok }}
+                                            {{ $selectedBarang->unit?->nama_unit }}
+                                        </div>
+                                    @endif
+                                @endif
+
                                 @error("items.$i.id_barang")
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
