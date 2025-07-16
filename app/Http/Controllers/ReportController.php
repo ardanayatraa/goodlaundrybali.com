@@ -59,7 +59,7 @@ class ReportController extends Controller
         // Generate PDF, pass exactly these variabel ke view
         $filterLabel = "Periode: " . Carbon::parse($start)->format('d M Y') . " s.d. " . Carbon::parse($end)->format('d M Y');
 
-        $pdf = Pdf::loadView('pdf.barang-report', compact(
+        $pdf = Pdf::loadView('pdf.transaksi-report', compact(
             'stockSummary',
             'start',
             'end',
