@@ -89,7 +89,8 @@ class Add extends Component
 
     public function updatedJumlahBayar($value)
     {
-        $this->kembalian = max(0, $value - $this->total_harga);
+        $bayar = (float) ($value ?? 0);
+        $this->kembalian = max(0, $bayar - $this->total_harga);
     }
 
     public function updated($name, $value)
