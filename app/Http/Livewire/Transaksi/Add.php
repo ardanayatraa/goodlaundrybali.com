@@ -121,8 +121,12 @@ class Add extends Component
             $subtotal = (float) ($item['subtotal'] ?? 0);
             $sum += $subtotal;
         }
-        $this->total_harga = max(0, $sum - $this->total_diskon);
-        $this->kembalian   = max(0, $this->jumlah_bayar - $this->total_harga);
+
+        $diskon = (float) ($this->total_diskon ?? 0);
+        $bayar = (float) ($this->jumlah_bayar ?? 0);
+
+        $this->total_harga = max(0, $sum - $diskon);
+        $this->kembalian   = max(0, $bayar - $this->total_harga);
     }
 
     public function usePoints()
