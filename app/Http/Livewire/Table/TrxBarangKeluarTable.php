@@ -20,10 +20,6 @@ class TrxBarangKeluarTable extends LivewireDatatable
     {
         return [
 
-            Column::name('id_trx_brgkeluar')
-                  ->label('ID Transaksi')
-                  ->sortable(),
-
             Column::name('barang.nama_barang')
                   ->label('Nama Barang')
                   ->sortable()
@@ -42,15 +38,15 @@ class TrxBarangKeluarTable extends LivewireDatatable
             ->searchable(),
 
 
-            Column::callback(
-                ['id_trx_brgkeluar'],
-                fn($id) => view('components.table-action', [
-                    'id'    => $id,
-                    'route' => 'trx-barang-keluar.edit'
-                ])
-            )
-            ->label('Actions')
-            ->excludeFromExport(),
+            // Column::callback(
+            //     ['id_trx_brgkeluar'],
+            //     fn($id) => view('components.table-action', [
+            //         'id'    => $id,
+            //         'route' => 'trx-barang-keluar.edit'
+            //     ])
+            // )
+            // ->label('Actions')
+            // ->excludeFromExport(),
         ];
     }
 

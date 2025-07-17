@@ -14,7 +14,7 @@ class Transaksi extends Model
     public $timestamps = false; // set true jika pakai created_at/updated_at
 
     protected $fillable = [
-        'id_pelanggan',
+        'no_telp',
         'tanggal_transaksi',
         'total_harga',
         'metode_pembayaran',
@@ -36,7 +36,7 @@ class Transaksi extends Model
 
     public function pelanggan()
     {
-        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
+        return $this->belongsTo(Pelanggan::class, 'no_telp', 'no_telp');
     }
 
     public function detailTransaksi()

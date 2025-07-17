@@ -11,7 +11,7 @@ class Paket extends Model
 
     protected $table = 'pakets';
     protected $primaryKey = 'id_paket';
-    protected $fillable = ['jenis_paket', 'harga', 'unit', 'waktu_pengerjaan', 'id_unit_paket'];
+    protected $fillable = ['jenis_paket', 'harga', 'waktu_pengerjaan', 'id_unit'];
 
     /**
      * Relasi ke tabel transaksis.
@@ -25,13 +25,13 @@ class Paket extends Model
     }
 
     /**
-     * Relasi ke tabel unit_pakets.
-     * Mengembalikan unit paket yang terkait dengan paket ini.
+     * Relasi ke tabel units.
+     * Mengembalikan unit yang terkait dengan paket ini.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function unitPaket()
+    public function unit()
     {
-        return $this->belongsTo(UnitPaket::class, 'id_unit_paket', 'id_unit_paket');
+        return $this->belongsTo(Unit::class, 'id_unit', 'id_unit');
     }
 }

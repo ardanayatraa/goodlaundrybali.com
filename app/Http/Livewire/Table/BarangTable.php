@@ -28,21 +28,37 @@ class BarangTable extends LivewireDatatable
     public function columns()
     {
         return [
-            Column::name('id_barang')->label('ID')->sortable(),
             Column::name('nama_barang')->label('Nama Barang')->sortable()->searchable(),
-            Column::name('stok')->label('Stok')->sortable()->searchable(),
+            
+            // Kolom stok dengan peringatan
+            Column::callback(['stok'], function ($stok) {
+                if ($stok <= 5) {
+                    return view('components.stok-warning', [
+                        'stok' => $stok,
+                        'warning' => true
+                    ]);
+                }
+                
+                return view('components.stok-warning', [
+                    'stok' => $stok,
+                    'warning' => false
+                ]);
+            })
+                ->label('Stok')
+                ->sortable()
+                ->searchable(),
+            
             Column::name('harga')->label('Harga')->sortable(),
             Column::name('unit.nama_unit')->label('Unit')->sortable(),
 
-            Column::callback(['id_barang'], function ($id) {
-
-                return view('components.table-action', [
-                    'id' => $id,
-                    'route'=>'barang.edit'
-                ]);
-            })
-                ->label('Actions')
-                ->excludeFromExport(),
+            // Column::callback(['id_barang'], function ($id) {
+            //     return view('components.table-action', [
+            //         'id' => $id,
+            //         'route'=>'barang.edit'
+            //     ]);
+            // })
+            //     ->label('Actions')
+            //     ->excludeFromExport(),
         ];
     }
 

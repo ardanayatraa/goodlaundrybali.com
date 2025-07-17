@@ -23,7 +23,6 @@ $models = [
     'TrxBarangKeluar',
     'TrxBarangMasuk',
     'Unit',
-    'UnitPaket'
 ];
 
 foreach ($models as $model) {

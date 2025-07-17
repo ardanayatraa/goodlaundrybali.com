@@ -10,7 +10,9 @@ class Pelanggan extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'id_pelanggan';
+    protected $primaryKey = 'no_telp';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'nama_pelanggan',
         'no_telp',
@@ -54,7 +56,7 @@ class Pelanggan extends Model
      */
     public function transaksi()
     {
-        return $this->hasMany(Transaksi::class, 'id_pelanggan');
+        return $this->hasMany(Transaksi::class, 'no_telp', 'no_telp');
     }
 
     public function getHargaPendaftaranAttribute()

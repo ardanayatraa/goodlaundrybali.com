@@ -153,17 +153,6 @@ Route::get('/trx-barang-keluar/date/{tanggal}', function ($tanggal) {
         return view('page.unit.edit', compact('id'));
     })->name('unit.edit');
 
-    // Unit Paket
-    Route::get('/unit-paket', function () {
-        return view('page.unit-paket.index');
-    })->name('unit-paket');
-    Route::get('/unit-paket/add', function () {
-        return view('page.unit-paket.add');
-    })->name('unit-paket.add');
-    Route::get('/unit-paket/edit/{id}', function ($id) {
-        return view('page.unit-paket.edit', compact('id'));
-    })->name('unit-paket.edit');
-
     // Laporan
     Route::get('report-barang', function () {
         return view('page.report-barang.index');

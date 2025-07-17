@@ -29,10 +29,6 @@ class PelangganTable extends LivewireDatatable
     public function columns()
     {
         return [
-            Column::name('id_pelanggan')
-                ->label('ID Pelanggan')
-                ->sortable(),
-
             Column::name('nama_pelanggan')
                 ->label('Nama Pelanggan')
                 ->sortable()
@@ -64,7 +60,7 @@ class PelangganTable extends LivewireDatatable
                 ->sortable(),
 
             // 4. Actions
-            Column::callback(['id_pelanggan'], function ($id) {
+            Column::callback(['no_telp'], function ($id) {
                 $pl = Pelanggan::find($id);
                 return view('action.pelanggan', [
                     'pl'    => $pl,

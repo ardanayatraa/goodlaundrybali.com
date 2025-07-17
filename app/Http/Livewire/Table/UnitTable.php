@@ -28,7 +28,6 @@ class UnitTable extends LivewireDatatable
     public function columns()
     {
         return [
-            Column::name('id_unit')->label('ID')->sortable(),
             Column::name('nama_unit')->label('Nama Unit')->sortable()->searchable(),
             Column::name('keterangan')->label('Keterangan'),
 

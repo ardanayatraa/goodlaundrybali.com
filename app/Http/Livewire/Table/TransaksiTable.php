@@ -41,10 +41,6 @@ class TransaksiTable extends LivewireDatatable
     public function columns()
     {
         return [
-            Column::name('id_transaksi')
-                  ->label('ID')
-                  ->sortable(),
-
             Column::name('pelanggan.nama_pelanggan')
                   ->label('Pelanggan')
                   ->sortable()

@@ -31,7 +31,7 @@ class Delete extends Component
      */
     public function delete()
     {
-        Pelanggan::where('id_pelanggan', $this->id_pelanggan)->delete();
+        Pelanggan::where('no_telp', $this->id_pelanggan)->delete();
         $this->showModal = false;
         session()->flash('success', 'Pelanggan berhasil dihapus!');
         $this->emit('refreshLivewireDatatable');

@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id('id_transaksi');
-            $table->foreignId('id_pelanggan')
-                  ->constrained('pelanggans', 'id_pelanggan')
-                  ->cascadeOnDelete();
+            $table->string('no_telp', 50);
+            $table->foreign('no_telp')->references('no_telp')->on('pelanggans')->cascadeOnDelete();
             $table->foreignId('id_point')
                   ->nullable()
                   ->constrained('points', 'id_point')

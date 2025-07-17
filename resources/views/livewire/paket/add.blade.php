@@ -21,12 +21,12 @@
 
                 <div>
                     <x-label for="searchUnitPaket" value="Cari Unit Paket" />
-                    @if ($id_unit_paket)
+                    @if ($id_unit)
                         <div class="mt-2 flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2 bg-white">
                             <span class="text-sm text-gray-700 flex-1">
-                                {{ $unitPakets->firstWhere('id_unit_paket', $id_unit_paket)?->nama_unit }}
+                                {{ $unitPakets->firstWhere('id_unit', $id_unit)?->nama_unit }}
                             </span>
-                            <button type="button" wire:click="$set('id_unit_paket', null)"
+                            <button type="button" wire:click="$set('id_unit', null)"
                                 class="text-red-500 hover:underline font-bold">
                                 &times;
                             </button>
@@ -39,7 +39,7 @@
                             <ul class="mt-2 border border-gray-300 rounded-lg max-h-40 overflow-y-auto">
                                 @forelse ($unitPakets as $unitPaket)
                                     <li class="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                                        wire:click="$set('id_unit_paket', {{ $unitPaket->id_unit_paket }})">
+                                        wire:click="$set('id_unit', {{ $unitPaket->id_unit }})">
                                         {{ $unitPaket->nama_unit }}
                                     </li>
                                 @empty
@@ -49,7 +49,7 @@
                             </ul>
                         @endif
                     @endif
-                    @error('id_unit_paket')
+                    @error('id_unit')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>

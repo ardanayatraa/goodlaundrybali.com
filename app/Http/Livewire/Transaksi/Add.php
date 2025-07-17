@@ -14,7 +14,7 @@ class Add extends Component
     // — Pencarian Pelanggan —
     public $searchPelanggan = '';
     public $focusedPelanggan = false;
-    public $id_pelanggan;
+    public $no_telp;
 
     // — Transaksi Utama —
     public $tanggal_transaksi;
@@ -44,7 +44,7 @@ class Add extends Component
     protected function rules()
     {
         $rules = [
-            'id_pelanggan'       => 'required|exists:pelanggans,id_pelanggan',
+            'no_telp'            => 'required|exists:pelanggans,no_telp',
             'tanggal_transaksi'  => 'required|date',
             'items'              => 'required|array|min:1',
             'items.*.id_paket'   => 'required|exists:pakets,id_paket',
@@ -79,12 +79,16 @@ class Add extends Component
         $this->calculateTotalHarga();
     }
 
-    public function updatedIdPelanggan()
+    public function updatedNoTelp()
     {
-        $pel = Pelanggan::find($this->id_pelanggan);
-        $this->jumlah_point = $pel?->point ?? 0;
-        $this->pointsToRedeem = $this->total_diskon = 0;
-        $this->calculateTotalHarga();
+        if ($this->no_telp) {
+            $pel = Pelanggan::where('no_telp', $this->no_telp)->first();
+            $this->jumlah_point = $pel?->point ?? 0;
+            $this->pointsToRedeem = $this->total_diskon = 0;
+            $this->focusedPelanggan = false;
+            $this->searchPelanggan = '';
+            $this->calculateTotalHarga();
+        }
     }
 
     public function updatedJumlahBayar($value)
@@ -100,13 +104,9 @@ class Add extends Component
             [$all, $i, $field] = $m;
             $paket = Paket::find($this->items[$i]['id_paket']);
             $harga = (float) ($paket?->harga ?? 0);
-            $jumlah = (int) ($this->items[$i]['jumlah'] ?? 1);
+            $jumlah = max(1, (int) ($this->items[$i]['jumlah'] ?? 1)); // Fix: ensure minimum 1
 
-            // Pastikan jumlah minimal 1 jika kosong
-            if ($jumlah < 1) {
-                $jumlah = 1;
-            }
-
+            $this->items[$i]['jumlah'] = $jumlah; // Fix: assign back to array
             $this->items[$i]['harga']    = $harga;
             $this->items[$i]['subtotal'] = $harga * $jumlah;
         }
@@ -141,6 +141,14 @@ class Add extends Component
         }
     }
 
+    // Fix: Method untuk select pelanggan
+    public function selectPelanggan($no_telp)
+    {
+        $this->no_telp = $no_telp;
+        $this->focusedPelanggan = false;
+        $this->searchPelanggan = '';
+    }
+
     public function addItem()
     {
         $this->items[] = [
@@ -167,7 +175,7 @@ class Add extends Component
         \DB::beginTransaction();
         try {
             $trx = Transaksi::create([
-                'id_pelanggan'      => $this->id_pelanggan,
+                'no_telp'           => $this->no_telp,
                 'tanggal_transaksi' => $this->tanggal_transaksi,
                 'total_harga'       => $this->total_harga,
                 'metode_pembayaran' => $this->metode_pembayaran,
@@ -189,7 +197,7 @@ class Add extends Component
                     'jam_ambil'     => $this->samePickup ? $this->globalJamAmbil   : $row['jam_ambil'],
                     'jumlah'        => $row['jumlah'],
                     'sub_total'     => $row['subtotal'],
-                    'total_diskon'  => 0,
+                    'total_diskon'  => ($this->total_diskon / count($this->items)), // Fix: distribute discount
                     'keterangan'    => $this->keterangan,
                     'created_at'    => Carbon::now(),
                     'updated_at'    => Carbon::now(),
@@ -198,7 +206,7 @@ class Add extends Component
 
             // Kurangi poin
             if ($this->pointsToRedeem > 0) {
-                $pel = Pelanggan::find($this->id_pelanggan);
+                $pel = Pelanggan::where('no_telp', $this->no_telp)->first();
                 $pel->update(['point' => max(0, $pel->point - $this->pointsToRedeem)]);
             }
 
@@ -213,9 +221,23 @@ class Add extends Component
 
     public function render()
     {
+        // Fix: Get selected pelanggan data
+        $selectedPelanggan = $this->no_telp ? Pelanggan::where('no_telp', $this->no_telp)->first() : null;
+
+        // Jika sedang focus dan belum ada search, tampilkan 5 rekomendasi teratas
+        if ($this->focusedPelanggan && empty($this->searchPelanggan)) {
+            $pelanggans = Pelanggan::orderBy('created_at', 'desc')->limit(5)->get();
+        } else {
+            // Jika ada search, cari berdasarkan nama atau no_telp
+            $pelanggans = Pelanggan::where(function($query) {
+                            $query->where('nama_pelanggan','like',"%{$this->searchPelanggan}%")
+                                  ->orWhere('no_telp','like',"%{$this->searchPelanggan}%");
+                        })->limit(5)->get();
+        }
+
         return view('livewire.transaksi.add', [
-            'pelanggans' => Pelanggan::where('nama_pelanggan','like',"%{$this->searchPelanggan}%")
-                                      ->limit(5)->get(),
+            'pelanggans' => $pelanggans,
+            'selectedPelanggan' => $selectedPelanggan,
             'pakets'     => Paket::all(),
         ]);
     }

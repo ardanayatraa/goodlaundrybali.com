@@ -11,7 +11,7 @@ class Point extends Model
 
     protected $table = 'points';
     protected $primaryKey = 'id_point';
-    protected $fillable = ['id_pelanggan', 'tanggal', 'jumlah_point'];
+    protected $fillable = ['no_telp', 'tanggal', 'jumlah_point'];
 
     /**
      * Mendefinisikan relasi ke model Pelanggan.
@@ -20,6 +20,6 @@ class Point extends Model
      */
     public function pelanggan()
     {
-        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
+        return $this->belongsTo(Pelanggan::class, 'no_telp', 'no_telp');
     }
 }

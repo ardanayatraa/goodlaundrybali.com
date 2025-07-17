@@ -76,7 +76,7 @@
                     <td class="border px-2 py-1 text-center">{{ $detail->paket->jenis_paket }}</td>
                     <td class="border px-2 py-1 text-center">{{ $detail->tanggal_ambil }}</td>
                     <td class="border px-2 py-1 text-center">
-                        {{ $detail->paket->unitPaket->nama_unit ?? $detail->paket->unit }}
+                        {{ $detail->paket->unit->nama_unit ?? $detail->paket->unit }}
                     </td>
                     <td class="border px-2 py-1 text-center">{{ $detail->jumlah }}</td>
                     <td class="border px-2 py-1 text-right">

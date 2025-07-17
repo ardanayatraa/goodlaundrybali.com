@@ -19,16 +19,12 @@ class PaketTable extends LivewireDatatable
     public function columns()
     {
         return [
-            Column::name('id_paket')
-                  ->label('ID Paket')
-                  ->defaultSort('asc'),
-
             Column::name('jenis_paket')
                   ->label('Jenis Paket')
                   ->searchable(),
 
             // kolom Unit
-            Column::name('unitPaket.nama_unit')
+            Column::name('unit.nama_unit')
                   ->label('Unit')
                   ->searchable(),
 

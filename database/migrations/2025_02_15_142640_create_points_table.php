@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('points', function (Blueprint $table) {
             $table->id('id_point');
-            $table->foreignId('id_pelanggan');
+            $table->string('no_telp', 50);
+            $table->foreign('no_telp')->references('no_telp')->on('pelanggans')->cascadeOnDelete();
             $table->date('tanggal');
             $table->integer('jumlah_point');
             $table->timestamps();

@@ -37,7 +37,7 @@ class Edit extends Component
         }
 
         // Ambil record lama untuk cek perubahan keterangan
-        $pel = Pelanggan::findOrFail($this->id_pelanggan);
+        $pel = Pelanggan::findOrFail($this->no_telp);
 
         // Siapkan data update
         $data = [
@@ -55,7 +55,7 @@ class Edit extends Component
             $data['member_start_at'] = Carbon::now();
         }
 
-        Pelanggan::where('id_pelanggan', $this->id_pelanggan)
+        Pelanggan::where('no_telp', $this->no_telp)
                  ->update($data);
 
         return redirect()->route('pelanggan');

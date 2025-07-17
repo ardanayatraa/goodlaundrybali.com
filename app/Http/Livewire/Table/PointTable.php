@@ -28,7 +28,6 @@ class PointTable extends LivewireDatatable
     public function columns()
     {
         return [
-            Column::name('id_point')->label('ID Point')->sortable(),
             Column::name('pelanggan.nama_pelanggan')->label('Nama Pelanggan')->sortable()->searchable(),
             Column::name('tanggal')->label('Tanggal')->sortable(),
             Column::name('jumlah_point')->label('Jumlah Point')->sortable(),
