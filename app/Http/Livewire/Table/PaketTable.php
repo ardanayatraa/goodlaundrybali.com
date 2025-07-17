@@ -13,12 +13,17 @@ class PaketTable extends LivewireDatatable
     public function builder()
     {
         // siapkan relasi unitPaket
-        return Paket::query()->with('unitPaket');
+        return Paket::query()->with('unit');
     }
 
     public function columns()
     {
         return [
+             Column::raw('null')->label('No')->callback(['jenis_paket'], function () {
+            static $no = 0;
+            return ++$no;
+        }),
+
             Column::name('jenis_paket')
                   ->label('Jenis Paket')
                   ->searchable(),

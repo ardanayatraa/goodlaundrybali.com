@@ -41,6 +41,11 @@ class TransaksiTable extends LivewireDatatable
     public function columns()
     {
         return [
+             Column::raw('null')->label('No')->callback(['total_harga'], function () {
+            static $no = 0;
+            return ++$no;
+        }),
+
             Column::name('pelanggan.nama_pelanggan')
                   ->label('Pelanggan')
                   ->sortable()

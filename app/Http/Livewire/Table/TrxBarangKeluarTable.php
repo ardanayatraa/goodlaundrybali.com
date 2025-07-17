@@ -20,6 +20,12 @@ class TrxBarangKeluarTable extends LivewireDatatable
     {
         return [
 
+             Column::raw('null')->label('No')->callback(['barang.nama_barang'], function () {
+            static $no = 0;
+            return ++$no;
+        }),
+
+
             Column::name('barang.nama_barang')
                   ->label('Nama Barang')
                   ->sortable()

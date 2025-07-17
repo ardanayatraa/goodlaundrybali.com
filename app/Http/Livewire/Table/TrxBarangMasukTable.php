@@ -20,7 +20,11 @@ class TrxBarangMasukTable extends LivewireDatatable
     public function columns()
     {
         return [
-           
+
+ Column::raw('null')->label('No')->callback(['barang.nama_barang'], function () {
+            static $no = 0;
+            return ++$no;
+        }),
 
             Column::callback(
                 ['tanggal_masuk', 'id_trx_brgmasuk'],

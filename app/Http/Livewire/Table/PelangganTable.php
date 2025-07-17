@@ -29,6 +29,12 @@ class PelangganTable extends LivewireDatatable
     public function columns()
     {
         return [
+
+             Column::raw('null')->label('No')->callback(['nama_pelanggan'], function () {
+            static $no = 0;
+            return ++$no;
+        }),
+
             Column::name('nama_pelanggan')
                 ->label('Nama Pelanggan')
                 ->sortable()

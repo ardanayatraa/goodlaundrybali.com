@@ -28,6 +28,11 @@ class UnitTable extends LivewireDatatable
     public function columns()
     {
         return [
+             Column::raw('null')->label('No')->callback(['nama_unit'], function () {
+            static $no = 0;
+            return ++$no;
+        }),
+
             Column::name('nama_unit')->label('Nama Unit')->sortable()->searchable(),
             Column::name('keterangan')->label('Keterangan'),
 
