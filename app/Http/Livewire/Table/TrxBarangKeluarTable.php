@@ -25,14 +25,7 @@ class TrxBarangKeluarTable extends LivewireDatatable
             return ++$no;
         }),
 
-
-            Column::name('barang.nama_barang')
-                  ->label('Nama Barang')
-                  ->sortable()
-                  ->searchable(),
-
-
-            Column::callback(
+    Column::callback(
                 ['tanggal_keluar', 'id_trx_brgkeluar'],
                 fn($tgl, $id) => view('datatables::link', [
                     'href' => route('trx-barang-keluar.detail', $id),
@@ -42,6 +35,13 @@ class TrxBarangKeluarTable extends LivewireDatatable
             ->label('Tanggal Keluar')
             ->sortable()
             ->searchable(),
+
+            Column::name('barang.nama_barang')
+                  ->label('Nama Barang')
+                  ->sortable()
+                  ->searchable(),
+
+
 
 
             // Column::callback(
