@@ -19,11 +19,6 @@
             <span>Tambah Transaksi</span>
         </a>
 
-        <a href="{{ route('pelanggan.add') }}"
-            class="inline-flex items-center mb-4 gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-            <i data-lucide="plus-circle" class="w-5 h-5"></i>
-            <span>Tambah Pelanggan</span>
-        </a>
 
 
         @livewire('transaksi.delete')
