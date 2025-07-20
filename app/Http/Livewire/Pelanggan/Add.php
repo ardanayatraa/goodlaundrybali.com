@@ -33,7 +33,8 @@ class Add extends Component
             'alamat'          => $this->alamat,
             'keterangan'      => $this->keterangan,
         ];
-        // Jika memilih “Member”, tambahkan member_start_at
+
+        // Jika memilih "Member", tambahkan member_start_at
         if (strtolower($this->keterangan) === 'member') {
             $data['member_start_at'] = Carbon::now();
         }
@@ -41,7 +42,13 @@ class Add extends Component
         Pelanggan::create($data);
 
         $this->reset();
-        return redirect()->route('pelanggan');
+
+        // Dynamic redirect berdasarkan route saat ini
+        $currentRoute = request()->route()->getName();
+
+        if ($currentRoute === 'transaksi') {
+            return redirect()->route('transaksi');
+        }
     }
 
     public function render()
