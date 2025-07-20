@@ -43,12 +43,8 @@ class Add extends Component
 
         $this->reset();
 
-        // Dynamic redirect berdasarkan route saat ini
-        $currentRoute = request()->route()->getName();
-
-        if ($currentRoute === 'transaksi') {
-            return redirect()->route('transaksi');
-        }
+        // Kembali ke halaman sebelumnya
+        return redirect()->back();
     }
 
     public function render()
