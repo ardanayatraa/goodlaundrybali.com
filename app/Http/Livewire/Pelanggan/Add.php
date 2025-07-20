@@ -17,6 +17,25 @@ class Add extends Component
         'keterangan'     => 'nullable|string|max:255',
     ];
 
+    public function mount()
+    {
+        // Otomatis simpan route sebelumnya dari referrer
+        $previousUrl = url()->previous();
+        $previousRoute = null;
+
+        // Cek apakah URL sebelumnya adalah route yang valid
+        if (str_contains($previousUrl, '/transaksi')) {
+            $previousRoute = 'transaksi';
+        } elseif (str_contains($previousUrl, '/pelanggan')) {
+            $previousRoute = 'pelanggan';
+        }
+
+        // Simpan di session jika ada route valid
+        if ($previousRoute) {
+            session(['pelanggan_redirect_to' => $previousRoute]);
+        }
+    }
+
     public function save()
     {
         $this->validate();
@@ -43,8 +62,11 @@ class Add extends Component
 
         $this->reset();
 
-        // Kembali ke halaman sebelumnya
-        return redirect()->back();
+        // Redirect berdasarkan route asal yang disimpan di session
+        $redirectTo = session('pelanggan_redirect_to', 'pelanggan');
+        session()->forget('pelanggan_redirect_to'); // Hapus session setelah digunakan
+
+        return redirect()->route($redirectTo);
     }
 
     public function render()
