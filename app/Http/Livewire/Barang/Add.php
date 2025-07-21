@@ -7,7 +7,7 @@ use App\Models\Barang;
 
 class Add extends Component
 {
-    public $nama_barang, $harga, $stok, $id_unit;
+    public $nama_barang, $harga, $stok, $stok_minimum, $id_unit;
     public $searchUnit = '';
     public $focusedUnit = false;
 
@@ -15,6 +15,7 @@ class Add extends Component
         'nama_barang' => 'required|string|max:50',
         'harga' => 'required',
         'stok' => 'required',
+        'stok_minimum' => 'required|integer|min:0',
         'id_unit' => 'required|exists:units,id_unit',
     ];
 
@@ -31,6 +32,7 @@ class Add extends Component
             'nama_barang' => $this->nama_barang,
             'harga' => $this->harga,
             'stok' => $this->stok,
+            'stok_minimum' => $this->stok_minimum,
             'id_unit' => $this->id_unit,
         ]);
 

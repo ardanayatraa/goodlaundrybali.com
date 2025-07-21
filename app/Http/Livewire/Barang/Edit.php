@@ -7,7 +7,7 @@ use App\Models\Barang;
 
 class Edit extends Component
 {
-    public $id_barang, $nama_barang, $harga, $stok, $id_unit;
+    public $id_barang, $nama_barang, $harga, $stok, $stok_minimum, $id_unit;
     public $searchUnit = '';
     public $focusedUnit = false;
 
@@ -15,6 +15,7 @@ class Edit extends Component
         'nama_barang' => 'required|string|max:50',
         'harga' => 'required|numeric|min:0',
         'stok' => 'required|integer|min:0',
+        'stok_minimum' => 'required|integer|min:0',
         'id_unit' => 'required|integer|exists:units,id_unit',
     ];
 
@@ -31,6 +32,7 @@ class Edit extends Component
         $this->nama_barang = $barang->nama_barang;
         $this->harga = $barang->harga;
         $this->stok = $barang->stok;
+        $this->stok_minimum = $barang->stok_minimum;
         $this->id_unit = $barang->id_unit;
     }
 
@@ -47,6 +49,7 @@ class Edit extends Component
             'nama_barang' => $this->nama_barang,
             'harga' => $this->harga,
             'stok' => $this->stok,
+            'stok_minimum' => $this->stok_minimum,
             'id_unit' => $this->id_unit,
         ]);
 

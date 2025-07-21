@@ -17,25 +17,6 @@ class Add extends Component
         'keterangan'     => 'nullable|string|max:255',
     ];
 
-    public function mount()
-    {
-        // Otomatis simpan route sebelumnya dari referrer
-        $previousUrl = url()->previous();
-        $previousRoute = null;
-
-        // Cek apakah URL sebelumnya adalah route yang valid
-        if (str_contains($previousUrl, '/transaksi')) {
-            $previousRoute = 'transaksi';
-        } elseif (str_contains($previousUrl, '/pelanggan')) {
-            $previousRoute = 'pelanggan';
-        }
-
-        // Simpan di session jika ada route valid
-        if ($previousRoute) {
-            session(['pelanggan_redirect_to' => $previousRoute]);
-        }
-    }
-
     public function save()
     {
         $this->validate();
@@ -52,8 +33,7 @@ class Add extends Component
             'alamat'          => $this->alamat,
             'keterangan'      => $this->keterangan,
         ];
-
-        // Jika memilih "Member", tambahkan member_start_at
+        // Jika memilih “Member”, tambahkan member_start_at
         if (strtolower($this->keterangan) === 'member') {
             $data['member_start_at'] = Carbon::now();
         }
@@ -61,12 +41,7 @@ class Add extends Component
         Pelanggan::create($data);
 
         $this->reset();
-
-        // Redirect berdasarkan route asal yang disimpan di session
-        $redirectTo = session('pelanggan_redirect_to', 'pelanggan');
-        session()->forget('pelanggan_redirect_to'); // Hapus session setelah digunakan
-
-        return redirect()->route($redirectTo);
+        return redirect()->route('pelanggan');
     }
 
     public function render()

@@ -41,17 +41,10 @@ class BarangTable extends LivewireDatatable
             Column::name('harga')->label('Harga')->sortable(),
             Column::name('unit.nama_unit')->label('Unit')->sortable(),
 
-                        Column::callback(['stok'], function ($stok) {
-                if ($stok <= 5) {
-                    return view('components.stok-warning', [
-                        'stok' => $stok,
-                        'warning' => true
-                    ]);
-                }
-
+            Column::callback(['stok', 'stok_minimum'], function ($stok, $stok_minimum) {
                 return view('components.stok-warning', [
                     'stok' => $stok,
-                    'warning' => false
+                    'stok_minimum' => $stok_minimum
                 ]);
             })
                 ->label('Stok')

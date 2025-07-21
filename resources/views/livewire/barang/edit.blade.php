@@ -35,6 +35,14 @@
                 </div>
 
                 <div>
+                    <x-label for="stok_minimum" value="Stok Minimum" />
+                    <x-input id="stok_minimum" type="number" wire:model="stok_minimum" class="w-full mt-2" />
+                    @error('stok_minimum')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div>
                     <x-label for="searchUnit" value="Cari Unit" />
                     @if ($id_unit)
                         <div class="mt-2 flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2 bg-white">

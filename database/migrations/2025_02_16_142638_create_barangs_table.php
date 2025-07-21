@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama_barang', 50);
             $table->decimal('harga', 12, 2);
             $table->integer('stok');
+            $table->integer('stok_minimum')->default(5);
             $table->unsignedBigInteger('id_unit');
             $table->timestamps();
         });
