@@ -15,10 +15,6 @@ return new class extends Migration
             $table->id('id_transaksi');
             $table->string('no_telp', 50);
             $table->foreign('no_telp')->references('no_telp')->on('pelanggans')->cascadeOnDelete();
-            $table->foreignId('id_point')
-                  ->nullable()
-                  ->constrained('points', 'id_point')
-                  ->nullOnDelete();
             $table->date('tanggal_transaksi');
             $table->decimal('total_harga', 12, 2);
             $table->string('metode_pembayaran', 50);
