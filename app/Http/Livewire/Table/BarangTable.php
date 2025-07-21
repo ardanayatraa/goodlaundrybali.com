@@ -51,14 +51,14 @@ class BarangTable extends LivewireDatatable
                 ->sortable()
                 ->searchable(),
 
-            // Column::callback(['id_barang'], function ($id) {
-            //     return view('components.table-action', [
-            //         'id' => $id,
-            //         'route'=>'barang.edit'
-            //     ]);
-            // })
-            //     ->label('Actions')
-            //     ->excludeFromExport(),
+            Column::callback(['id_barang'], function ($id) {
+                return view('components.barang-table-action', [
+                    'id' => $id,
+                    'route'=>'barang.edit'
+                ]);
+            })
+                ->label('Actions')
+                ->excludeFromExport(),
         ];
     }
 
