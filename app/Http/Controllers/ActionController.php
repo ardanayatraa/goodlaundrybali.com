@@ -181,7 +181,7 @@ class ActionController extends Controller
         $transaksi = Transaksi::with([
             'pelanggan',
 
-            'detailTransaksi.paket.unitPaket'
+            'detailTransaksi.paket.unit'
         ])->findOrFail($id);
 
         // Muat view PDF (resources/views/pdf/transaksi-cetak.blade.php)
